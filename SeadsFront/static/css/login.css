@@ -1,0 +1,117 @@
+/*Absolute Center for LogIn*/
+form {
+  width: 27em;
+  height: 27em;
+  margin: auto;
+  position: absolute;
+  border: black solid 1px; /*REMOVE: this is just to make it easier to see border for positioning*/
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #4d4d4d;
+    padding: .5em 0 .5em 0;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4d4d4d;
+    padding: 0.5em 0 .5em 1em;
+    text-transform: uppercase;
+}
+
+hr {
+    width:80%;
+}
+
+*:focus {
+    outline: none;
+}
+
+input[type=text], input[type=password] {
+    border: 2px solid #bdc3c7;
+    color: #34495e;
+    background: #fafdff;
+    font-size: 15px;
+    padding: 8px 12px;
+    margin-bottom: 1em;
+    height: 2em;
+    width: 13em;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: all .25s linear, color .25s linear, background-color .25s linear;
+    transition: all .25s linear, color .25s linear, background-color .25s linear;
+    margin-left: 2em;
+    /* margin-right: auto; */
+}
+
+input[type=submit] {
+    border: 2px solid #bdc3c7;
+    color: #B6BDBD;
+    background: #EBEEF0;
+    font-size: 15px;
+    margin-bottom: 1em;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    height: 2em;
+    width: 10em;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: all .25s linear, color .25s linear, background-color .25s linear;
+    transition: all .25s linear, color .25s linear, background-color .25s linear;
+}
+
+input:focus { /* add this to the already existing style */
+    width: 75%;
+    background: white;
+}
+
+.notValid {
+    background-color: #bdc3c7;
+    border-radius: 50%;
+    font-size: 0;
+    height: 6px;
+    position: absolute;
+    width: 6px;
+    margin-left: -10;
+    margin-top: 4;
+    -webkit-transition: all .25s linear, color .25s linear, background-color .25s linear;
+    transition: all .25s linear, color .25s linear, background-color .25s linear;
+}
+
+.red {
+    background-color: red;
+    border-radius: 50%;
+    font-size: 0;
+    height: 6px;
+    position: absolute;
+    width: 6px;
+    margin-left: -10;
+    margin-top: 4;
+    -webkit-transition: all .25s linear, color .25s linear, background-color .25s linear;
+    transition: all .25s linear, color .25s linear, background-color .25s linear;
+}
+
+.green {
+    background-color: #66CCCC;
+    border-radius: 50%;
+    font-size: 0;
+    height: 6px;
+    position: absolute;
+    width: 6px;
+    margin-left: -10;
+    margin-top: 4;
+    -webkit-transition: all .25s linear, color .25s linear, background-color .25s linear;
+    transition: all .25s linear, color .25s linear, background-color .25s linear;
+}
+

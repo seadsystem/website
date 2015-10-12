@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+
+
+<div class="container-fluid">
+         <div class="row">
+            <img src="{% static 'images/seadsLogo.png' %}" class="img-responsive center">
+            <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+               <form name="login_form" class="form-horizontal" action="{% url 'django.contrib.auth.views.login' %}" method="post">
+               	{% csrf_token %}
+                  <div class="form-group">
+                     {% if form.errors %}
+                        <p class="text-center">Your username and password didn't match. Please try again.</p>
+                     {% endif %}
+                     <label for="username" class="col-sm-4 col-md-3 col-lg-3 control-label">Username: </label>
+                     <div class="col-sm-8 col-md-9 col-lg-9">
+                        <input type="username" class="form-control overrideit" name="username" id="username" placeholder="Enter Username">
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <label class="col-sm-4 col-md-3 col-lg-3 control-label" for="password">Password: </label>
+                     <div class="col-sm-8 col-md-9 col-lg-9">
+                        <input type="password" class="form-control overrideit" placeholder="Password" name="password" id="password">
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-sm-offset-4 col-sm-9 col-md-offset-4 col-md-9 col-lg-offset-4 col-lg-9">
+                        <button type="submit" value="login" class="btn btn-block coloredsignin">Sign in</button>
+                        <input type="hidden" name="next" value="{{ next }}">
+                     </div>
+                     <div class="col-sm-offset-4 col-sm-9 col-md-offset-4 col-md-9 col-lg-offset-4 col-lg-9">
+                        <a button type='submit' class='btn btn-block coloredsignin' href='/accounts/password/reset/'> Forgot your Password?</a></button>
+                     </div>
+                     
+                  </div>
+                  <div>-
+               </form>
+                  </div> 
+               </form>
+            </div>
+         </div>
+      </div>
+
+
+
+
+
+
+
+                
+
+</form>
+
+{% endblock %}

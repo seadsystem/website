@@ -1,0 +1,85 @@
+/*CSS for SHEMP 
+by Nabil Kazerouni, @nabil_kaz, nabilkaz@gmail.com
+Edits:
+10/28/2013 - Removed Dark Shadow above Dashboard buttom that made it looked pressed from #mainmenu>li:first-child 
+            -moz-box-shadow: inset 0 1px 0 #9c9c9c, inset 0 4px 0 #dbdbdb;
+            -webkit-box-shadow: inset 0 1px 0 #9c9c9c, inset 0 4px 0 #dbdbdb;
+            box-shadow: inset 0 1px 0 #9c9c9c, inset 0 4px 0 #dbdbdb;
+11/06/2013 - Added font for use in menu. Uses classes beginning with "icon-" and uses the psuedo selector of ":before" and content to add the appropriate character.
+
+
+/* ----- Page Properties ---- 
+
+NavBG Light Gray : #e6e6e6
+MenuBG Blue: #7eb4ba
+
+----- Page Properties ---- */
+
+
+/*---- menu_header ----*/
+
+#menu_header {
+    background: #e6e6e6;
+    height: 4em;
+    min-width: 900px;
+}
+#useronoff {
+    text-align: right;
+    float: right;
+    font-weight: bold;
+}
+#tbtitle {
+    float: left;
+    display:
+}
+
+#open-menu {
+   float: left;
+}
+
+#useronoff, #tbtitle {
+    font-size: 1.5em;
+    color: #66CCCC;
+    margin: .6% 1%;
+}
+
+/* Styling for the pages */
+
+#main_window {
+   overflow: hidden;
+   position: relative;
+   padding-top: 10px;
+   padding-left: 10px;
+   clear: right;
+}
+
+.page {
+   display: none;
+}
+
+#dashboard_page {
+   display: inline;
+}
+
+/*Scroll bar */
+
+ul#dddevices::-webkit-scrollbar {
+  width: 5px;
+}
+ 
+ul#dddevices::-webkit-scrollbar-thumb:vertical {
+  margin: 5px;
+  background-color: #999;
+  -webkit-border-radius: 5px;
+}
+ 
+ul#dddevices::-webkit-scrollbar-button:start:decrement,
+ul#dddevices::-webkit-scrollbar-button:end:increment {
+  height: 5px;
+  display: block;
+}
+
+/* fix scroller overflow-y */
+.scroller {
+   overflow-y : hidden;
+}

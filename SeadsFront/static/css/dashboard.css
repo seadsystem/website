@@ -1,0 +1,145 @@
+#main_window {
+   overflow: hidden;
+   position: relative;
+   padding-top: 10px;
+   padding-left: 10px;
+   clear: right;
+}
+
+.page {
+   display: none;
+}
+
+#graphs_page {
+   display: inline;
+}
+
+#livegraphs_page {
+   display: inline;
+}
+
+.page h1 {
+	font-size: 3em;
+	font-weight: bold;
+	color: #4d4d4d;
+	padding: .5em 0 1em 0;
+	text-indent: 1.5em;
+	text-transform: uppercase;
+}
+
+.page h2 {
+	font-size: 2em;
+	font-weight: bold;
+	color: #4d4d4d;
+	padding: .5em 0 .5em 0;
+	text-transform: uppercase;
+}
+
+.page h1 img{
+margin: -.1em .5em -.7em 0;
+}
+
+.page hr {
+	width: 95%;
+	padding-right: 1em;
+}
+
+/* Tab Content - menucool.com */
+.tabs ul
+{
+    padding: 7px 0;
+    margin:0;
+    font-size: 0;
+    list-style-type: none;
+    text-align: left; /*set to left, center, or right to align the tabs as desired*/
+    padding-left:20px; /* Offset of the first tab */
+}
+        
+.tabs ul li
+{
+    display: inline;
+    margin: 0;/*no distance between tabs*/
+    background: White;
+    margin-left: -4px;
+}
+        
+.tabs ul li a
+{
+    font: normal 12px Verdana;
+    text-decoration: none;
+    position: relative;
+    padding: 7px 22px;
+    color: #000;
+    outline:none;
+    background: #D3D3D3;
+    border:1px solid #CCC;
+    border-right:0;
+}
+
+/*Note: IE8 and earlier doesn't support li:last-child. You have to add another class to the last tab (LI) and specify its border-right as below.*/
+.tabs ul li:last-child a
+{
+    border-right:1px solid #CCC;
+}
+  
+        
+.tabs ul li a:hover
+{
+    color: #000;
+    background: #f7f7f7;
+}
+        
+.tabs ul li.ui-tabs-active a, .tabs ul li.ui-tabs-active a:hover
+{
+    top: 0px;
+    font-weight:normal;
+    background: #f7f7f7;
+    border-bottom: 1px solid #f7f7f7;
+    color: #000;
+}
+        
+        
+.tabs ul li.ui-tabs-active a:hover
+{
+    text-decoration: none;
+}
+
+.tabs > div
+{
+    border-top: 1px solid #CCC; padding: 30px 10px;
+}
+
+.tabs
+{
+    width: 95%;
+	padding-left: 2.8em;
+}
+
+#shemp-graph {
+   width: 100%;
+   height: 80%;
+}
+
+.greenButton {
+   display:inline-block;
+   width:117px;height:58px;
+   background:url(../images/icons/green_button_download.png) no-repeat;
+   text-indent:-9999999px;
+   text-align:left;
+   overflow:hidden;
+   cursor:pointer;
+}
+
+.ui-widget-overlay {
+   position: fixed !important;
+   background: #000 !important;
+   opacity: .3 !important;
+   -moz-opacity: 0.3 !important;
+   filter: alpha(opacity=30) !important;
+}
+
+.ui-dialog { z-index: 1000 !important ;}
+
+.navbar.navbar-default.navbar-static-top {
+   margin-bottom: 0px;
+}

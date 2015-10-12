@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+<html>
+<head>
+
+  <!--
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/data.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
+  -->
+
+  <script src="{% static "js/highstock.js" %}"></script>
+  <script src="{% static "js/exporting.js" %}"></script>
+
+  <!-- Additional files for the Highslide popup effect
+  <script type="text/javascript" src="http://www.highcharts.com/media/com_demo/highslide-full.min.js"></script>
+  <script type="text/javascript" src="http://www.highcharts.com/media/com_demo/highslide.config.js" charset="utf-8"></script>
+  <link rel="stylesheet" type="text/css" href="http://www.highcharts.com/media/com_demo/highslide.css" />
+  -->
+
+  <!-- export-csv affects charts globally; adds csv and xls exporting options-->
+  <script src="{% static "js/export-csv.js" %}"></script>
+  <!-- theme -->
+  <script src="{% static "js/dark-unica-highcharts.js" %}"></script>
+
+</head>
+<body style="background-color:white;">
+
+ <div class="container">
+  <div class="row" style="padding-bottom:0%;">
+    <div class="col-sm-2">
+    </div>
+    <div class="col-sm-4">
+      <div class="btn-group" role="group" aria-label="...">
+        <button onclick="get_datatype('W');setDType('W');" type="button" class="btn btn-default btn">
+        Wattage
+      </button>
+        <button onclick="get_datatype('I');setDType('I');" type="button" class="btn btn-default btn">
+        Current
+      </button>
+        <button onclick="get_datatype('V');setDType('V');" type="button" class="btn btn-default btn">
+        Voltage
+      </button>
+      <!--their var dtype-->
+      <input type="hidden" id="dType" value="W" />
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <span style="float:right;"><span class="btn btn-default btn"> Granularity</span> &nbsp&nbsp
+      <input id="slider1" type="text" data-slider-min="100" data-slider-max="5000" data-slider-step="1" data-slider-value="3000"/></span>
+    </div>
+</div>
+    <div class="row">
+      <div class='col-sm-2'>
+    </div>
+      <div class="col-sm-8">
+          <div id="container"></div>
+
+      </div>
+
+       <!--<div><h1 id="maximum">Maximum is: {{max}}</h1></div>
+       <div><h1 id="average">Average is: {{avg}}</h1></div> -->
+  </div>
+  <div class="row" style="padding-top:0%;">
+    <div class="col-sm-2">
+    </div>
+          <div class='col-sm-4'>
+            <div class="form-group">
+              <div class='input-group date' id='datetimepicker1'>
+                <input type='text' class="form-control" />
+                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class='col-sm-4'>
+          <div class="form-group">
+            <div class='input-group date' id='datetimepicker2'>
+              <input type='text' class="form-control" />
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+        </div>
+        </div>
+  </div>
+
+</body>
+<script type="text/javascript">
+  var data1 = {{data|safe}};//Some old stuff that previous people used
+  //data1 = transform_dates(data1);
+
+  var thejson = '{{data2|safe}}';//This is our JSON we're grabbing from API
+  thejson = JSON.parse(thejson);
+
+  //need a function to make sure that the json data is chronological
+  //might not be necessary; the test data provided in a device was out of order.
+  function custom_compare (a,b) {
+    // I'm assuming all values are numbers
+    return a[0] - b[0];
+  }
+
+  //Arrays to hold the correctly formatted data. Need to be
+  //global variables so they can be changed with button clicks.
+  var voltage = new Array();
+  var current = new Array();
+  var wattage = new Array();
+  $(function () {
+    //This for loop builds the correctly formatted array from the JSON
+    //and then puts each component into the correct category
+    for (i = 1; i < thejson.data.length; i++){
+        if(thejson.data[i][0] == "None") continue;
+        var date = thejson.data[i][0]; //date variable will be useful if we need to plot the time
+        date = moment.utc(date).valueOf();//Turn date into UTC for plotting
+        if(thejson.data[i][1] != "None") current.push([date, parseInt(thejson.data[i][1])]);
+        if(thejson.data[i][2] != "None") wattage.push([date, parseInt(thejson.data[i][2])]);
+        if(thejson.data[i][3] != "None") voltage.push([date, parseInt(thejson.data[i][3])]);
+    }
+    //data needs to be sorted before entered into highcharts/
+    current = current.sort(custom_compare);
+    voltage = voltage.sort(custom_compare);
+    wattage = wattage.sort(custom_compare);
+    var processed_json = wattage;
+
+    //This is the main chart function that actually builds/renders the chart instance
+    $('#container').highcharts({
+
+        title: {
+            text: 'Wattage'
+        },
+
+        xAxis: {
+          type: 'datetime',
+          tickInterval: 100000000,
+          //tickWidth: 0,
+          title: {text:'Time'}
+        },
+        yAxis: {
+          title: {text:'Watts'}
+        },
+
+        rangeSelector: {
+                allButtonsEnabled: true,
+                enabled:true,
+            },
+
+        chart: {
+          events: {
+              selection: function (event) {
+                  var text,
+                      label,
+                      tick;
+                  if (event.xAxis) {
+                      //text = 'min: ' + Highcharts.numberFormat(event.xAxis[0].min, 2) + ', max: ' + Highcharts.numberFormat(event.xAxis[0].max, 2);
+                      m1 = event.xAxis[0].min; //get min
+                      m2 = event.xAxis[0].max; //get max
+                      chart = $('#container').highcharts(); //reference
+                      chart.xAxis[0].setExtremes(m1, m2); //update x axis
+                      tick = (m2-m1)/100;
+                      chart.xAxis[0].options.tickInterval = tick;
+                      //code below is for a popup upon zoom/reset that shows information
+                  } /*else {
+                      text = 'Selection reset';
+                  }
+                  //this is a popup to show values briefly on xAxis
+                  label = this.renderer.label(text, 100, 120)
+                      .attr({
+                          fill: Highcharts.getOptions().colors[0],
+                          padding: 10,
+                          r: 5,
+                          zIndex: 8
+                      })
+                      .css({
+                          color: '#FFFFFF'
+                      })
+                      .add();
+
+                  setTimeout(function () {
+                      label.fadeOut();
+                  }, 1000);*/
+              }
+          },
+        zoomType: 'x'
+        },
+        series: [{
+            data: processed_json,
+            name: "Wattage" //default series name
+        }]
+    });
+  });
+
+$(function () {
+    $('#datetimepicker1').datetimepicker({
+      pick12HourFormat: true,
+      defaultDate: moment(data1[1][0]),
+      language: 'en'
+    });
+  });
+
+  $(function () {
+    $('#datetimepicker2').datetimepicker({
+      pick12HourFormat: true,
+      defaultDate: moment(),
+      language: 'en'
+    });
+  });
+
+  $(function () {
+    $("#datetimepicker1").on("dp.hide", function (e) {display_new_range($('#dType').val())})
+  });
+
+  $(function () {
+    $("#datetimepicker2").on("dp.hide", function (e) {display_new_range($('#dType').val())})
+  });
+
+  function transform_dates(data1){
+    for (i = 0; i < data1.length; i++){
+      data1[i][0] = moment(data1[i][0]).format('MMM D, h:m:s');
+    }
+    return data1;
+  }
+
+  $('#slider1').slider({
+  formatter: function(value) {
+    return 'Current value: ' + value;
+      }
+  });
+
+  $('#slider1').on("slideStop", function(e){
+    console.log("stopped");
+    display_new_range($('#dType').val());
+  });
+
+
+  function get_datatype(s){
+    display_new_range(s)
+  }
+
+  function setDType(dtype){
+    $('#dType').val(dtype);
+  };
+
+  function getDType(){
+    var dType = $('#dType').val();
+  }
+
+  //This function is called when buttons are pressed and it
+  //ultimately updates the whole graph by redrawing it
+  function display_new_range(dtype) {
+    getDType(); //set the value of dType to be dtype
+    dtype = dtype || "W"; //if no dtype (none) then default "W"
+    var granularity = $('#slider1').data('slider').getValue()
+    console.log("granularity", granularity);
+    //set the start and end_time to milliseconds because highcharts min and max is in milliseconds
+    var start_time = $("#datetimepicker1").data('DateTimePicker').date.unix() * 1000;
+    var end_time = $("#datetimepicker2").data('DateTimePicker').date.unix() * 1000;
+    //console.log("start_time",start_time);
+    //console.log("end_time",end_time);
+    $.get("", {start_time : start_time,  end_time : end_time, dtype: dtype,
+      granularity : granularity}, function(data){
+      $("#maximum").text("Maximum is: " + data[1].max);
+      $("#average").text("Average is: " + data[1].avg);
+      chart = $('#container').highcharts();
+      //console.log("maximum value",data[1].max);
+      //console.log("average value",data[1].avg);
+
+      var prevmin = chart.xAxis[0].min;
+      var prevmax = chart.xAxis[0].max;
+
+      //console.log("prevmin", chart.xAxis[0].min);
+      //console.log("prevmax", chart.xAxis[0].max);
+      chart.xAxis[0].setExtremes(start_time, end_time);
+      //console.log("min", chart.xAxis[0].min);
+      //console.log("max", chart.xAxis[0].max);
+      //Here I change the actual data the graph is displaying based on the button clicked
+      if(dtype == "W") {
+        chart.series[0].setData(wattage, false);       //Change the data points
+        chart.setTitle({text: "Wattage"});             //Change the title
+        chart.yAxis[0].axisTitle.attr({text: 'Watts'});//Change the yAxis title
+        chart.series[0].update({name:"Wattage"}, false); //update series name
+      }
+      if(dtype == "I") {
+        chart.setTitle({text: "Current"});
+        chart.yAxis[0].axisTitle.attr({text: 'Amps'});
+        chart.series[0].setData(current, false);
+        chart.series[0].update({name:"Current"}, false);
+      }
+      if(dtype == "V") {
+        chart.series[0].setData(voltage, false);
+        chart.setTitle({text: "Voltage"});
+        chart.yAxis[0].axisTitle.attr({text: 'Volts'});
+        chart.series[0].update({name:"Voltage"}, false);
+      }
+      //redraw the chart based on button chosen or date picked
+      chart.redraw();
+      //take the xAxis values from the previous graph so that when we
+      //transition between graphs the xAxis stays the same.
+      //This function is highly dependant on whether or not the data is
+      //continuous. If it is not continuous and not consistent across
+      //xAxis values for wattage/voltage/current, then switching between
+      //the three will not retain xAxis values.
+      chart.xAxis[0].setExtremes(prevmin, prevmax);
+    });
+  };
+
+</script>
+</html>
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<!-- You cannot see register.html if there are form errors -->
+{% if form.errors %}
+<p>Please try again.</p>
+<!--http://stackoverflow.com/questions/2035288/getting-a-list-of-errors-in-a-django-form
+http://stackoverflow.com/questions/7419535/how-to-render-django-form-errors-not-in-a-ul
+{{user_form.errors}}-->
+{% endif %}
+<!-- required csrf token -->
+        <div class="container-fluid">
+   <div class="row">
+      <img src="{% static 'images/seadsLogo.png' %}" class="img-responsive center">
+      <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+         <form class="form-horizontal" role="form" name="register_user_form" action="/register/" method="post">
+                        {% csrf_token %}
+         <!-- each of the required fields: Username, First/Last name, email, phone #, provider and password.-->
+            <div class="form-group">
+               <label for="user_name" class="form-field col-sm-4 col-md-3 col-lg-4 control-label">Username:</label>
+               <div class="col-sm-8 col-md-9 col-lg-8"><input class="form-control overrideit" name="username" type="text" id="username" placeholder="Username" value={{user}}></div>
+               <p class="text-center">{{ user_form.username.errors.as_text }}</p>
+            </div>
+            <div class="form-group">
+               <label for="first_name" class="form-field col-sm-4 col-md-3 col-lg-4 control-label">First Name:</label>
+               <div class="col-sm-8 col-md-9 col-lg-8"><input class="form-control overrideit" name="first_name" type="text" id="first_name" placeholder="First Name" value={{first_name}}></div>
+               <p class="text-center">{{ user_form.first_name.errors.as_text }}</p>
+            </div>
+            <div class="form-group">
+               <label for="last_name" class="col-sm-4 col-md-3 col-lg-4 control-label">Last Name:</label>
+               <div class="col-sm-8 col-md-9 col-lg-8"><input name="last_name" type="text" id="last_name" class="form-control overrideit" placeholder="Last Name" value={{last_name}}></div>
+               <p class="text-center">{{ user_form.last_name.errors.as_text }}</p>
+            </div>
+            <div class="form-group">
+               <label for="email_address" class="col-sm-4 col-md-3 col-lg-4 control-label">Email Address:</label>
+               <div class="col-sm-8 col-md-9 col-lg-8"><input name="email" type="text" id="email" placeholder="E-mail Address" class="form-control overrideit" value={{email}}></div>
+               <p class="text-center">{{ user_form.email.errors.as_text }}</p>
+            </div>
+            <div class="form-group">
+               <label for="phone_number" class="col-sm-4 col-md-3 col-lg-4 control-label">Phone Number: </label>
+               <div class="col-sm-8 col-md-9 col-lg-8"><input name="phone" type="text" id="phone" class="form-control overrideit" placeholder="(XXX)XXX-XXXX" value={{phone}}></div>
+               <p class="text-center">{{ user_form.phone.errors.as_text }}</p>
+            </div>
+            <div class="form-group">
+               <label for="cell_carrier" class="col-sm-4 col-md-3 col-lg-4 control-label">Cell Provider: </label>
+               <div class="col-sm-8 col-md-9 col-lg-8"><select name="cellProvider" id="cellProvider" class="form-control overrideit" value={{cell_prov}}><option>AT&T</option><option>Verizon</option><option>T-Mobile</option><option>Sprint</option></select></div>
+               <p class="text-center">{{ user_form.cellProvider.errors.as_text }}</p>
+            </div>
+            <div class="form-group">
+               <label for="password" class="col-sm-4 col-md-3 col-lg-4 control-label">Password: </label>
+               <div class="col-sm-8 col-md-9 col-lg-8"><input name="password" type="password" id="password" class="form-control overrideit" value={{password_save}}></div>
+               <p class="text-center">{{ user_form.password.errors.as_text }}</p>
+            </div>
+            <div class="form-group">
+               <div class="col-sm-8 col-sm-offset-4 col-md-8 col-md-offset-4 col-lg-8 col-lg-offset-4">
+                  <button name="Submit" class="btn btn-block coloredsignin" type="submit" id="Submit" name="submit" value="register">Register</button>
+               <!-- will alert a user if any of their forms have errors, will be submitted otherwise -->
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+{% endblock %}

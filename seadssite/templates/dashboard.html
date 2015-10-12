@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+{% if alerts %}
+<!-- if we have an alert, tell the user -->
+{% for alert in alerts %}
+
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+  <strong>Something went wrong and you action could not be completed: </strong> {{alert}}
+</div>
+{% endfor %}
+{% endif %}
+	<div class="container">
+		<div class="page-wrap" style="width:100%;">
+			<div class="row" style="text-align:center;">
+
+				<div class="col-md-3" style="border-right:3px solid #a4a4a4"><div style="color:black;font-size:25;font-weight:bold;">{{connected_devices}}
+
+				</div><span>Connected Devices</span></div>
+				<div class="col-md-3" style="border-right:3px solid #a4a4a4"><div style="color:black;font-size:25;font-weight:bold;">{{maps|length}}</div><span>Registered Devices</span></div>
+				<div class="col-md-3" style="border-right:3px solid #a4a4a4"><div style="color:black;font-size:25;font-weight:bold;">{{current_power_usage}} W</div><span>Current Power Usage</span></div>
+				<div class="col-md-3"><div style="color:black;font-size:25;font-weight:bold;">{{average_power_usage}} W/h</div><span>Average Weekly Power Usage</span></div>
+			</div>
+			<!-- for mapped devies, create boxes for them to be shown -->
+			{%for map in maps%}
+				{% if forloop.counter0|divisibleby:4 %}
+					{%if forloop.counter0 == 0%}
+						<div class="row deviceRow">
+					{% else %}
+						</div>
+						<div class="row deviceRow">
+					{% endif %}
+				{% endif %}
+				<div class="col-md-3">
+					<div style="background: #f8f8f8;width:100%;height:25%;margin:0 auto;border-radius: 4px;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;border:1px solid #E7E7E7;" class="deviceBox" onmouseover="$(this).css('background-color', '#e6e6e6');" onmouseout="$(this).css('background-color', '#f8f8f8');">
+						<div style="float:right;padding:10px;">
+							<form method="post">
+								<!-- button for deletion -->
+											{% csrf_token %}
+											<button type="submit" class="btn btn-danger delete" value={{map.device.device_id}} name="delete">
+												<i class="fa fa-trash-o fa-lg"></i></button>
+											</form>
+						</div>
+						<!-- button to visualize specific device -->
+						<div style="float:left;padding:10px;" >
+							<span style="font-size:17px;color:black;">{{map.device.name}}</span>
+							<input style="display:none;" class="device_id" value="{{map.device.device_id}}"/>
+						</div>
+						<span class="glyphicon glyphicon-off" aria-hidden="true" style="font-size:50px;color:#a4a4a4;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);"></span>
+						<div style="right:20px;;padding:10px;position:absolute;bottom:0px;" >
+							<span style="font-size:15px;color:black;">W: <span style="color:#00CD02"><b id=cur{{map.device.device_id}}>0</b></span></span>
+						</div>
+					</div>
+				</div>
+
+		    {% endfor %}
+			</div>
+			<!-- button to register a new device (modal)-->
+		    <div class="row"><!-- Button trigger modal -->
+			    <div class="col-md-3 registerDevice">
+			    	<div style="float:left;padding:10px;" >
+							<span style="font-size:17px;color:black;">Add Device</span>
+						</div>
+			    	<div style="background: #f8f8f8;width:100%;height:25%;margin:0 auto;border-radius: 4px;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;border:1px solid #E7E7E7;" class="registerBox" onmouseover="$(this).css('background-color', '#e6e6e6');" onmouseout="$(this).css('background-color', '#f8f8f8');">
+						
+							<span class="glyphicon glyphicon-plus" aria-hidden="true" style="font-size:50px;color:#a4a4a4;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);" data-toggle="modal" data-target="#register_modal"></span>
+					</div>
+				</div>
+	
+			</div>
+
+	</div>
+	</div>
+
+
+<!-- Modal for registering a new device -->
+<div class="modal fade" id="register_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- close the modal-->
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title">Register your new SEADS device</h4>
+			</div>
+			<div class="modal-body">
+			<!-- Device ID must be a number this is the check -->
+				<div class="alert alert-danger fade in" role="alert" id="deviceIDNumError" style="display:none;">
+					<button type="button" class="close" onclick="$('#deviceIDNumError').hide();"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+					<h4>Error</h4>
+					<p>Device ID must be a number</p>
+				</div>
+			<!-- checks to make sure a deivce ID is provided -->
+				<div class="alert alert-danger fade in" role="alert" id="deviceIDEmpty" style="display:none;">
+					<button type="button" class="close" onclick="$('#deviceIDEmpty').hide();"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+					<h4>Error</h4>
+					<p>A device ID must be provided</p>
+				</div>
+		<!-- Checks to make sure a deivce name is provided -->
+				<div class="alert alert-danger fade in" role="alert" id="deviceNameEmpty" style="display:none;">
+					<button type="button" class="close" onclick="$('#deviceNameEmpty').hide();"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+					<h4>Error</h4>
+					<p>A device name must be provided</p>
+				</div>
+		<!-- fillable fields/beta dropdown -->
+				<form method="post" id="deviceForm">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="input-group">
+								<div class="form-group">
+									<label>Device ID</label>
+									<input type="text" id="device_id" name="device_id" class="form-control" placeholder="ID">
+								</div>
+								<div class="form-group">
+									<label>Device Name</label>
+									<input type="text" id="device_name" name="device_name" class="form-control" placeholder="Device Name">
+								</div>
+	<!--ADDED DROPDOWN -->      
+								<div class="form-group">
+									<label>Appliance Type</label>
+									<select name="apptype" id="apptype" class="form-control overrideit" >
+        							<option value="1">Microwave</option>
+							        <option value="2">Lamp</option>
+							        <option value="3">Laptop</option>
+							    </select>
+								</div>
+
+								<button class="btn btn-default" id="deviceRegisterSubmit" type="submit" value=1 name="register" style="display:none;"></button>
+
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="validation()">Register</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div>
+<script src="{% static "js/dashboard.js" %}"></script>
+<script type="text/javascript">
+var data1 = {{power_map|safe}};
+for(i=0; i<data1.length; i++){
+	var field = data1[i][1]
+	if (data1[i][1] < 0){
+		field = 0
+	}
+	$('#cur' + data1[i][2]).html(field);
+}
+</script>
+</div>
+{% endblock %}

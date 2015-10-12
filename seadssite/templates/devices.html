@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+{% if alerts %}
+{% for alert in alerts %}
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+  <strong>Something went wrong and you action could not be completed: </strong> {{alert}}
+</div>
+{% endfor %}
+{% endif %}
+<script src="{% static 'x-editable/js/x-main.js' %}"></script>
+<div class="container" style="padding-top:10px;">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<table class="table table-hover table table-bordered">
+				<thead>
+					<th>Device ID</th>
+					<th>Device Name</th>
+					<th>Connection Status</th>
+					<th>Power Status</th>
+					<th>Modify</th>
+				</thead>
+				<tbody>
+					{% for map in maps%}
+					<tr>
+						<td class = "col-md-2"><span style="position:relative;float:left;">{{map.device.device_id}}</span><a class="btn btn-default" href="/visualization/{{map.device.device_id}}" style="position:relative;float:right;">Visualize</a></td>
+						<td class = "col-md-2">
+							<a class="modify" data-pk="{{map.device.device_id}}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">
+								{{map.device.name}}</a>
+							</td>
+							{% if map.device.connection %}
+							<td class="col-md-1">
+								<i class="fa fa-check fa-2x text-success"></i>
+							</td>
+							{% else %}
+							<td class="col-md-1">
+								<i class="fa fa-times fa-2x text-danger"></i>						
+							</td>
+							{%endif%}
+							{% if map.device.power %}
+							<td class="col-md-1">
+								<i class="fa fa-check fa-2x text-success"></i>
+							</td>
+							{% else %}
+							<td class="col-md-1">
+								<i class="fa fa-times fa-2x text-danger"></i>						
+								{%endif%}
+							</td>
+							<td class="col-md-1">
+								<div class="row">
+									<div class="col-md-3">
+										<form method="post">
+											{% csrf_token %}
+											<button type="submit" class="btn glyphicon glyphicon-pencil" value={{map.device.device_id}} name="modify2">
+											</button>
+										</form>
+									</div>
+									<div class="col-md-3">
+										<form method="post">
+											{% csrf_token %}
+											<button type="submit" class="btn btn-danger" value={{map.device.device_id}} name="delete">
+												<i class="fa fa-trash-o fa-lg"></i> Delete </button>
+											</form>
+										</div>
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+
+					<!-- Button trigger modal -->
+					<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#register_modal">
+						Register Device
+					</button>
+
+				</div>
+			</div>
+
+			<!-- Modal -->
+			<div class="modal fade" id="register_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title">Register your new SEADS device</h4>
+						</div>
+						<div class="modal-body">
+
+							<div class="alert alert-danger fade in" role="alert" id="deviceIDNumError" style="display:none;">
+								<button type="button" class="close" onclick="$('#deviceIDNumError').hide();"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+								<h4>Error</h4>
+								<p>Device ID must be a number</p>
+							</div>
+
+							<div class="alert alert-danger fade in" role="alert" id="deviceIDEmpty" style="display:none;">
+								<button type="button" class="close" onclick="$('#deviceIDEmpty').hide();"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+								<h4>Error</h4>
+								<p>A device ID must be provided</p>
+							</div>
+
+							<div class="alert alert-danger fade in" role="alert" id="deviceNameEmpty" style="display:none;">
+								<button type="button" class="close" onclick="$('#deviceNameEmpty').hide();"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+								<h4>Error</h4>
+								<p>A device name must be provided</p>
+							</div>
+
+							<form method="post" id="deviceForm">
+								{% csrf_token %}
+								<div class="row">
+									<div class="col-lg-6">
+										<div class="input-group">
+											<div class="form-group">
+												<label>Device ID</label>
+												<input type="text" id="device_id" name="device_id" class="form-control" placeholder="ID">
+											</div>
+											<div class="form-group">
+												<label>Device Name</label>
+												<input type="text" id="device_name" name="device_name" class="form-control" placeholder="Device Name">
+											</div>
+											<button class="btn btn-default" id="deviceRegisterSubmit" type="submit" value=1 name="register" style="display:none;"></button>
+
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" onclick="validation()">Register</button>
+						</div>
+					</div><!-- /.modal-content -->
+				</div><!-- /.modal-dialog -->
+			</div>
+			<script>
+				function validation(){
+					$("#deviceIDNumError").hide();
+					$("#deviceIDEmpty").hide();
+					$("#deviceNameEmpty").hide();
+					var deviceID = $("#device_id").val();
+					if (isNaN(deviceID)){
+					//alert("not a number");
+					$("#deviceIDNumError").show();
+					return false;
+				}
+				if(!$("#device_id").val()){
+					$("#deviceIDEmpty").show();
+					return false;
+				}
+				if(!$("#device_name").val()){
+					$("#deviceNameEmpty").show();
+					return false;	
+				}
+				else{
+					$("#deviceRegisterSubmit").click();
+				}
+			}
+
+			$("#device_id, #device_name").keypress(function(e){ 
+				if(e.which == 13) {
+					e.preventDefault();
+					validation();
+				}
+			});
+			
+		</script>
+	</div>
+	{% endblock %}

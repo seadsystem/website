@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+<html>
+    <head>
+        <style>
+            td div{
+                width:150px;
+                height:100px;
+            }
+            tr th{
+                padding:10px 0;
+            }
+        </style>
+    </head>
+    <body>
+
+    <!-- Populate table with real data. This is just a mockup-->
+
+    <div id="wrapper" style="width:100%;">
+        <div id="table_wrapper" style="width:70%;margin:50px auto;">
+            <table align="center">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Price ($)</th>
+                    <th>Wattage (watts)</th>
+                    <th>Emission (tons)</th>
+                </tr>
+                <tr>
+                    <td><div>1.</div></td>
+                    <td><div><img src="{% static "images/npTest/noun_118.png" %}" style="max-width:50%;height:auto;"></div></td>
+                    <td><div>30</div></td>
+                    <td><div>50</div></td>
+                    <td><div>0.5</div></td>
+                </tr>
+                <tr>
+                    <td><div>2.</div></td>
+                    <!--credit artist Taylor Miller if used production-->
+                    <td><div><img src="{% static "images/npTest/noun_25594_cc.png" %}" style="max-width:50%;height:auto;"></div></td>
+                    <td><div>40</div></td>
+                    <td><div>4</div></td>
+                    <td><div>0.1</div></td>
+                </tr>
+                <tr>
+                    <td><div>3.</div></td>
+                    <!--credit artist Alyssa Mahlberg if used production-->
+                    <td><div><img src="{% static "images/npTest/noun_3633_cc.png" %}" style="max-width:50%;height:auto;"></div></td>
+                    <td><div>10</div></td>
+                    <td><div>55</div></td>
+                    <td><div>2</div></td>
+                </tr>
+                <tr>
+                    <td><div>4.</div></td>
+                    <!--credit artist Sri Kadimisetty if used production-->
+                    <td><div><img src="{% static "images/npTest/noun_25179_cc.png" %}" style="max-width:50%;height:auto;"></div></td>
+                    <td><div>1000</div></td>
+                    <td><div>9</div></td>
+                    <td><div>100</div></td>
+                </tr>
+                <tr>
+                    <td><div>5.</div></td>
+                    <!--credit artist Yazmin Alanis if used production-->
+                    <td><div><img src="{% static "images/npTest/noun_114485_cc.png" %}" style="max-width:50%;height:auto;"></div></td>
+                    <td><div>3</div></td>
+                    <td><div>1</div></td>
+                    <td><div>0.0005</div></td>
+                </tr>
+                <tr>
+                    <td><div>6.</div></td>
+                    <!--credit artist Piero Borgo if used production-->
+                    <td><div><img src="{% static "images/npTest/noun_2650_cc.png" %}" style="max-width:50%;height:auto;"></div></td>
+                    <td><div>43.2</div></td>
+                    <td><div>10</div></td>
+                    <td><div>4</div></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    </body>
+
+</html> 
+{% endblock %}
