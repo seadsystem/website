@@ -160,12 +160,12 @@ def get_plug_data(start_time, end_time, dtype, device_id, samples = 3000, limit=
             if index > 0 and value not in [dtype]:
                 row[index] = int(value)
 
-    print len(api_response)
+    print (len(api_response))
     api_head = api_response[:1]
     api_reverse = api_response[::-1]
     api_reduce = rreduce(api_reverse[:len(api_reverse)-1], dtype)
     api_response = api_head + api_reduce
-    print len(api_response)
+    print (len(api_response))
     #end = time.time()
     #print "Server Processing Took: {}seconds".format(end-start)
     return api_response
@@ -201,9 +201,9 @@ def register_device(device_id, device_name, current_user):
         #catch errors
         #this is where the "alert" comes from in the views
         except ValueError:
-            print "Invalid Device ID"
+            print ("Invalid Device ID")
         except TypeError:
-            print "Invalid Device ID"
+            print ("Invalid Device ID")
     return None
 
 

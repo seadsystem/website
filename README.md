@@ -1,41 +1,68 @@
 #Django Frontend
-User data visualization platform for our setup postgres db.
-
-The service can be started using the init script installed via Puppet:
-```sh
-$ sudo service seadssite start
-```
-The frontend is supposed to be the way users can interact and view data that devices are collecting, and sending to the server.
+This is a preliminary setup for our seads Frontend website, which will eventually include d3 visualizations. Currently, this website will only work with a local postgres database, which can be installed with the instructions below.
 
 ##Installation
-
-Installation of the Go Landing Zone, Python API, and Django Frontend can be automated by using the Puppet modules included in the repository. The puppet modules are written for and assume to be executed on an Ubuntu 14.04 x64 Linux server. First you must install the prerequisites for running Puppet. From the terminal, execute:
+The django application within this repository must, at this time, work with a local postgres database on your machine. To install postgress on Ubuntu, type the following commands in your terminal:
 ```sh
-$ sudo apt-get install puppet git
-```
-It is recommended that you also install fail2ban with the following command:
-```sh
-$ sudo apt-get install fail2ban
+$ sudo apt-get update
+$ sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib
 ```
 
-Copy the Puppet files onto the server (for example, by cloning the repository) and change to the DB directory.
+Now, log in to postgres as an administrator, and create your database myDB:
 ```sh
-$ cd Seads-Front-Back/
+$ sudo su - postgres
+$ psql
+> CREATE DATABASE myDB;
 ```
-If desired, configure the UNIX application user’s password in puppet/modules/config. First add the user credentials to manifests/credentials.pp, then uncomment the password definitions in config/manifests/init.pp.
+Next, create your username and password( keep the single quotes around 'myPassword'):
 ```sh
-$ cd puppet/modules/config
-$ nano manifests/credentials.pp
-$ nano manifests/init.pp
-$ cd ../../..
+> CREATE USER myUsername WITH PASSWORD 'myPassword';
+```
+You should also be sure to explicitly grant all priveleges to your new user:
+```sh
+GRANT ALL PRIVILEGES ON DATABASE myDB TO myUsername;
+```
+Now, quit out of psql:
+```sh
+> \q
+```
+and log out of the postgres administrator:
+```sh
+$ exit
 ```
 
-Copy the files to the /etc/puppet directory, and execute Puppet:
+Now, we can configure the Django server in this repository to work with your myDB database. Go into SeadsFront ->settings.py, and scroll down until you see the object DATABASES. Modify it to look like this:
+
 ```sh
-$ sudo rsync -avc puppet/ /etc/puppet/
-$ sudo puppet apply puppet/manifests/site.pp
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'myDB',
+        'USER': 'myUsername',
+        'PASSWORD': 'myPassword',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 ```
-After Puppet has executed the modules correctly, the server should be listening on ports 8080 and 9000. Verify with netstat:
+You also need to migrate these changes. Go to the main directory with manage.py, and type:
+
 ```sh
-$ netstat -tln | egrep ':(8080|9000|8000)'
+$ python manage.py makemigrations
+$ python manage.py migrate
 ```
+
+##Running the Website
+you can now run the existing Seads website! Just type:
+
+```sh
+$ python manage.py runserver 0.0.0.0:8000
+```
+
+This will run the django server on your machine, at port 8000. Open your browser, and type in 0.0.0.0:8000 at youre address bar. You should see the Seads homepage.
+
+To view the admin page, go to 0.0.0.0:8000/admin. I'm not sure what the proper username and passwords are yet.
+
+To see what the former groups tried to do to visualize data, go to 0.0.0.0/visualization/1. This will take a long time to load.
+
+
