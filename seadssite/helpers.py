@@ -1,6 +1,6 @@
 import ast
 import requests
-from .models import Devices, Map
+from .models import Device, Map
 import time
 
 def rreduce(data, dtype):
@@ -175,11 +175,11 @@ actual function to delete a device from "user"
 '''
 #Get the device ID and "device" of the device requested to be deleted
 def delete_device(device_id, current_user):
-    D = Devices.objects.filter(device_id = device_id)
+    D = Device.objects.filter(device_id = device_id)
     M = Map.objects.filter(device=D)
     #if the user owns the device they are trying to delete
     if Map.objects.filter(user=current_user.id, device=D):
-        Devices.objects.filter(device_id = device_id).delete()
+        Device.objects.filter(device_id = device_id).delete()
     else:
         return "you don't own the device you're deleting, or it doesn't exist"
     return None
@@ -189,13 +189,13 @@ actual function to register device to specific user
 '''
 def register_device(device_id, device_name, current_user):
     #check if device is already registered to this user
-    D = Devices.objects.filter(device_id=device_id)
+    D = Device.objects.filter(device_id=device_id)
     if Map.objects.filter(user=current_user.id, device=D):
         return "The device you've attempted to register has already been registered."
     else:
     #try to create a new device and map it to the user
         try:
-            D = Devices(device_id=device_id, name=device_name)
+            D = Device(device_id=device_id, name=device_name)
             D.save()
             Map(user = current_user, device = D).save()
         #catch errors
@@ -213,6 +213,6 @@ def modify_device_name(device_id, name):
         we must also enforce that the name field can't be blank
         '''
         #save info to device object
-        D = Devices.objects.filter(device_id = device_id)[0]
+        D = Device.objects.filter(device_id = device_id)[0]
         D.name = new_name
         D.save()

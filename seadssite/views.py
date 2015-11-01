@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic.base import TemplateView
 from django.contrib.auth.models import User
 from seadssite.forms import UserForm, UserProfileForm
-from .models import Devices, Map
+from .models import Device, Map
 from .helpers import *
 
 
