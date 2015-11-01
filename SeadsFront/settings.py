@@ -62,9 +62,9 @@ WSGI_APPLICATION = 'SeadsFront.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'test_db',
-        'USER': 'michael',
-        'PASSWORD': 'ElCharro37',
+        'NAME': 'mydb',
+        'USER': 'django',
+        'PASSWORD': 'djangosead',
         'HOST': 'localhost',
         'PORT': '',
     }

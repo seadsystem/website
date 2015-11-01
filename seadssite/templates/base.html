@@ -1,6 +1,8 @@
 {% load staticfiles %}
 <html>
 <head>
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="{% static 'js/jquery.easing.min.js' %}"></script>
   <script src="{% static "js/bootstrap.min.js" %}"></script>
@@ -37,8 +39,8 @@
      <a class="navbar-brand" href="/" style="color:white;">SEADS</a>
      <a class="navbar-brand" href="http://www.sead.systems/wiki/index.php/Main_Page" style="color:white;">WIKI</a>
    </div>
-   
-   
+
+
    <div class="navbar-collapse collapse navbar-left">
     <ul class="nav navbar-nav">
      {% if user.is_authenticated %}
@@ -47,7 +49,7 @@
      {% endif %}
    </ul>
  </div>
- 
+
  <div class="navbar-collapse collapse navbar-right">
   <ul class="nav navbar-nav">
     <!-- Show this on any "Homepage" regardless the user -->
@@ -60,7 +62,7 @@
     <li><a class="" style="color:white;" href="{%url 'django.contrib.auth.views.logout' %}">
           LOG OUT <span class="glyphicon glyphicon-log-out"></span></a></li>
         {% else %}
-        
+
 
           <li><a class="" href="{%url 'django.contrib.auth.views.login' %}" style="color:white;">
       LOG IN <span class="glyphicon glyphicon-log-in"></span></a></li>
@@ -77,5 +79,5 @@
   {% block content %}
   {% endblock %}
 </body>
-  
+
 </html>
