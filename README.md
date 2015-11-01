@@ -13,35 +13,47 @@ This assumes you have the package manager homebrew installed, if not you can go 
 To install the necessary dependencies of this project open a terminal and type the following commands.
 
 1. Install python3
-```sh
-brew install python3
-```
+
+    ```sh
+    brew install python3
+    ```
+
 2. Install django
-```sh
-pip3 install django
-```
+
+    ```sh
+    pip3 install django
+    ```
+
 3. Install requests library for python
-```sh
-pip3 install requests
-```
+
+    ```sh
+    pip3 install requests
+    ```
+
 4. Install postgresql
-```sh
-brew install postgress
-```
+
+    ```sh
+    brew install postgress
+    ```
+
 5. Initialize database
-```sh
-initdb /usr/local/var/postgres
-```
+
+    ```sh
+    initdb /usr/local/var/postgres
+    ```
+
 6. Launch database
-```sh
-postgres -D /usr/loca/var/postgres
-```
+
+    ```sh
+    postgres -D /usr/loca/var/postgres
+    ```
+
 6. Or configure it to launch as a background process on login
-```sh
-mkdir -p ~/Library/LaunchAgents
-ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
-launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
-```
+    ```sh
+    mkdir -p ~/Library/LaunchAgents
+    ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
+    launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
+    ```
 
 ##Setup local database for project development
 
@@ -81,7 +93,7 @@ $ exit
 
 Now, we can configure the Django server in this repository to work with your myDB database. Go into SeadsFront ->settings.py, and scroll down until you see the object DATABASES. Modify it to look like this:
 
-```json
+```js
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
