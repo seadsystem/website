@@ -91,7 +91,7 @@ and log out of the postgres administrator:
 $ exit
 ```
 
-Now, we can configure the Django server in this repository to work with your myDB database. Go into SeadsFront ->settings.py, and scroll down until you see the object DATABASES. Modify it to look like this:
+Now, we can configure the Django server in this repository to work with your myDB database. Go into settings.py, and scroll down until you see the object DATABASES. Modify it to look like this:
 
 ```js
 DATABASES = {

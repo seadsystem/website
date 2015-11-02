@@ -119,6 +119,7 @@ TODO: users can delete eachothers devices I think
 '''
 
 def DashboardView(request):
+    print(request.user)
     #get needed variables set up, and try to make sure only the users devices are shown
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
@@ -159,6 +160,7 @@ def DashboardView(request):
 
 
 def DevicesView(request):
+    print(request)
     #get needed variables set up, and try to make sure only the users devices are shown
     alerts = []
     current_user = request.user
