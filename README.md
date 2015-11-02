@@ -108,15 +108,15 @@ DATABASES = {
 You also need to migrate these changes. Go to the main directory with manage.py, and type:
 
 ```sh
-$ python manage.py makemigrations
-$ python manage.py migrate
+$ python3 manage.py makemigrations
+$ python3 manage.py migrate
 ```
 
 ##Running the Website
 you can now run the existing Seads website! Just type:
 
 ```sh
-$ python manage.py runserver 0.0.0.0:8000
+$ python3 manage.py runserver 0.0.0.0:8000
 ```
 
 This will run the django server on your machine, at port 8000. Open your browser, and type in 0.0.0.0:8000 at youre address bar. You should see the Seads homepage.
