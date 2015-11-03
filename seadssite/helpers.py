@@ -108,19 +108,19 @@ def get_plug_data(start_time, end_time, dtype, device_id, samples = 3000, limit=
 
     #the basic API call will have a base format that includes just a device ID, it builds from that
     if limit:
-        api_string = "http://128.114.59.76:8080/{}".format(device_id)
+        api_string = "http://db.sead.systems:8080/{}".format(device_id)
         api_string += "?type={}".format(dtype)
         api_string += "&limit=1"
 
     elif dtype is None:#This is me doing a test for Winter 2015 team
-        api_string = "http://api.sead.systems:8080/{}".format(device_id)
+        api_string = "http://db.sead.systems:8080/{}".format(device_id)
         api_string +="?json=true"
         api_string += "&start_time={}&end_time={}".format(start_time, end_time)
         api_string += "&subset={}".format(1000) #Hardcoded, change this later TODO
 
     else:
 
-        api_string = "http://128.114.59.76:8080/{}".format(device_id)
+        api_string = "http://db.sead.systems:8080/{}".format(device_id)
         #the next optional appendage to the API call is dtype which can be I,V or W (current, volt or watt)
         api_string += "?type={}".format(dtype)
         #the next optional appendage to the API call is start and end time
@@ -160,50 +160,3 @@ def get_plug_data(start_time, end_time, dtype, device_id, samples = 3000, limit=
     #end = time.time()
     #print "Server Processing Took: {}seconds".format(end-start)
     return api_response
-
-'''
-actual function to delete a device from "user"
-'''
-#Get the device ID and "device" of the device requested to be deleted
-def delete_device(device_id, current_user):
-    D = Device.objects.filter(device_id = device_id)
-    M = Map.objects.filter(device=D)
-    #if the user owns the device they are trying to delete
-    if Map.objects.filter(user=current_user.id, device=D):
-        Device.objects.filter(device_id = device_id).delete()
-    else:
-        return "you don't own the device you're deleting, or it doesn't exist"
-    return None
-
-'''
-actual function to register device to specific user
-'''
-def register_device(device_id, device_name, current_user):
-    #check if device is already registered to this user
-    D = Device.objects.filter(device_id=device_id)
-    if Map.objects.filter(user=current_user.id, device=D):
-        return "The device you've attempted to register has already been registered."
-    else:
-    #try to create a new device and map it to the user
-        try:
-            D = Device(device_id=device_id, name=device_name)
-            D.save()
-            Map(user = current_user, device = D).save()
-        #catch errors
-        #this is where the "alert" comes from in the views
-        except ValueError:
-            print ("Invalid Device ID")
-        except TypeError:
-            print ("Invalid Device ID")
-    return None
-
-
-def modify_device_name(device_id, name):
-        '''
-        a bit of a hack, this assumes every device has a unique ID, will have to be enforced in DB
-        we must also enforce that the name field can't be blank
-        '''
-        #save info to device object
-        D = Device.objects.filter(device_id = device_id)[0]
-        D.name = new_name
-        D.save()

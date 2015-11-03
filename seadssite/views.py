@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic.base import TemplateView
 from django.contrib.auth.models import User
 from seadssite.forms import UserForm, UserProfileForm
-from .models import Device, Map
+from .models import Device
 from .helpers import *
 
 
@@ -119,45 +119,30 @@ TODO: users can delete eachothers devices I think
 '''
 
 def DashboardView(request):
-    print(request.user)
-    #get needed variables set up, and try to make sure only the users devices are shown
+    # get needed variables set up, and try to make sure only the users devices are shown
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
     alerts = []
     current_user = request.user
 
-    #if the user clicked register (and dashboard -- that is register a device)
-    #we set the new id and new name as what was submitted in the form
-    #if there are any alerts (invalid id etc), they will get appened to alert
+    # if the user clicked register (and dashboard -- that is register a device)
+    # we set the new id and new name as what was submitted in the form
+    # if there are any alerts (invalid id etc), they will get appened to alert
     if request.POST.get('register'):
         new_device_id = request.POST.get('device_id')
         new_device_name = request.POST.get('device_name')
-        alert = register_device(new_device_id, new_device_name, current_user)
-        if alert is not None:
-            alerts.append(alert)
-
-    #if the user clicked delete
-    #we delete the specified device
+        Device.objects.register_device(device_name=new_device_name, device_id=new_device_id, current_user=request.user)
+    # if the user clicked delete
+    # we delete the specified device
     elif request.POST.get('delete'):
         device_id = request.POST.get('delete')
-        alert = delete_device(device_id, current_user)
-        if alert is not None:
-            alerts.append(alert)
+        device = Device.objects.get(device_id=device_id)
+        device.deactivate_device()
+
+    connected_devices = Device.objects.all().filter(user_id=current_user.id, connetion=True).count()
 
 
-    connected_devices = Device.objects.all()
-        .filter(user_id=current_user.id, connetion=true).count()
-    current_power_usage = get_max_power_usage(5, user_devices_map) #5 min
-    average_power_usage = get_average_power_usage(1440, user_devices_map, 500) # 1 day
-    current_power_map = get_current_power_map(user_devices_map)
-
-
-    return render(request, 'dashboard.html', {'maps': user_devices_map,
-        'alerts':alerts, 'connected_devices': connected_devices,
-        'current_power_usage': current_power_usage,
-        'average_power_usage': average_power_usage,
-        'power_map': current_power_map})
-
+    return render(request, 'dashboard.html', {'connected_devices': connected_devices})
 
 def DevicesView(request):
     print(request)
@@ -171,7 +156,9 @@ def DevicesView(request):
     if request.POST.get('name') == "modify":
         device_id = request.POST.get('pk')
         new_name = request.POST.get('value')
-        modify_device_name(device_id, new_name)
+        device = Device.objects.get(device_id=device_id)
+        device.name = new_name
+        device.save()
 
     #if the user clicked register
     #we set the new id and new name as what was submitted in the form
