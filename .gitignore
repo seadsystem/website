@@ -4,3 +4,5 @@ settings.py
 __pycache__
 __pycache__/*sgitgit
 __pycache__/*.*
+*.pyc
+*~
