@@ -1,3 +1,6 @@
 settings.py
 .idea/*
 .idea/*.*
+__pycache__
+__pycache__/*sgitgit
+__pycache__/*.*
