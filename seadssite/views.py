@@ -56,14 +56,14 @@ def register(request):
     first_name_save = request.POST.get('first_name') or ''
     last_name_save = request.POST.get('last_name') or ''
     email_save = request.POST.get('email') or ''
-    cellProvider_save = request.POST.get('cellProvider') or ''
+    cell_provider_save = request.POST.get('cell_provider') or ''
     password_save = request.POST.get('password') or ''
 
     #if a user "POST"s, check phone number, provider and user/profile form(models)
     if request.method == 'POST':
         print ("user is about to register")
         phone = request.POST['phone']
-        cellProvider = request.POST['cellProvider']
+        cell_provider = request.POST['cell_provider']
         user_form = UserForm(data=request.POST)
         profile_form = UserProfileForm(data=request.POST)
 
@@ -109,7 +109,7 @@ def register(request):
 
     return render_to_response(
             'register.html',
-            {'user_form': user_form, 'profile_form': profile_form, 'registered': registered, 'user': user_save, 'phone': phone_save, 'first_name':first_name_save, 'last_name':last_name_save, 'email':email_save, 'cell_prov':cellProvider_save, 'password':password_save},
+            {'user_form': user_form, 'profile_form': profile_form, 'registered': registered, 'user': user_save, 'phone': phone_save, 'first_name':first_name_save, 'last_name':last_name_save, 'email':email_save, 'cell_prov':cell_provider_save, 'password':password_save},
             context)
 
 
@@ -125,7 +125,6 @@ def DashboardView(request):
         return HttpResponseRedirect('/login/?next=%s' % request.path)
     alerts = []
     current_user = request.user
-    user_devices_map = Map.objects.filter(user=current_user.id)
 
     #if the user clicked register (and dashboard -- that is register a device)
     #we set the new id and new name as what was submitted in the form
@@ -146,7 +145,8 @@ def DashboardView(request):
             alerts.append(alert)
 
 
-    connected_devices = get_connected_devices(user_devices_map)
+    connected_devices = Device.objects.all()
+        .filter(user_id=current_user.id, connetion=true).count()
     current_power_usage = get_max_power_usage(5, user_devices_map) #5 min
     average_power_usage = get_average_power_usage(1440, user_devices_map, 500) # 1 day
     current_power_map = get_current_power_map(user_devices_map)

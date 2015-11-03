@@ -1,6 +1,6 @@
 import ast
 import requests
-from .models import Device, Map
+from .models import Device
 import time
 
 def rreduce(data, dtype):
@@ -43,15 +43,6 @@ def should_adopt(start, current, ffilter):
     if abs(start[1] - current[1]) > ffilter:
         return True
     return False
-
-def get_connected_devices(maps):
-    if len(maps) == 0:
-        return 0
-    connected_devices = 0
-    for dmap in maps:
-        if dmap.device.connection:
-            connected_devices += 1
-    return connected_devices
 
 def device_max_data(api_response):
     if len(api_response) < 2:
