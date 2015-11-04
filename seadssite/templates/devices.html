@@ -1,14 +1,7 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% block content %}
-{% if alerts %}
-{% for alert in alerts %}
-<div class="alert alert-danger alert-dismissible" role="alert">
-  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-  <strong>Something went wrong and you action could not be completed: </strong> {{alert}}
-</div>
-{% endfor %}
-{% endif %}
+
 <script src="{% static 'x-editable/js/x-main.js' %}"></script>
 <div class="container" style="padding-top:10px;">
 	<div class="col-md-12">
@@ -22,44 +15,32 @@
 					<th>Modify</th>
 				</thead>
 				<tbody>
-					{% for map in maps%}
+					{% for device in devices%}
 					<tr>
-						<td class = "col-md-2"><span style="position:relative;float:left;">{{map.device.device_id}}</span><a class="btn btn-default" href="/visualization/{{map.device.device_id}}" style="position:relative;float:right;">Visualize</a></td>
+						<td class = "col-md-2"><span style="position:relative;float:left;">{{device.device_id}}</span><a class="btn btn-default" href="/visualization/{{device.device_id}}" style="position:relative;float:right;">Visualize</a></td>
 						<td class = "col-md-2">
-							<a class="modify" data-pk="{{map.device.device_id}}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">
-								{{map.device.name}}</a>
+							<a class="modify" data-pk="{{device.device_id}}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">
+								{{device.name}}</a>
 							</td>
-							{% if map.device.connection %}
-							<td class="col-md-1">
-								<i class="fa fa-check fa-2x text-success"></i>
-							</td>
-							{% else %}
 							<td class="col-md-1">
 								<i class="fa fa-times fa-2x text-danger"></i>						
 							</td>
-							{%endif%}
-							{% if map.device.power %}
 							<td class="col-md-1">
-								<i class="fa fa-check fa-2x text-success"></i>
-							</td>
-							{% else %}
-							<td class="col-md-1">
-								<i class="fa fa-times fa-2x text-danger"></i>						
-								{%endif%}
+								<i class="fa fa-times fa-2x text-danger"></i>
 							</td>
 							<td class="col-md-1">
 								<div class="row">
 									<div class="col-md-3">
 										<form method="post">
 											{% csrf_token %}
-											<button type="submit" class="btn glyphicon glyphicon-pencil" value={{map.device.device_id}} name="modify2">
+											<button type="submit" class="btn glyphicon glyphicon-pencil" value={{device.device_id}} name="modify2">
 											</button>
 										</form>
 									</div>
 									<div class="col-md-3">
 										<form method="post">
 											{% csrf_token %}
-											<button type="submit" class="btn btn-danger" value={{map.device.device_id}} name="delete">
+											<button type="submit" class="btn btn-danger" value={{device.device_id}} name="delete">
 												<i class="fa fa-trash-o fa-lg"></i> Delete </button>
 											</form>
 										</div>
