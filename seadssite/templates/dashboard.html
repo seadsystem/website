@@ -5,9 +5,10 @@
 <div class="container">
     <div class="page-wrap" style="width:100%;">
         <div class="row" style="text-align:center;">
-            <div class="col-md-3" style="border-right:3px solid #a4a4a4"><div style="color:black;font-size:25;font-weight:bold;">{{devices|length}}
-				</div><span>Connected Devices</span></div>
-                <div class="col-md-3" style="border-right:3px solid #a4a4a4"><div style="color:black;font-size:25;font-weight:bold;">{{devices|length}}</div><span>Registered Devices</span></div>
+            <div>
+                <div style="color:black;font-size:25;font-weight:bold;">{{devices|length}}</div>
+                <span>Registered Device{% if devices|length > 1 %}s{% endif %}</span>
+            </div>
             </div>
             <!-- for mapped devies, create boxes for them to be shown -->
 			<div>
@@ -21,14 +22,18 @@
 					{% endif %}
 				{% endif %}
 				<div class="col-md-3">
-					<div style="background: #f8f8f8;width:100%;height:25%;margin:0 auto;border-radius: 4px;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;border:1px solid #E7E7E7;" class="deviceBox" onmouseover="$(this).css('background-color', '#e6e6e6');" onmouseout="$(this).css('background-color', '#f8f8f8');">
+					<div style="background: #f8f8f8;width:100%;height:25%;margin:0 auto;border-radius: 4px;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;border:1px solid #E7E7E7;"
+                         class="deviceBox"
+                         onmouseover="$(this).css('background-color', '#e6e6e6');"
+                         onmouseout="$(this).css('background-color', '#f8f8f8');">
 						<div style="float:right;padding:10px;">
 							<form method="post">
 								<!-- button for deletion -->
 											{% csrf_token %}
-											<button type="submit" class="btn btn-danger delete" value={{device.device_id}} name="delete">
-												<i class="fa fa-trash-o fa-lg"></i></button>
-											</form>
+                                <button type="submit" class="btn btn-danger delete" value={{device.device_id}} name="delete">
+                                    <i class="fa fa-trash-o fa-lg"></i>
+                                </button>
+                            </form>
 						</div>
 						<!-- button to visualize specific device -->
 						<div style="float:left;padding:10px;" >

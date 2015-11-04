@@ -143,6 +143,7 @@ def DevicesView(request):
         Device.objects.register_device(new_device_id, new_device_name, current_user)
     # if the user clicked delete
     elif request.POST.get('delete'):
+        print("HEREOMG")
         device_id = request.POST.get('delete')
         device = Device.objects.get(device_id=device_id)
         device.deactivate_device()
@@ -150,7 +151,11 @@ def DevicesView(request):
     user_devices = Device.objects.filter(user=current_user, is_active=True)
 
     return render(request, 'devices.html', {'devices': user_devices})
-
+'''
+Visualizaition of each DEVICE
+'''
+def VisualizationView(request, device_id):
+    return None
 
 def list(request):
     return render_to_response('list.html')

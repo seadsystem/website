@@ -16,9 +16,11 @@ for registering (creating) devices
 '''
 class DeviceManager(models.Manager):
     def register_device(self, device_id, device_name, current_user):
-        print("DeviceID: " + device_id)
-        print("DeviceName: " + device_name)
-        print("CurrentUser: " + str(current_user))
+
+        if Device.objects.all().filter(user=current_user, device_id=device_id):
+            raise FieldError('This device has already been registered to this user.', device_id, current_user)
+        elif Device.objects.all().filter(device_id=device_id):
+            raise FieldError('This device has already been registered to a different user.', device_id)
         try:
             newDevice = Device(device_id=device_id, name=device_name, user=current_user)
             newDevice.save()
@@ -48,23 +50,6 @@ class Device(models.Model):
     objects = DeviceManager()
 
     '''
-    # save()
-    # Summary: This registers a device to a user
-    # param device_id: (primary key)
-    # param device_name: (a name for the device)
-    # param current_user: (forgeign key, user device is related to)
-    '''
-    def save(self, *args, **kwargs):
-        # check if device is already registered to this user
-
-        if Device.objects.all().filter(user=self.user, device_id=self.device_id):
-            raise FieldError('This device has already been registered to this user.', self.device_id, self.user)
-        elif Device.objects.all().filter(device_id=self.device_id):
-            raise FieldError('This device has already been registered to a different user.', self.device_id)
-        else:
-            super(Device, self).save(*args, **kwargs)
-
-    '''
     # deativate_device()
     # Summary: This will deactivate the device which removes it from view,
     # doesn't do a full delete, as this would cause problems with foreign keys
@@ -79,7 +64,7 @@ class Device(models.Model):
     # reactivate_device()
     # Summary: This will reactivate the device which removes has already been deactivated,
     '''
-    def deactivate_device(self):
+    def reactivate_device(self):
         if Device.objects.filter(device_id = self.device_id, is_active=True):
             raise FieldError('This device is currently active.', self)
         self.is_active = True;
