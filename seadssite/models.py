@@ -15,7 +15,10 @@ Model Manager for doing table actions on devices. Extends base model manager cla
 for registering (creating) devices
 '''
 class DeviceManager(models.Manager):
-    def register_device(device_id, device_name, current_user):
+    def register_device(self, device_id, device_name, current_user):
+        print("DeviceID: " + device_id)
+        print("DeviceName: " + device_name)
+        print("CurrentUser: " + str(current_user))
         try:
             newDevice = Device(device_id=device_id, name=device_name, user=current_user)
             newDevice.save()
