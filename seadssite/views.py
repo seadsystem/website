@@ -107,9 +107,10 @@ def DashboardView(request):
     # we set the new id and new name as what was submitted in the form
     # if there are any alerts (invalid id etc), they will get appened to alert
     if request.POST.get('register'):
+        print(request)
         new_device_id = request.POST.get('device_id')
         new_device_name = request.POST.get('device_name')
-        Device.objects.register_device(device_name=new_device_name, device_id=new_device_id, current_user=request.user)
+        Device.objects.register_device(new_device_id, new_device_name, request.user)
     # if the user clicked delete
     # we delete the specified device
     elif request.POST.get('delete'):
@@ -117,13 +118,11 @@ def DashboardView(request):
         device = Device.objects.get(device_id=device_id)
         device.deactivate_device()
 
-    connected_devices = Device.objects.all().filter(user=current_userpython3 , connection=True).count()
+    connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
 
-
-    return render(request, 'dashboard.html', {'connected_devices': connected_devices})
+    return render(request, 'dashboard.html', {'devices': connected_user_devices})
 
 def DevicesView(request):
-
     # get needed variables set up, and try to make sure only the users devices are shown
     current_user = request.user
 
@@ -131,28 +130,32 @@ def DevicesView(request):
     # changes the edited field to the new submission
     if request.POST.get('name') == "modify":
         device_id = request.POST.get('pk')
-        new_name = request.POST.get('value')
         device = Device.objects.get(device_id=device_id)
+        new_name = request.POST.get('value')
         device.name = new_name
         device.save()
-
     # if the user clicked register
     # we set the new id and new name as what was submitted in the form
     # if there are any alerts (invalid id etc), they will get appened to alert
     elif request.POST.get('register'):
         new_device_id = request.POST.get('device_id')
         new_device_name = request.POST.get('device_name')
-        Device.objects.register_device(device_id=new_device_id, device_name=new_device_name, current_user=current_user)
-
+        Device.objects.register_device(new_device_id, new_device_name, current_user)
     # if the user clicked delete
     elif request.POST.get('delete'):
+        print("HEREOMG")
         device_id = request.POST.get('delete')
         device = Device.objects.get(device_id=device_id)
         device.deactivate_device()
 
-    return render(request, 'devices.html')
+    user_devices = Device.objects.filter(user=current_user, is_active=True)
 
-
+    return render(request, 'devices.html', {'devices': user_devices})
+'''
+Visualizaition of each DEVICE
+'''
+def VisualizationView(request, device_id):
+    return None
 
 def list(request):
-	return render_to_response('list.html')
+    return render_to_response('list.html')
