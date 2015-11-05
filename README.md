@@ -45,15 +45,23 @@ To install the necessary dependencies of this project open a terminal and type t
 6. Launch database
 
     ```sh
-    postgres -D /usr/loca/var/postgres
+    postgres -D /usr/local/var/postgres
     ```
 
-6. Or configure it to launch as a background process on login
+7. Or configure it to launch as a background process on login
     ```sh
     mkdir -p ~/Library/LaunchAgents
     ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
     launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
     ```
+
+## Install psycopg2
+In order to allow Django to communicate with PostgreSQL you will need to install [psycopg2](http://initd.org/psycopg/). To do this run:
+```sh
+pip3 install psycopg2
+```
+
+Note: if pip is having trouble finding you `pg_config` check out [this](https://rayed.com/wordpress/?p=1743) article for help.
 
 ##Setup local database for project development
 
@@ -70,6 +78,7 @@ psql -d postgres
 ```
 
 #### The rest of these instructions are the same on OSX and Ubuntu
+
 ```sh
 $ psql
 > CREATE DATABASE myDB;
@@ -86,12 +95,9 @@ Now, quit out of psql:
 ```sh
 > \q
 ```
-and log out of the postgres administrator:
-```sh
-$ exit
-```
 
-Now, we can configure the Django server in this repository to work with your myDB database. Go into SeadsFront ->settings.py, and scroll down until you see the object DATABASES. Modify it to look like this:
+
+Now, we can configure the Django server in this repository to work with your myDB database. Go into settings.py, and scroll down until you see the object DATABASES. Modify it to look like this:
 
 ```js
 DATABASES = {

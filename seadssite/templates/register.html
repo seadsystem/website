@@ -10,7 +10,7 @@ http://stackoverflow.com/questions/7419535/how-to-render-django-form-errors-not-
 {{user_form.errors}}-->
 {% endif %}
 <!-- required csrf token -->
-        <div class="container-fluid">
+<div class="container-fluid">
    <div class="row">
       <img src="{% static 'images/seadsLogo.png' %}" class="img-responsive center">
       <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
@@ -44,8 +44,8 @@ http://stackoverflow.com/questions/7419535/how-to-render-django-form-errors-not-
             </div>
             <div class="form-group">
                <label for="cell_carrier" class="col-sm-4 col-md-3 col-lg-4 control-label">Cell Provider: </label>
-               <div class="col-sm-8 col-md-9 col-lg-8"><select name="cellProvider" id="cellProvider" class="form-control overrideit" value={{cell_prov}}><option>AT&T</option><option>Verizon</option><option>T-Mobile</option><option>Sprint</option></select></div>
-               <p class="text-center">{{ user_form.cellProvider.errors.as_text }}</p>
+               <div class="col-sm-8 col-md-9 col-lg-8"><select name="cell_provider" id="cell_provider" class="form-control overrideit" value={{cell_prov}}><option>AT&T</option><option>Verizon</option><option>T-Mobile</option><option>Sprint</option></select></div>
+               <p class="text-center">{{ user_form.cell_provider.errors.as_text }}</p>
             </div>
             <div class="form-group">
                <label for="password" class="col-sm-4 col-md-3 col-lg-4 control-label">Password: </label>
