@@ -45,7 +45,7 @@ To install the necessary dependencies of this project open a terminal and type t
 6. Launch database
 
     ```sh
-    postgres -D /usr/loca/var/postgres
+    postgres -D /usr/local/var/postgres
     ```
 
 6. Or configure it to launch as a background process on login
@@ -86,10 +86,7 @@ Now, quit out of psql:
 ```sh
 > \q
 ```
-and log out of the postgres administrator:
-```sh
-$ exit
-```
+
 
 Now, we can configure the Django server in this repository to work with your myDB database. Go into settings.py, and scroll down until you see the object DATABASES. Modify it to look like this:
 
