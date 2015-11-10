@@ -15408,7 +15408,7 @@ var ColumnSeries = extendClass(Series, {
 			barY = mathRound(barY) + yCrisp;
 			barH = bottom - barY;
 
-			// Top edges are exceptions
+			// Top edges are api_exceptions.py
 			if (fromTop) {
 				barY -= 1;
 				barH += 1;

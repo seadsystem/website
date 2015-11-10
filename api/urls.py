@@ -5,8 +5,8 @@ from api import views
 urlpatterns = patterns('seadssite',
     url(r'^api/device/(?P<device_id>[0-9]+)/raw_query$',
         views.RawQuery.as_view()),
-    url(r'^api/device/(?P<device_id>[0-9]+)/total_power$',
-        views.TotalDevicePower.as_view()),
+    url(r'^api/device/(?P<device_id>[0-9]+)/consumed_power$',
+        views.ConsumedPower.as_view()),
 )
 
 

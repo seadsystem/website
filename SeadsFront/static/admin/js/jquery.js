@@ -299,7 +299,7 @@ jQuery.extend({
 				return false;
 			}
 		} catch ( e ) {
-			// IE8,9 Will throw exceptions on certain host objects #9897
+			// IE8,9 Will throw api_exceptions.py on certain host objects #9897
 			return false;
 		}
 
@@ -3885,7 +3885,7 @@ jQuery.extend({
 	cache: {},
 
 	// The following elements (space-suffixed to avoid Object.prototype collisions)
-	// throw uncatchable exceptions if you attempt to set expando properties
+	// throw uncatchable api_exceptions.py if you attempt to set expando properties
 	noData: {
 		"applet ": true,
 		"embed ": true,
@@ -7814,7 +7814,7 @@ jQuery.extend({
 				return val != null ?
 					val :
 					// Support: IE10-11+
-					// option.text throws exceptions (#14686, #14858)
+					// option.text throws api_exceptions.py (#14686, #14858)
 					jQuery.trim( jQuery.text( elem ) );
 			}
 		},

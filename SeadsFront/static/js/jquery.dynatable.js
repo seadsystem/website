@@ -832,7 +832,7 @@
       // Likewise, other browsers may have varying (undocumented) limits.
       // Also, Firefox's limit can be changed in about:config as browser.history.maxStateObjectSize
       // Since we don't know what the actual limit will be in any given situation, we'll just try caching and rescue
-      // any exceptions by retrying pushState without caching the records.
+      // any api_exceptions.py by retrying pushState without caching the records.
       //
       // I have absolutely no idea why perPageOptions suddenly becomes an array-like object instead of an array,
       // but just recently, this started throwing an error if I don't convert it:
