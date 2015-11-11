@@ -6,20 +6,24 @@ from rest_framework import exceptions
 from .api_exceptions import ServiceUnavalibleException
 import requests
 
-'''
-Acts as a router to the db.sead.systems:8080 api, nothing more.
-you can pass in any of the supported query parameters
-('type', 'start_time', 'end_time', 'device', 'diff', 'subset', 'limit', 'json')
-ex.
-localhost:8000/api/device/:device_id/raw_query?limit=50&type=F&diff=1
-'''
 
 class RawQuery(APIView):
+    """
+    Acts as a router to the db.sead.systems:8080 api, nothing more.
+    you can pass in any of the supported query parameters
+    ('type', 'start_time', 'end_time', 'device', 'diff', 'subset', 'limit', 'json')
+    """
     permission_classes = []
     allowed_parameters = ['type', 'start_time', 'end_time', 'device',
                       'diff', 'subset', 'limit', 'json']
 
     def get(self, request, device_id):
+        """
+        :summary: This is the get request for the raw_query \n
+        :param request: the object containing the query parameters \n
+        :param device_id: the device_id of the device requesting information about\n
+        :return: \n
+        """
         params = request.GET.dict()
 
         for param in params:
@@ -32,20 +36,25 @@ class RawQuery(APIView):
         return Response({"status": response.status_code , "data": response.json()})
 
 
-'''
-Calculates the total power usage or generation for a particular device over some time period
-include start_time and end_time as query paramers in api call. Start and end times
-must be utc unix timestamps
-
-'''
-
-
 class TotalPower(APIView):
+
+    """ Calculates the total power usage or generation for a particular device over some time period
+    include start_time and end_time as query paramers in api call. Start and end times
+    must be utc unix timestamps. """
+
     permission_classes = []
     allowed_parameters = ['start_time', 'end_time']
     devices = ['Panel1', 'Panel2', 'Panel3', 'shed ', 'PowerS', 'PowerG']
 
-    def get(self, request, device_id, type):
+    def get(self, request, device_id, power_type):
+
+        """
+        :summary: Get request for total power\n
+        :param request: the object conainting the query parameters\n
+        :param device_id: the device_id of the device requesting information about\n
+        :param type: must be consumed_power or generated_power \n
+        :return: Response object\n
+        """
         params = request.GET.dict()
         if len(params) > len(self.allowed_parameters):
             raise exceptions.ParseError(detail = "Too many request parameters.")
@@ -59,7 +68,7 @@ class TotalPower(APIView):
         end_time = params["end_time"]
         params['type'] = 'P'
 
-        if type == 'consumed_power':
+        if power_type == 'consumed_power':
             type_of_power = True
         else:
             type_of_power = False
