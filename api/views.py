@@ -1,11 +1,10 @@
 from rest_framework import permissions
+from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import exceptions
 from .api_exceptions import ServiceUnavalibleException
 import requests
-
-import sys
 
 '''
 Acts as a router to the db.sead.systems:8080 api, nothing more.
@@ -34,70 +33,71 @@ class RawQuery(APIView):
 
 
 '''
-Calculates the total power usage for a particular device over some time period
+Calculates the total power usage or generation for a particular device over some time period
 include start_time and end_time as query paramers in api call. Start and end times
 must be utc unix timestamps
 
 '''
 
 
-class ConsumedPower(APIView):
+class TotalPower(APIView):
     permission_classes = []
     allowed_parameters = ['start_time', 'end_time']
     devices = ['Panel1', 'Panel2', 'Panel3', 'shed ', 'PowerS', 'PowerG']
 
-    def get(self, request, device_id):
+    def get(self, request, device_id, type):
         params = request.GET.dict()
-        print(str(params))
         if len(params) > len(self.allowed_parameters):
             raise exceptions.ParseError(detail = "Too many request parameters.")
         else:
             for param in params:
                 if param not in self.allowed_parameters:
-                    raise exceptions.ParseError(detail = "Query param: <" + param +"> is not allowed.")
+                    raise exceptions.ParseError(detail = "Query param: <" + param + "> is not allowed.")
 
         url = "http://db.sead.systems:8080/" + device_id
-        start_time = params['start_time']
-        end_time = params['end_time']
-        params = dict()
+        start_time = params["start_time"]
+        end_time = params["end_time"]
         params['type'] = 'P'
+
+        if type == 'consumed_power':
+            type_of_power = True
+        else:
+            type_of_power = False
 
         try:
             params["start_time"] = start_time
             params["end_time"] = start_time
-            params['device'] = 234
-            responseStart = requests.get(url, params)
-            print(responseStart.content)
+            responseStart = requests.get(url, params).json()
             params["start_time"] = end_time
             params["end_time"] = end_time
-            responseEnd = requests.get(url, params)
-        except requests.exceptions.ConnectionError as connection:
-            raise ServiceUnavalibleException(connection)
-        except requests.exceptions.Timeout as timeout:
-            raise ServiceUnavalibleException(timeout)
+            responseEnd = requests.get(url, params).json()
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            raise ServiceUnavalibleException()
         except requests.exceptions.RequestException as request:
-            raise BadRequest(request)
-        '''
-        def filter_out_irrelavant_values(time_item):
-            time_item.pop(0)
-            return time_item[0][1]
+            raise Http404(request)
 
-        start_arr = list(map(filter_out_irrelavant_values, responseStart))
-        end_arr = list(map(filter_out_irrelavant_values, responseEnd))
+        '''
+        internal helper function, makes an easy to work with
+        list of power values out of messy api response data
+        # param api_response: the response to feed into the function
+        # param consumption_or_generation: boolean true to calculate
+            consumption, false to calculate generation
+        # returns a list
+        '''
+
+        def get_power_list_from_api_data(api_repsone, consumption_or_generation):
+            return list(map(lambda power: int(power[1]), (
+                        filter(lambda power_value:
+                            consumption_or_generation if int(power_value[1]) < 0 else not consumption_or_generation,
+                            list(api_repsone[1:])))))
+
+        start_power_values = get_power_list_from_api_data(responseStart, type_of_power)
+
+        end_power_values = get_power_list_from_api_data(responseEnd, type_of_power)
 
         total_power = 0
 
-        for i, power in enumerate(start_arr):
-            total_power += -int(end_arr[i]) + int(power)
+        for index, end_power in enumerate(end_power_values):
+            total_power += end_power-start_power_values[index]
 
-        print(total_power)
-
-
-        # for power in total_power_arr:
-         #   total_power += power
-
-        print("power1: ", start_arr)
-        print("power2: ", end_arr)
-        print("total_power: ", total_power)
-        '''
-        return Response({"status": 200, "data": 'awesome'})
+        return Response({"status": 200, "data": abs(total_power)})
