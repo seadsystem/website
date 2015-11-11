@@ -41,7 +41,7 @@ def register(request):
 
     # if a user "POST"s, check phone number, provider and user/profile form(models)
     if request.method == 'POST':
-        print ("user is about to register")
+        print("user is about to register")
         phone = request.POST['phone']
         cell_provider = request.POST['cell_provider']
         user_form = UserForm(data=request.POST)
@@ -94,7 +94,7 @@ def register(request):
 
 '''
 device dashboard page controller
-TODO: users can delete eachothers devices I think
+TODO: users can delete each others devices I think
 '''
 
 def DashboardView(request):

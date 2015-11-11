@@ -8,7 +8,7 @@ from django.core.validators import RegexValidator
 '''
 What the user must contain to be valid
 '''
-# Required feilds for a user -- just used every field from the original SEADS site to maintain what Ali wanted
+# Required fields for a user -- just used every field from the original SEADS site to maintain what Ali wanted
 
 
 class UserForm(forms.ModelForm):
@@ -33,11 +33,11 @@ class UserForm(forms.ModelForm):
     )
     username = forms.CharField(min_length=4, max_length=20, required=True)
     email = forms.EmailField(min_length=4, max_length=20, required=True)
-    phone = forms.CharField(min_length=7, required=True,
+    phone = forms.CharField(required=True,
         validators=[
             RegexValidator(
-                regex='\(?([0-9][0-9][0-9])?\)?[0-9][0-9][0-9]\-?[0-9][0-9][0-9][0-9]$',
-                message='Please enter a valid phone number.',
+                regex='^[0-9]{10}$',
+                message='Please enter a 10 digit phone number with no punctuation.',
                 code='invalid_username'
             ),
         ]
