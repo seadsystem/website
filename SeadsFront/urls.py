@@ -1,21 +1,14 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from seadssite import views as v
 from django.conf import settings
 from django.conf.urls.static import static
-
+admin.autodiscover()
 
 urlpatterns = patterns('',
-
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', v.IndexView.as_view()),
-    url(r'^devices/',v.DevicesView),
-    url(r'^dashboard/',v.DashboardView),
     url(r'^login/$', 'django.contrib.auth.views.login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
-    url(r'^register/$', v.register),
-    url(r'^help/$', v.help),
-    url(r'^visualization/([0-9]*)/$', v.VisualizationView),
+    url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/password/reset/$', 'django.contrib.auth.views.password_reset', 
         {'post_reset_redirect' : '/accounts/password/reset/done/'}),
     url(r'^accounts/password/reset/done/$', 'django.contrib.auth.views.password_reset_done'),
@@ -24,4 +17,5 @@ urlpatterns = patterns('',
         {'post_reset_redirect' : '/accounts/password/done/'}),
     url(r'^accounts/password/done/$', 'django.contrib.auth.views.password_reset_complete'),
     url(r'^', include('seadssite.urls')),
+    url(r'^', include('api.urls')),
         ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
