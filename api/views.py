@@ -14,8 +14,7 @@ class RawQuery(APIView):
     ('type', 'start_time', 'end_time', 'device', 'diff', 'subset', 'limit', 'json')
     """
     permission_classes = []
-    allowed_parameters = ['type', 'start_time', 'end_time', 'device',
-                      'diff', 'subset', 'limit', 'json']
+    allowed_parameters = ['type', 'start_time', 'end_time', 'device', 'diff', 'subset', 'limit', 'json']
 
     def get(self, request, device_id):
         """
@@ -33,7 +32,7 @@ class RawQuery(APIView):
         response = requests.get("http://db.sead.systems:8080/" + device_id, params=params)
         response.raise_for_status()
 
-        return Response({"status": response.status_code , "data": response.json()})
+        return Response({"status": response.status_code, "data": response.json()})
 
 
 class TotalPower(APIView):
@@ -47,12 +46,12 @@ class TotalPower(APIView):
 
         """
         :summary: Get request for total power\n
-        :param: request: the object conainting the query parameters\n
-        :param: device_id: the device_id of the device requesting information about\n
-        :param: type: must be consumed_power or generated_power \n
-        :param: start_time: beginning of range of time to calculate total power for (must be a valid utc timestamp)
-        :param: end_time: end of range of time to calculate total power for (must be a valid utc timestamp)
-        :return: Response object\n
+        :param request: the object containing the query parameters\n
+        :param device_id: the device_id of the device requesting information about\n
+        :param power_type: must be consumed_power or generated_power \n
+        :param start_time: beginning of range of time to calculate total power for (must be a valid utc timestamp) \n
+        :param end_time: end of range of time to calculate total power for (must be a valid utc timestamp) \n
+        :return Response object\n
         """
 
         """using the same function to handle total power generated and total power consumed,
@@ -60,31 +59,30 @@ class TotalPower(APIView):
         or consumed power is calculated"""
         type_of_power = True if power_type == 'consumed_power' else False
 
+        print(type_of_power)
         url = "http://db.sead.systems:8080/" + device_id
 
         start_params = {
-            "type": "p",
+            "type": "P",
             "start_time": start_time,
             "end_time": start_time
         }
 
         try:
-            response_start = requests.get(url, start_params).json()
+            response_start = requests.get(url, params=start_params).json()
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             raise ServiceUnavalibleException()
         except requests.exceptions.RequestException as request:
             raise Http404(request)
 
         end_params = {
-            "type": "p",
+            "type": "P",
             "start_time": end_time,
             "end_time": end_time
         }
 
         try:
-            end_params["start_time"] = end_time
-            end_params["end_time"] = end_time
-            response_end = requests.get(url, end_params).json()
+            response_end = requests.get(url, params=end_params).json()
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             raise ServiceUnavalibleException()
         except requests.exceptions.RequestException as request:
@@ -109,8 +107,11 @@ class TotalPower(APIView):
 
         end_power_values = get_power_list_from_api_data(response_end, type_of_power)
 
+        print(start_power_values)
+        print(end_power_values)
+
         total_power = 0
         for index, end_power in enumerate(end_power_values):
             total_power += end_power-start_power_values[index]
 
-        return Response({"status": 200, "data": abs(total_power)})
+        return Response({"power": abs(total_power)})
