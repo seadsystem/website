@@ -20,8 +20,8 @@ class RawQuery(APIView):
     def get(self, request, device_id):
         """
         :summary: This is the get request for the raw_query \n
-        :param request: the object containing the query parameters \n
-        :param device_id: the device_id of the device requesting information about\n
+        :param: request: the object containing the query parameters \n
+        :param: device_id: the device_id of the device requesting information about\n
         :return: \n
         """
         params = request.GET.dict()
@@ -38,74 +38,78 @@ class RawQuery(APIView):
 
 class TotalPower(APIView):
 
-    """ Calculates the total power usage or generation for a particular device over some time period
-    include start_time and end_time as query paramers in api call. Start and end times
-    must be utc unix timestamps. """
+    """ Calculates the total power usage or generation for a particular device over some time period.
+    Start and end times must be utc unix timestamps. """
 
     permission_classes = []
-    allowed_parameters = ['start_time', 'end_time']
-    devices = ['Panel1', 'Panel2', 'Panel3', 'shed ', 'PowerS', 'PowerG']
 
-    def get(self, request, device_id, power_type):
+    def get(self, request, device_id, power_type, start_time, end_time):
 
         """
         :summary: Get request for total power\n
-        :param request: the object conainting the query parameters\n
-        :param device_id: the device_id of the device requesting information about\n
-        :param type: must be consumed_power or generated_power \n
+        :param: request: the object conainting the query parameters\n
+        :param: device_id: the device_id of the device requesting information about\n
+        :param: type: must be consumed_power or generated_power \n
+        :param: start_time: beginning of range of time to calculate total power for (must be a valid utc timestamp)
+        :param: end_time: end of range of time to calculate total power for (must be a valid utc timestamp)
         :return: Response object\n
         """
-        params = request.GET.dict()
-        if len(params) > len(self.allowed_parameters):
-            raise exceptions.ParseError(detail = "Too many request parameters.")
-        else:
-            for param in params:
-                if param not in self.allowed_parameters:
-                    raise exceptions.ParseError(detail = "Query param: <" + param + "> is not allowed.")
+
+        """using the same function to handle total power generated and total power consumed,
+        this sets a boolean that will control whether or not generated power is calculated
+        or consumed power is calculated"""
+        type_of_power = True if power_type == 'consumed_power' else False
 
         url = "http://db.sead.systems:8080/" + device_id
-        start_time = params["start_time"]
-        end_time = params["end_time"]
-        params['type'] = 'P'
 
-        if power_type == 'consumed_power':
-            type_of_power = True
-        else:
-            type_of_power = False
+        start_params = {
+            "type": "p",
+            "start_time": start_time,
+            "end_time": start_time
+        }
 
         try:
-            params["start_time"] = start_time
-            params["end_time"] = start_time
-            responseStart = requests.get(url, params).json()
-            params["start_time"] = end_time
-            params["end_time"] = end_time
-            responseEnd = requests.get(url, params).json()
+            response_start = requests.get(url, start_params).json()
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             raise ServiceUnavalibleException()
         except requests.exceptions.RequestException as request:
             raise Http404(request)
 
-        '''
+        end_params = {
+            "type": "p",
+            "start_time": end_time,
+            "end_time": end_time
+        }
+
+        try:
+            end_params["start_time"] = end_time
+            end_params["end_time"] = end_time
+            response_end = requests.get(url, end_params).json()
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            raise ServiceUnavalibleException()
+        except requests.exceptions.RequestException as request:
+            raise Http404(request)
+
+        """
         internal helper function, makes an easy to work with
         list of power values out of messy api response data
         # param api_response: the response to feed into the function
         # param consumption_or_generation: boolean true to calculate
             consumption, false to calculate generation
         # returns a list
-        '''
+        """
 
-        def get_power_list_from_api_data(api_repsone, consumption_or_generation):
+        def get_power_list_from_api_data(api_response, consumption_or_generation):
             return list(map(lambda power: int(power[1]), (
                         filter(lambda power_value:
                             consumption_or_generation if int(power_value[1]) < 0 else not consumption_or_generation,
-                            list(api_repsone[1:])))))
+                            list(api_response[1:])))))
 
-        start_power_values = get_power_list_from_api_data(responseStart, type_of_power)
+        start_power_values = get_power_list_from_api_data(response_start, type_of_power)
 
-        end_power_values = get_power_list_from_api_data(responseEnd, type_of_power)
+        end_power_values = get_power_list_from_api_data(response_end, type_of_power)
 
         total_power = 0
-
         for index, end_power in enumerate(end_power_values):
             total_power += end_power-start_power_values[index]
 
