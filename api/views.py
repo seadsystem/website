@@ -107,9 +107,6 @@ class TotalPower(APIView):
 
         end_power_values = get_power_list_from_api_data(response_end, type_of_power)
 
-        print(start_power_values)
-        print(end_power_values)
-
         total_power = 0
         for index, end_power in enumerate(end_power_values):
             total_power += end_power-start_power_values[index]
