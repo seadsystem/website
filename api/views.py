@@ -205,7 +205,15 @@ class PowerPerTimePeriod(APIView):
 
 
 def get_power_list_from_api_data(api_response, consumption_or_generation):
-        return list(map(lambda power: int(power[1]), (
-                    filter(lambda power_value:
-                        consumption_or_generation if int(power_value[1]) < 0 else not consumption_or_generation,
-                        list(api_response[1:])))))
+    """
+    internal helper function, makes an easy to work with
+    list of power values out of messy api response data
+    :param api_response: the response to feed into the function
+    :param consumption_or_generation: boolean true to calculate
+    consumption, false to calculate generation
+    returns a list
+    """
+    return list(map(lambda power: int(power[1]), (
+                filter(lambda power_value:
+                    consumption_or_generation if int(power_value[1]) < 0 else not consumption_or_generation,
+                    list(api_response[1:])))))
