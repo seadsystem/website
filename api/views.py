@@ -3,8 +3,10 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .api_exceptions import ServiceUnavalibleException
-import requests
 from datetime import datetime, timedelta
+import math
+import requests
+
 
 class RawQuery(APIView):
     """
@@ -40,6 +42,10 @@ class TotalPower(APIView):
     Start and end times must be utc unix timestamps. """
 
     permission_classes = []
+
+    """these will be configurable later """
+    consumption_devices = ["Power1", "Power2", "Power3", "shed"]
+    generation_devices = ["PowerS", "PowerG"]
 
     def get(self, request, device_id, power_type, start_time, end_time):
 
@@ -101,10 +107,14 @@ class TotalPower(APIView):
 
 class PowerPerTimePeriod(APIView):
 
-    """ Calculates the total power usage or generation for a particular device over some time period.
+    """ Calculates the total power usage/generation per day/week/etc for a particular device over some time period.
     Start and end times must be utc unix timestamps. """
 
     permission_classes = []
+
+    """these will be configurable later """
+    consumption_devices = ["Power1", "Power2", "Power3", "shed"]
+    generation_devices = ["PowerS", "PowerG"]
 
     def get(self, request, device_id, power_type, start_time, end_time):
 
@@ -201,6 +211,74 @@ class PowerPerTimePeriod(APIView):
         return Response({"power": response})
 
 
+class AllPowerData(APIView):
+
+    """ Gives back all the data points for a particular device over some time period.
+    Start and end times must be utc unix timestamps. """
+
+    permission_classes = []
+
+    """these will be configurable later """
+    consumption_devices = ["Power1", "Power2", "Power3", "shed"]
+    generation_devices = ["PowerS", "PowerG"]
+
+    def get(self, request, device_id, power_type, start_time, end_time):
+        """
+        :summary: Get request for all data points in a given time period, diffed\n
+        :param request: the object containing the query parameters\n
+        :param device_id: the device_id of the device requesting information about\n
+        :param power_type: must be consumed_power or generated_power \n
+        :param start_time: beginning of range of time to calculate total power for (must be a valid utc timestamp) \n
+        :param end_time: end of range of time to calculate total power for (must be a valid utc timestamp) \n
+        :param (optional) subset: subset of all the points given back by api, useful for down-sampling data
+          /api/device/:(device_id)/:(consumed_power|generated_power)/:(start_time)/:(end_time)?subset=1000 \n
+        :return Response object \n
+          example \n
+            "power": [ \n
+                314, \n
+                456, \n
+                335, \n
+                367, \n
+                ... \n
+            ] \n
+        """
+
+        """using the same function to handle daily power generated and daily power consumed,
+        this sets a boolean that will control whether or not generated power is calculated
+        or consumed power is calculated"""
+        type_of_power = True if power_type == 'consumed_power' else False
+
+        url = "http://db.sead.systems:8080/" + device_id
+        params = {
+                "type": "P",
+                "start_time": start_time,
+                "end_time": end_time,
+                "diff": 1,
+            }
+
+        if type_of_power:
+                devices = self.consumption_devices
+            else:
+                devices = self.generation_devices
+
+        if request.GET.get('subset'):
+            if type_of_power:
+                params['subset'] = math.ceil(request.GET.get('subset') / len(self.consumption_devices)
+            else:
+                params['subset'] = request.GET.get('subset') / len(self.generation_devices)
+
+
+        try:
+            for device in devices
+            response = get_power_list_from_api_data(requests.get(url, params=params).json(), type_of_power)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            raise ServiceUnavalibleException()
+        except requests.exceptions.RequestException as request:
+            raise Http404(request)
+
+        return Response({"power": response})
+
+
 def get_power_list_from_api_data(api_response, consumption_or_generation):
     """
     internal helper function, makes an easy to work with
@@ -210,7 +288,4 @@ def get_power_list_from_api_data(api_response, consumption_or_generation):
     consumption, false to calculate generation
     returns a list
     """
-    return list(map(lambda power: int(power[1]), (
-                filter(lambda power_value:
-                    consumption_or_generation if int(power_value[1]) < 0 else not consumption_or_generation,
-                    list(api_response[1:])))))
+    return list(map(lambda power: int(power[1]), api_response[1:]))

@@ -10,6 +10,8 @@ urlpatterns = patterns('seadssite',
         views.TotalPower.as_view()),
     url(r'^api/device/(?P<device_id>[0-9]+)/daily/(?P<power_type>consumed_power|generated_power)/(?P<start_time>[0-9]+)/(?P<end_time>[0-9]+)$',
         views.PowerPerTimePeriod.as_view()),
+    url(r'^api/device/(?P<device_id>[0-9]+)/all/(?P<power_type>consumed_power|generated_power)/(?P<start_time>[0-9]+)/(?P<end_time>[0-9]+)$',
+        views.AllPowerData.as_view()),
 )
 
 
