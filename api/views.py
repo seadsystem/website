@@ -2,11 +2,9 @@ from rest_framework import permissions
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import exceptions
 from .api_exceptions import ServiceUnavalibleException
 import requests
 from datetime import datetime, timedelta
-from tzlocal import get_localzone
 
 class RawQuery(APIView):
     """
@@ -62,7 +60,6 @@ class TotalPower(APIView):
         or consumed power is calculated"""
         type_of_power = True if power_type == 'consumed_power' else False
 
-        print(type_of_power)
         url = "http://db.sead.systems:8080/" + device_id
 
         start_params = {
@@ -187,7 +184,7 @@ class PowerPerTimePeriod(APIView):
                 "start_time": epoch_time,
                 "end_time": epoch_time,
             }
-            print("HERERERERE")
+
             try:
                 end = get_power_list_from_api_data(requests.get(url, params=params).json(), type_of_power)
                 power_delta = 0
