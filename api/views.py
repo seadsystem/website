@@ -53,6 +53,8 @@ class TotalPower(APIView):
         :param start_time: beginning of range of time to calculate total power for (must be a valid utc timestamp) \n
         :param end_time: end of range of time to calculate total power for (must be a valid utc timestamp) \n
         :return Response object\n
+        example: \n
+        {"power": 5673 }
         """
 
         """using the same function to handle total power generated and total power consumed,
@@ -119,7 +121,30 @@ class PowerPerTimePeriod(APIView):
         :params (optional) frequency: number of days to sum power over if 7, gives back a week at a time from start date
          to end date, if 1 daily, if 31,30, or 28, monthly etc, if no frequency given default 1 (daily) query like such
           /api/device/:(device_id)/:(consumed_power|generated_power)/:(start_time)/:(end_time)?frequency=7 \n
-        :return Response object\n
+        :return Response object \n
+          example \n
+            "power": [ \n
+                { \n
+                    "power": 45517642, \n
+                    "date": "2015-11-02 20:00:00" \n
+                }, \n
+                { \n
+                    "power": 76611579, \n
+                    "date": "2015-11-03 20:00:00" \n
+                }, \n
+                { \n
+                    "power": 95669560, \n
+                    "date": "2015-11-04 20:00:00" \n
+                }, \n
+                { \n
+                    "power": 88306852, \n
+                    "date": "2015-11-05 20:00:00" \n
+                }, \n
+                { \n
+                    "power": 84121558, \n
+                    "date": "2015-11-06 20:00:00" \n
+                } \n
+            ] \n
         """
 
         if request.GET.get('frequency'):
@@ -162,7 +187,7 @@ class PowerPerTimePeriod(APIView):
                 "start_time": epoch_time,
                 "end_time": epoch_time,
             }
-
+            print("HERERERERE")
             try:
                 end = get_power_list_from_api_data(requests.get(url, params=params).json(), type_of_power)
                 power_delta = 0
