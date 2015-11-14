@@ -44,7 +44,7 @@ class TotalPower(APIView):
     permission_classes = []
 
     """these will be configurable later """
-    consumption_devices = ["Power1", "Power2", "Power3", "shed"]
+    consumption_devices = ["Panel1", "Panel2", "Panel3", "shed"]
     generation_devices = ["PowerS", "PowerG"]
 
     def get(self, request, device_id, power_type, start_time, end_time):
@@ -113,7 +113,7 @@ class PowerPerTimePeriod(APIView):
     permission_classes = []
 
     """these will be configurable later """
-    consumption_devices = ["Power1", "Power2", "Power3", "shed"]
+    consumption_devices = ["Panel1", "Panel2", "Panel3", "shed"]
     generation_devices = ["PowerS", "PowerG"]
 
     def get(self, request, device_id, power_type, start_time, end_time):
@@ -219,7 +219,7 @@ class AllPowerData(APIView):
     permission_classes = []
 
     """these will be configurable later """
-    consumption_devices = ["Power1", "Power2", "Power3", "shed"]
+    consumption_devices = ["Panel1", "Panel2", "Panel3"]
     generation_devices = ["PowerS", "PowerG"]
 
     def get(self, request, device_id, power_type, start_time, end_time):
@@ -249,37 +249,57 @@ class AllPowerData(APIView):
         type_of_power = True if power_type == 'consumed_power' else False
 
         url = "http://db.sead.systems:8080/" + device_id
+
         params = {
-                "type": "P",
-                "start_time": start_time,
-                "end_time": end_time,
-                "diff": 1,
-            }
+            "type": "P",
+            "start_time": start_time,
+            "end_time": end_time,
+        }
 
         if type_of_power:
-                devices = self.consumption_devices
-            else:
-                devices = self.generation_devices
+            devices = self.consumption_devices
+        else:
+            devices = self.generation_devices
 
         if request.GET.get('subset'):
-            if type_of_power:
-                params['subset'] = math.ceil(request.GET.get('subset') / len(self.consumption_devices)
-            else:
-                params['subset'] = request.GET.get('subset') / len(self.generation_devices)
+            subset_length = int(request.GET.get('subset'))
+            params['subset'] = subset_length
 
+        response = {}
 
         try:
-            for device in devices
-            response = get_power_list_from_api_data(requests.get(url, params=params).json(), type_of_power)
+            for device in devices:
+                params['device'] = device
+                resp = requests.get(url, params=params)
+                response[device] = get_power_list_from_api_data(resp.json())
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             raise ServiceUnavalibleException()
         except requests.exceptions.RequestException as request:
             raise Http404(request)
 
-        return Response({"power": response})
+        resp = []
+        resp1 = []
+
+        for i in range(subset_length):
+            resp.append(0)
+            resp1.append(0)
+
+        for device in response:
+            for index, power in enumerate(response[device]):
+                if index < subset_length-2:
+                    print(index)
+                    print(device + ": " + str(index) + ": " + str(response[device][index] - response[device][index+1]))
+                    resp[index] += response[device][index]-response[device][index+1]
+
+        print(resp)
+        '''for device in response:
+            for index, power in enumerate(response[device]):
+                resp[index] += power'''
+
+        return Response({"power": resp})
 
 
-def get_power_list_from_api_data(api_response, consumption_or_generation):
+def get_power_list_from_api_data(api_response):
     """
     internal helper function, makes an easy to work with
     list of power values out of messy api response data
