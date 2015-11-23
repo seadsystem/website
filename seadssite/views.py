@@ -159,3 +159,6 @@ def VisualizationView(request, device_id):
 
 def list(request):
     return render_to_response('list.html')
+
+def graph(request):
+    return render_to_response('graph.html')
