@@ -7,4 +7,5 @@ urlpatterns = patterns('seadssite',
                        url(r'^dashboard/(?P<device_id>[0-9]+)/$', v.VisualizationView),
                        url(r'^dashboard/[0-9]+/appliances/$', v.DevicesView),
                        url(r'^help/$', v.help),
-                       url(r'^list/$', 'views.list', name='list'))
+                       url(r'^list/$', 'views.list', name='list'),
+                       url(r'^graph/$', 'views.graph', name='graph'))
