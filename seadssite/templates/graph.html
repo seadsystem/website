@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<html>
+<meta charset="utf-8">
+  <head>
+    <style>
+    .device{
+      display: inline;
+    }
+    .option{
+      display:inline;
+    }
+
+    body {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+      display: none;
+    }
+
+    .line {
+      fill: none;
+      stroke: steelblue;
+      stroke-width: 1.5px;
+    }
+    </style>
+  </head>
+
+  <body>
+
+
+    <div class = "device" id="device">
+        <input name="device 1"
+               type="button"
+               value="device 1"
+               onclick="Start()" />
+    </div>
+
+    <div class = "device" id="device">
+        <input name="device 2"
+               type="button"
+               value="device 2"
+               onclick="Start()" />
+    </div>
+
+    <br>
+
+    <div class = "option" id="daily">
+        <input name="Daily Usage"
+               type="button"
+               value="Daily Usage"
+               onclick="Daily()" />
+    </div>
+
+    <div class = "option" id="continuous">
+        <input name="Daily Usage"
+               type="button"
+               value="Continuous Usage"
+               onclick="Continuous()" />
+    </div>
+
+    <br>
+    <br>
+
+
+    <label for="from">From</label>
+    <input type="text" id="from" name="from">
+    <label for="to">to</label>
+    <input type="text" id="to" name="to">
+
+    <div class = "DateRange" id="DateRange">
+        <input name="getRange"
+               type="button"
+               value="getRange"
+               onclick="BStart()" />
+    </div>
+    <div class = "DateRangeCont" id="DateRangeCont">
+        <input name="getRangeCont"
+               type="button"
+               value="getRangeCont"
+               onclick="CStart()" />
+    </div>
+
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+    <script>
+
+    $('label[for="from"]').hide();
+    $('label[for="to"]').hide();
+    $('#from').hide();
+    $('#to').hide();
+    $('#DateRange').hide();
+    $('#DateRangeCont').hide();
+
+    $('#daily').hide();
+    $('#continuous').hide();
+
+    var daily = false;
+    var continuous = false;
+
+    function Start(){
+      //var url = Refresh();
+      //console.log(url);
+      $('#daily').show();
+      $('#continuous').show();
+    }
+
+    function BStart(){
+        var url = Refresh();
+        console.log(url);
+
+        if(daily == true){
+          var svg = d3.select("body");
+          svg.selectAll("svg").remove();
+          daily = false;
+        }
+        else{
+          daily = true;
+      }
+        var margin = {top: 20, right: 20, bottom: 70, left: 40},
+            width = 600 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom;
+
+        // Parse the date / time
+        var	parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+
+        var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+        var y = d3.scale.linear().range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .tickFormat(d3.time.format("%Y-%m-%d"));
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .ticks(10);
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+
+/*        var jdata = $.getJSON(url, function(){
+          var jsondata = jdata.responseJSON;
+          console.log(jsondata);
+        });
+        */
+          d3.json(url, function(error, data) {
+
+            //data = JSON.stringify(data.power);
+          //  console.log(data);
+
+          data.power.forEach(function(d) {
+              d.date = parseDate(d.date);
+              console.log(d.date);
+              d.use = +d.power;
+              console.log(d.use);
+          });
+
+          x.domain(data.power.map(function(d) { return d.date; }));
+          y.domain([0, d3.max(data.power, function(d) { return d.use / 10000; })]);
+
+          svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)" );
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("KW");
+
+            svg.selectAll("bar")
+            .data(data.power)
+            .enter().append("rect")
+           // .attr("class", "bar")
+            .style("fill", "steelblue")
+            .attr("x", function(d) { return x(d.date); })
+            .attr("width", x.rangeBand())
+            .attr("y", function(d) { return y(d.use/10000); })
+            .attr("height", function(d) { return height - y(d.use/10000); })
+            //.on('mouseover', use_tip.show)
+            //.on('mouseout', use_tip.hide);
+        });
+
+
+    }
+
+
+    function Daily(){
+      if(daily == false){
+        $('label[for="from"]').show();
+        $('label[for="to"]').show();
+        $('#from').show();
+        $('#to').show();
+        $('#DateRange').show();
+        $('#DateRangeCont').hide();
+        daily = true;
+        continuous = false;
+      }
+      else{
+        $('label[for="from"]').hide();
+        $('label[for="to"]').hide();
+        $('#from').hide();
+        $('#to').hide();
+        $('#DateRange').hide();
+        $('#DateRangeCont').hide();
+        daily = false;
+        continuous = false;
+      }
+    }
+
+    function Continuous(){
+      if(continuous == false){
+      //  console.log("Work in Progress!");
+        $('label[for="from"]').hide();
+        $('label[for="to"]').hide();
+        $('#from').hide();
+        $('#to').hide();
+        $('#DateRange').hide();
+        $('#DateRangeCont').show();
+
+        var svg = d3.select("body");
+        svg.selectAll("svg").remove();
+
+        continuous = true;
+        daily = false;
+      }
+      else{
+      //  console.log("Work in Progress!");
+        $('label[for="from"]').hide();
+        $('label[for="to"]').hide();
+        $('#from').hide();
+        $('#to').hide();
+        $('#DateRange').hide();
+        $('#DateRangeCont').hide();
+        continuous = false;
+        daily = false;
+      }
+    }
+
+    function CStart(){
+      console.log("Still Working!")
+    }
+
+   function Refresh(){
+    var start = getStart();
+    var end = getEnd();
+    //console.log(start);
+    //console.log(end);
+
+    var url = "http://127.0.0.1:8000/api/device/466419817/daily/generated_power/" + start + "/" + end + "?format=json";
+    //console.log(url);
+        var svg = d3.select("body");
+        svg.selectAll("svg").remove();
+
+    return url;
+  }
+
+    function getStart(){
+        //get dates from datepicker widget
+        var StartDate = $("#from").datepicker( "getDate" );
+        //convert to unix timestamp
+        var startunix = Date.parse(StartDate)/1000;
+        return startunix;
+    }
+    function getEnd(){
+      //get dates from datepicker widget
+      var EndDate = $("#to").datepicker( "getDate" );
+      //convert to unix timestamp
+      var endunix = Date.parse(EndDate)/1000;
+      return endunix;
+    }
+
+    //datepicker widget
+    $(function() {
+      $( "#from" ).datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        numberOfMonths: 3,
+        onSelect: function(dateText, inst) {
+           var dateAsString = dateText; //the first parameter of this function
+           var StartDate = $(this).datepicker( 'getDate' ); //the getDate method
+        }
+      });
+      $( "#to" ).datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        numberOfMonths: 3,
+        onSelect: function(dateText, inst) {
+           var dateAsString = dateText; //the first parameter of this function
+           var EndDate = $(this).datepicker( 'getDate' ); //the getDate method
+        }
+      });
+    });
+    </script>
+  </body>
+</html>
+{% endblock %}
