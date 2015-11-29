@@ -6,8 +6,13 @@
 <meta charset="utf-8">
   <head>
     <style>
-    .device{
+
+    .wrap{
+      text-align: center;
+    }
+    .btn-lg{
       display: inline;
+
     }
     .option{
       display:inline;
@@ -47,14 +52,15 @@
   <body>
 
 
-    <div class = "device" id="device-1">
+  <div class="wrap">
+    <div class = "btn-lg" id="device-1">
         <input name="device 1"
                type="button"
                value="device 1"
                onclick="Start()" />
     </div>
 
-    <div class = "device" id="device-2">
+    <div class = "btn-lg" id="device-2">
         <input name="device 2"
                type="button"
                value="device 2"
@@ -63,41 +69,45 @@
 
     <br>
 
-    <div class = "option" id="daily">
+    <div class = "btn" id="daily" title="View Daily Energy Usage">
         <input name="Daily Usage"
                type="button"
                value="Daily Usage"
                onclick="Daily()" />
     </div>
 
-    <div class = "option" id="continuous">
+    <div class = "btn" id="continuous" title="View Minute-by-Minute Energy Usage">
         <input name="Daily Usage"
                type="button"
                value="Continuous Usage"
                onclick="Continuous()" />
     </div>
 
+  </div>
+
     <br>
     <br>
 
 
+<div class="wrap">
     <label for="from">From</label>
-    <input type="text" id="from" name="from">
+    <input type="text" class="form-inline" id="from" name="from">
     <label for="to">to</label>
-    <input type="text" id="to" name="to">
+    <input type="text" class="form-inline" id="to" name="to">
 
     <div class = "DateRange" id="DateRange">
         <input name="getRange"
                type="button"
-               value="getRange"
+               value="Graph Daily Data"
                onclick="BStart()" />
     </div>
     <div class = "DateRangeCont" id="DateRangeCont">
         <input name="getRangeCont"
                type="button"
-               value="getRangeCont"
+               value="Graph Continuous Data"
                onclick="CStart()" />
     </div>
+</div>
 
     <script src="http://d3js.org/d3.v3.js"></script>
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
@@ -117,6 +127,7 @@
     var continuous = false;
 
     function Start(){
+        var url_min = Get_Minute();
       //var url = Refresh();
       //console.log(url);
       $('label[for="from"]').hide(500);
@@ -128,20 +139,23 @@
 
       $('#daily').show(500);
       $('#continuous').show(500);
+
+      var svg = d3.select("body");
+      svg.selectAll("svg").remove();
+
+      daily = false;
+      continuous = false;
+
+      d3.json(url_min, function(error, min_data){
+         console.log(min_data);
+      });
     }
 
     function BStart(){
-        var Generated_url = Get_Generated();
-        var Consumed_url = Get_Consumed();
+        var url_gen = Get_Generated();
+        var url_cons = Get_Consumed();
+        var url_min = Get_Minute();
 
-        if(daily == true){
-          var svg = d3.select("body");
-          svg.selectAll("svg").remove();
-          daily = false;
-        }
-        else{
-          daily = true;
-        }
         var margin = {top: 20, right: 20, bottom: 70, left: 40},
             width = 600 - margin.left - margin.right,
             height = 300 - margin.top - margin.bottom;
@@ -151,8 +165,6 @@
 
         var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
         var y = d3.scale.linear().range([height, 0]);
-
-        //var separation = x.rangeBand() / 2;
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -164,6 +176,9 @@
             .orient("left")
             .ticks(10);
 
+        var svg = d3.select("body");
+
+/*
         var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -188,70 +203,159 @@
           svg.call(use_tip);
           svg.call(gen_tip);
 
+*/
 
-          d3.json(Generated_url, function(error, data) {
-            data.power.forEach(function(d) {
+
+          d3.json(url_gen, function(error, data_gen) {
+            d3.json(url_cons, function(error, data_cons) {
+            data_gen.power.forEach(function(d) {
               d.date_gen = parseDate(d.date);
               d.gen = +d.power;
           });
+            data_cons.power.forEach(function(d) {
+              d.date_cons = parseDate(d.date);
+              d.cons = +d.power;
+            });
 
-          x.domain(data.power.map(function(d) { return d.date_gen; }));
-          y.domain([0, d3.max(data.power, function(d) { return d.gen / 1000000; })]);
 
-          svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .selectAll("text")
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", "-.55em")
-            .attr("transform", "rotate(-90)" );
+        x.domain(data_cons.power.map(function(d) { return d.date_cons; }));
+        y.domain([0, d3.max(data_cons.power, function(d) { return d.cons / 1000000; })]);
 
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("kW");
+        //Update x-axis
+        svg.select(".x.axis")
+          .transition()
+          .duration(1000)
+          .call(xAxis);
 
-            svg.selectAll("bar")
-            .data(data.power)
-            .enter().append("rect")
+       //Update y-axis
+        svg.select(".y.axis")
+           .transition()
+           .duration(1000)
+           .call(yAxis);
+
+
+      var gen_bars = svg.selectAll(".gen_rect")
+            .data(data_gen.power, function(d) { return d.date_gen; });
+            //.data(data_gen.power);
+       //Enter rectangles
+       gen_bars.enter()
+           .append("rect")
+           .style("fill", "green" )
+           .attr("x", function(d) { return x(d.date_gen); })
+           .attr("y", function(d) { return y(d.gen/1000000) })
+           .attr("width", x.rangeBand()) //returns rangeRoundBands width
+           .attr("height", function(d) { return height - y(d.gen/1000000) });
+
+
+       //Update rectangles
+       gen_bars.transition()
+           .duration(1000)
+           //.style("fill", function(d,i) { return color(i) })
+           .attr("x", function(d) { return x(d.date_gen); })
+           .attr("y", function(d) { return y(d.gen/1000000) })
+           .attr("width", x.rangeBand() / 2) //returns rangeRoundBands width
+           .attr("height", function(d) { return height - y(d.gen/1000000) });
+
+
+       //Exit rectangles
+       gen_bars.exit()
+           .transition()
+           .duration(500)
+           .attr("x", width)
+           .remove();
+
+      var cons_bars = svg.selectAll(".cons_rect")
+            .data(data_cons.power, function(d) { return d.date_cons; });
+            //.data(data_cons.power);
+
+      //Enter rectangles
+      cons_bars.enter()
+          .append("rect")
+          //.style("fill", function(d,i) { return color(i) })
+          .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
+          .attr("y", function(d) { return y(d.cons/1000000) })
+          .attr("width", x.rangeBand() / 2) //returns rangeRoundBands width
+          .attr("height", function(d) { return height - y(d.cons/1000000) });
+
+
+      //Update rectangles
+      cons_bars.transition()
+          .duration(1000)
+          //.style("fill", function(d,i) { return color(i) })
+          .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
+          .attr("y", function(d) { return y(d.cons/1000000) })
+          .attr("width", x.rangeBand() / 2) //returns rangeRoundBands width
+          .attr("height", function(d) { return height - y(d.cons/1000000) });
+
+
+      //Exit rectangles
+      cons_bars.exit()
+          .transition()
+          .duration(500)
+          .attr("x", width)
+          .remove();
+
+          svg.selectAll("bar")
+          .data(data_gen.power)
+          .enter().append("rect")
+          .attr("class", "gen_rect")
+         // .attr("class", "bar")
+          .style("fill", "steelblue")
+          .attr("x", function(d) { return x(d.date_gen); })
+          .attr("width", x.rangeBand() / 2)
+          .attr("y", function(d) { return y(d.gen/1000000); })
+          .attr("height", function(d) { return height - y(d.gen/1000000); });
+          //.on('mouseover', gen_tip.show)
+        //  .on('mouseout', gen_tip.hide);
+
+          svg.selectAll("bar")
+          .data(data_cons.power)
+          .enter().append("rect")
+          .attr("class", "cons_rect")
+         // .attr("class", "bar")
+          .style("fill", "red")
+          .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
+          .attr("width", x.rangeBand()/2)
+          .attr("y", function(d) { return y(d.cons/1000000); })
+          .attr("height", function(d) { return height - y(d.cons/1000000); });
+          //.on('mouseover', use_tip.show)
+          //.on('mouseout', use_tip.hide);
+
+
+/*
+            svg.selectAll(".gen_rect")
+            .data(data_gen.power)
+            .transition()
+            .duration(1000)
+            //.enter().append("rect")
            // .attr("class", "bar")
-            .style("fill", "steelblue")
+            .attr("fill", "steelblue")
             .attr("x", function(d) { return x(d.date_gen); })
             .attr("width", x.rangeBand() / 2)
             .attr("y", function(d) { return y(d.gen/1000000); })
-            .attr("height", function(d) { return height - y(d.gen/1000000); })
-            .on('mouseover', gen_tip.show)
-            .on('mouseout', gen_tip.hide);
+            .attr("height", function(d) { return height - y(d.gen/1000000); });
+            //.on('mouseover', gen_tip.show)
+            //.on('mouseout', gen_tip.hide);
+
+            svg.selectAll(".cons_rect")
+            .data(data_cons.power)
+            .transition()
+            .duration(1000)
+            //.enter().append("rect")
+           // .attr("class", "bar")
+            .attr("fill", "red")
+            .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
+            .attr("width", x.rangeBand()/2)
+            .attr("y", function(d) { return y(d.cons/1000000); })
+            .attr("height", function(d) { return height - y(d.cons/1000000); });
+          //  .on('mouseover', use_tip.show)
+          //  .on('mouseout', use_tip.hide);
+
+  */
+
+
+
         });
-
-        d3.json(Consumed_url, function(error, data) {
-          data.power.forEach(function(d) {
-            d.date_cons = parseDate(d.date);
-            d.cons = +d.power;
-        });
-
-        x.domain(data.power.map(function(d) { return d.date_cons; }));
-        y.domain([0, d3.max(data.power, function(d) { return d.cons / 1000000; })]);
-
-        svg.selectAll("bar")
-        .data(data.power)
-        .enter().append("rect")
-       // .attr("class", "bar")
-        .style("fill", "red")
-        .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
-        .attr("width", x.rangeBand()/2)
-        .attr("y", function(d) { return y(d.cons/1000000); })
-        .attr("height", function(d) { return height - y(d.cons/1000000); })
-        .on('mouseover', use_tip.show)
-        .on('mouseout', use_tip.hide);
-
       });
 
     }
@@ -285,14 +389,6 @@
           .x(function(d) { return x(d.date); })
           .y(function(d) { return y(d.cons/1000000); });
 
-
-      var svg = d3.select("body").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
         d3.json(url_cons, function(error, data) {
            data.power.forEach(function(d){
               d.date = parseDate(d.date);
@@ -302,30 +398,24 @@
         y.domain([d3.min(data.power, function(d) { return d.cons/1000000; }) - 0.01, d3.max(data.power, function(d){return d.cons/1000000;}) + 0.01]);
         x.domain(d3.extent(data.power, function(d) { return d.date; }));
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+        var svg = d3.select("body").transition();
 
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("kW");
+           // Make the changes
+               svg.select(".line")   // change the line
+                   .duration(1000)
+                   .attr("d", line(data.power));
+               svg.select(".x.axis") // change the x axis
+                   .duration(1000)
+                   .call(xAxis);
+               svg.select(".y.axis") // change the y axis
+                   .duration(1000)
+                   .call(yAxis);
 
-        svg.append("path")
-            .datum(data.power)
-            .attr("class", "line")
-            .attr("d", line);
-        });
+           });
     }
 
     function Daily(){
-      if(daily == false){
+      if(daily == false || continuous == true){
         $('label[for="from"]').show(500);
         $('label[for="to"]').show(500);
         $('#from').show(500);
@@ -338,7 +428,122 @@
 
         daily = true;
         continuous = false;
-      }
+
+      //  var url_gen = "http://localhost:8000/api/device/466419817/daily/generated_power/1446537600/1446710400?format=json";
+      //  var url_cons = "http://localhost:8000/api/device/466419817/daily/consumed_power/1446537600/1446710400?format=json";
+
+        var url_gen = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446710400&device=PowerS&granularity=60&list_format=energy";
+        var url_cons = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446710400&device=Panel1&granularity=60&list_format=energy";
+
+        var margin = {top: 20, right: 20, bottom: 70, left: 40},
+            width = 600 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom;
+
+        // Parse the date / time
+        var	parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+
+        var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+        var y = d3.scale.linear().range([height, 0]);
+
+        //var separation = x.rangeBand() / 2;
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .tickFormat(d3.time.format("%Y-%m-%d"));
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .ticks(10);
+
+        svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+
+        var use_tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function(d) {
+            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons/ 1000000 + " kW</span>";
+          })
+
+       var gen_tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function(d) {
+            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen/ 1000000 + " kW</span>";
+          })
+
+          svg.call(use_tip);
+          svg.call(gen_tip);
+
+          d3.json(url_gen, function(error, data_gen) {
+            d3.json(url_cons, function(error, data_cons) {
+            data_gen.power.forEach(function(d) {
+              d.date_gen = parseDate(d.date);
+              d.gen = +d.power;
+          });
+            data_cons.power.forEach(function(d) {
+              d.date_cons = parseDate(d.date);
+              d.cons = +d.power;
+            });
+
+        x.domain(data_cons.power.map(function(d) { return d.date_cons; }));
+        y.domain([0, d3.max(data_cons.power, function(d) { return d.cons / 1000000; })]);
+
+          svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)" );
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("kW");
+
+            svg.selectAll("bar")
+            .data(data_gen.power)
+            .enter().append("rect")
+            .attr("class", "gen_rect")
+           // .attr("class", "bar")
+            .style("fill", "steelblue")
+            .attr("x", function(d) { return x(d.date_gen); })
+            .attr("width", x.rangeBand() / 2)
+            .attr("y", function(d) { return y(d.gen/1000000); })
+            .attr("height", function(d) { return height - y(d.gen/1000000); })
+            .on('mouseover', gen_tip.show)
+            .on('mouseout', gen_tip.hide);
+
+            svg.selectAll("bar")
+            .data(data_cons.power)
+            .enter().append("rect")
+            .attr("class", "cons_rect")
+           // .attr("class", "bar")
+            .style("fill", "red")
+            .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
+            .attr("width", x.rangeBand()/2)
+            .attr("y", function(d) { return y(d.cons/1000000); })
+            .attr("height", function(d) { return height - y(d.cons/1000000); })
+            .on('mouseover', use_tip.show)
+            .on('mouseout', use_tip.hide);
+        });
+      });
+
+}
       else{
         $('label[for="from"]').hide(500);
         $('label[for="to"]').hide(500);
@@ -353,10 +558,10 @@
         daily = false;
         continuous = false;
       }
-    }
+}
 
     function Continuous(){
-      if(continuous == false){
+      if(continuous == false || daily == true){
       //  console.log("Work in Progress!");
         $('label[for="from"]').show(500);
         $('label[for="to"]').show(500);
@@ -372,7 +577,75 @@
 
         continuous = true;
         daily = false;
-      }
+
+        //var url = "http://localhost:8000/api/device/466419817/daily/generated_power/1446537600/1446710400?format=json";
+        var url = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446710400&device=Panel1&granularity=60&list_format=energy";
+
+        var margin = {top: 20, right: 20, bottom: 50, left: 50},
+            width = 800 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse; // for dates like "2014-01-01"
+        //var parseDate = d3.time.format("%Y-%m-%dT00:00:00Z").parse;  // for dates like "2014-01-01T00:00:00Z"
+
+        var x = d3.time.scale()
+        //.domain([new Date(sample_consumed[0].date), d3.time.day.offset(new Date(sample_consumed[sample_consumed.length - 1].date), 1)])
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+        // .domain([0, d3.max(sample_consumed, function(d) { return +d.power; })])
+            .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        var line = d3.svg.line()
+            .x(function(d) { return x(d.date); })
+            .y(function(d) { return y(d.cons/1000000); });
+
+
+        var svg = d3.select("body").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+          d3.json(url, function(error, data) {
+             data.power.forEach(function(d){
+                d.date = parseDate(d.date);
+                d.cons = +d.power;
+           });
+
+          y.domain([d3.min(data.power, function(d) { return d.cons/1000000; }) - 0.01, d3.max(data.power, function(d){return d.cons/1000000;}) + 0.01]);
+          x.domain(d3.extent(data.power, function(d) { return d.date; }));
+
+          svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+          svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+              .append("text")
+              .attr("transform", "rotate(-90)")
+              .attr("y", 6)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+              .text("kW");
+
+          svg.append("path")
+              .datum(data.power)
+              .attr("class", "line")
+              .attr("d", line);
+          });
+
+    }
       else{
       //  console.log("Work in Progress!");
         $('label[for="from"]').hide(500);
@@ -396,10 +669,10 @@
     //console.log(start);
     //console.log(end);
 
-    var url = "http://localhost:8000/api/device/466419817/daily/generated_power/" + start + "/" + end + "?format=json";
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end + "&device=PowerS&granularity=3600&list_format=energy";
     //console.log(url);
-        var svg = d3.select("body");
-        svg.selectAll("svg").remove();
+      //  var svg = d3.select("body");
+      //  svg.selectAll("svg").remove();
 
     return url;
    }
@@ -410,10 +683,24 @@
     //console.log(start);
     //console.log(end);
 
-    var url = "http://localhost:8000/api/device/466419817/daily/consumed_power/" + start + "/" + end + "?format=json";
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end + "&device=Panel1&granularity=3600&list_format=energy";
     //console.log(url);
-        var svg = d3.select("body");
-        svg.selectAll("svg").remove();
+        //var svg = d3.select("body");
+        //svg.selectAll("svg").remove();
+
+    return url;
+   }
+
+   function Get_Minute(){
+    var start = getStart();
+    var end = getEnd();
+    //console.log(start);
+    //console.log(end);
+
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end + "&device=Panel1&granularity=60&list_format=energy";
+    //console.log(url);
+      //  var svg = d3.select("body");
+      //  svg.selectAll("svg").remove();
 
     return url;
    }
@@ -458,6 +745,7 @@
         }
       });
     });
+
     </script>
   </body>
 </html>
