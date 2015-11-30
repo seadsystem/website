@@ -465,7 +465,9 @@ function Continuous() {
 }
 
 function getEnergyUrl(start, end, device, granularity) {
-    return "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + device + "&granularity=" + granularity;
+    var pathArray = window.location.pathname.split( '/' );
+    var deviceId = pathArray[2];
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + device + "&granularity=" + granularity;
 }
 
 function getStart() {
