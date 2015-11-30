@@ -17,6 +17,12 @@
     .option{
       display:inline;
     }
+    .Panel{
+      display:inline;
+    }
+    .Panel_Daily{
+      display:inline;
+    }
 
     body {
       font: 10px sans-serif;
@@ -56,14 +62,14 @@
     <div class = "btn-lg" id="device-1">
         <input name="device 1"
                type="button"
-               value="device 1"
+               value="Device 1"
                onclick="Start()" />
     </div>
 
     <div class = "btn-lg" id="device-2">
         <input name="device 2"
                type="button"
-               value="device 2"
+               value="Device 2"
                onclick="Start()" />
     </div>
 
@@ -95,17 +101,44 @@
     <label for="to">to</label>
     <input type="text" class="form-inline" id="to" name="to">
 
-    <div class = "DateRange" id="DateRange">
-        <input name="getRange"
+    <br>
+
+    <div class = "Panel_Daily" id="PanelD1">
+        <input name="Panel1"
                type="button"
-               value="Graph Daily Data"
-               onclick="BStart()" />
+               value="Graph Panel 1"
+               onclick="Update_Daily_Graph(1)" />
     </div>
-    <div class = "DateRangeCont" id="DateRangeCont">
-        <input name="getRangeCont"
+    <div class = "Panel_Daily" id="PanelD2">
+        <input name="Panel2"
                type="button"
-               value="Graph Continuous Data"
-               onclick="CStart()" />
+               value="Graph Panel 2"
+               onclick="Update_Daily_Graph(2)" />
+    </div>
+    <div class = "Panel_Daily" id="PanelD3">
+        <input name="Panel3"
+               type="button"
+               value="Graph Panel 3"
+               onclick="Update_Daily_Graph(3)" />
+    </div>
+
+    <div class = "Panel" id="Panel1">
+        <input name="Panel1"
+               type="button"
+               value="Graph Panel 1"
+               onclick="Update_Continuous_Graph(1)" />
+    </div>
+    <div class = "Panel" id="Panel2">
+        <input name="Panel2"
+               type="button"
+               value="Graph Panel 2"
+               onclick="Update_Continuous_Graph(2)" />
+    </div>
+    <div class = "Panel" id="Panel3">
+        <input name="Panel3"
+               type="button"
+               value="Graph Panel 3"
+               onclick="Update_Continuous_Graph(3)" />
     </div>
 </div>
 
@@ -117,8 +150,8 @@
     $('label[for="to"]').hide();
     $('#from').hide();
     $('#to').hide();
-    $('#DateRange').hide();
-    $('#DateRangeCont').hide();
+    $('.Panel').hide();
+    $('.Panel_Daily').hide();
 
     $('#daily').hide();
     $('#continuous').hide();
@@ -127,16 +160,17 @@
     var continuous = false;
 
     function Start(){
-        var url_min = Get_Minute();
-      //var url = Refresh();
-      //console.log(url);
       $('label[for="from"]').hide(500);
       $('label[for="to"]').hide(500);
       $('#from').hide(500);
       $('#to').hide(500);
+      $('.Panel').hide();
+      $('.Panel_Daily').hide();
       $('#DateRange').hide(500);
       $('#DateRangeCont').hide(500);
 
+      $('#daily').hide(500);
+      $('#continuous').hide(500);
       $('#daily').show(500);
       $('#continuous').show(500);
 
@@ -146,21 +180,22 @@
       daily = false;
       continuous = false;
 
-      d3.json(url_min, function(error, min_data){
-         console.log(min_data);
-      });
     }
 
-    function BStart(){
-        var url_gen = Get_Generated();
-        var url_cons = Get_Consumed();
-        var url_min = Get_Minute();
+    function Update_Daily_Graph(panel){
+        if(panel == 1)
+           var url_cons = Get_Panel1_Daily();
+        else if(panel == 2)
+           var url_cons = Get_Panel2_Daily();
+        else if(panel == 3)
+           var url_cons = Get_Panel3_Daily();
+
+        var url_gen = Get_Generated_Daily();
 
         var margin = {top: 20, right: 20, bottom: 70, left: 40},
             width = 600 - margin.left - margin.right,
             height = 300 - margin.top - margin.bottom;
 
-        // Parse the date / time
         var	parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
         var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
@@ -176,9 +211,6 @@
             .orient("left")
             .ticks(10);
 
-        var svg = d3.select("body");
-
-/*
         var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -190,72 +222,75 @@
           .attr('class', 'd3-tip')
           .offset([-10, 0])
           .html(function(d) {
-            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons / 1000000 + " kW</span>";
+            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons  + " kW</span>";
           })
 
        var gen_tip = d3.tip()
           .attr('class', 'd3-tip')
           .offset([-10, 0])
           .html(function(d) {
-            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen / 1000000 + " kW</span>";
+            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen + " kW</span>";
           })
+
+          d3.select("svg")
+          .remove();
 
           svg.call(use_tip);
           svg.call(gen_tip);
 
-*/
-
-
           d3.json(url_gen, function(error, data_gen) {
             d3.json(url_cons, function(error, data_cons) {
-            data_gen.power.forEach(function(d) {
-              d.date_gen = parseDate(d.date);
-              d.gen = +d.power;
+              data_gen.data.reverse();
+              data_cons.data.reverse();
+            data_gen.data.forEach(function(d) {
+              d.date_gen = parseDate(d.time);
+              d.gen = +d.energy;
           });
-            data_cons.power.forEach(function(d) {
-              d.date_cons = parseDate(d.date);
-              d.cons = +d.power;
+            data_cons.data.forEach(function(d) {
+              d.date_cons = parseDate(d.time);
+              d.cons = +d.energy;
             });
 
+        x.domain(data_gen.data.map(function(d) { return d.date_gen; }));
+        y.domain([0, d3.max(data_gen.data, function(d) { return d.gen; })]);
 
-        x.domain(data_cons.power.map(function(d) { return d.date_cons; }));
-        y.domain([0, d3.max(data_cons.power, function(d) { return d.cons / 1000000; })]);
+        svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+          .selectAll("text")
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.55em")
+          .attr("transform", "rotate(-90)" );
 
-        //Update x-axis
-        svg.select(".x.axis")
-          .transition()
-          .duration(1000)
-          .call(xAxis);
-
-       //Update y-axis
-        svg.select(".y.axis")
-           .transition()
-           .duration(1000)
-           .call(yAxis);
-
+        svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text("kW-");
 
       var gen_bars = svg.selectAll(".gen_rect")
-            .data(data_gen.power, function(d) { return d.date_gen; });
-            //.data(data_gen.power);
-       //Enter rectangles
-       gen_bars.enter()
+           .data(data_gen.data, function(d) { return d.date_gen; });
+           gen_bars.enter()
            .append("rect")
-           .style("fill", "green" )
+           .style("fill", "steelblue" )
            .attr("x", function(d) { return x(d.date_gen); })
-           .attr("y", function(d) { return y(d.gen/1000000) })
-           .attr("width", x.rangeBand()) //returns rangeRoundBands width
-           .attr("height", function(d) { return height - y(d.gen/1000000) });
-
+           .attr("y", function(d) { return y(d.gen) })
+           .attr("width", x.rangeBand())
+           .attr("height", function(d) { return height - y(d.gen) });
 
        //Update rectangles
        gen_bars.transition()
            .duration(1000)
-           //.style("fill", function(d,i) { return color(i) })
            .attr("x", function(d) { return x(d.date_gen); })
-           .attr("y", function(d) { return y(d.gen/1000000) })
-           .attr("width", x.rangeBand() / 2) //returns rangeRoundBands width
-           .attr("height", function(d) { return height - y(d.gen/1000000) });
-
+           .attr("y", function(d) { return y(d.gen) })
+           .attr("width", x.rangeBand() / 2)
+           .attr("height", function(d) { return height - y(d.gen) });
 
        //Exit rectangles
        gen_bars.exit()
@@ -265,28 +300,22 @@
            .remove();
 
       var cons_bars = svg.selectAll(".cons_rect")
-            .data(data_cons.power, function(d) { return d.date_cons; });
-            //.data(data_cons.power);
-
-      //Enter rectangles
-      cons_bars.enter()
+          .data(data_cons.data, function(d) { return d.date_cons; });
+          cons_bars.enter()
           .append("rect")
-          //.style("fill", function(d,i) { return color(i) })
+          .style("fill", "red")
           .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
-          .attr("y", function(d) { return y(d.cons/1000000) })
-          .attr("width", x.rangeBand() / 2) //returns rangeRoundBands width
-          .attr("height", function(d) { return height - y(d.cons/1000000) });
-
+          .attr("y", function(d) { return y(d.cons) })
+          .attr("width", x.rangeBand() / 2)
+          .attr("height", function(d) { return height - y(d.cons) });
 
       //Update rectangles
       cons_bars.transition()
           .duration(1000)
-          //.style("fill", function(d,i) { return color(i) })
           .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
-          .attr("y", function(d) { return y(d.cons/1000000) })
-          .attr("width", x.rangeBand() / 2) //returns rangeRoundBands width
-          .attr("height", function(d) { return height - y(d.cons/1000000) });
-
+          .attr("y", function(d) { return y(d.cons) })
+          .attr("width", x.rangeBand() / 2)
+          .attr("height", function(d) { return height - y(d.cons) });
 
       //Exit rectangles
       cons_bars.exit()
@@ -295,81 +324,32 @@
           .attr("x", width)
           .remove();
 
-          svg.selectAll("bar")
-          .data(data_gen.power)
-          .enter().append("rect")
-          .attr("class", "gen_rect")
-         // .attr("class", "bar")
-          .style("fill", "steelblue")
-          .attr("x", function(d) { return x(d.date_gen); })
-          .attr("width", x.rangeBand() / 2)
-          .attr("y", function(d) { return y(d.gen/1000000); })
-          .attr("height", function(d) { return height - y(d.gen/1000000); });
-          //.on('mouseover', gen_tip.show)
-        //  .on('mouseout', gen_tip.hide);
-
-          svg.selectAll("bar")
-          .data(data_cons.power)
-          .enter().append("rect")
-          .attr("class", "cons_rect")
-         // .attr("class", "bar")
-          .style("fill", "red")
-          .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
-          .attr("width", x.rangeBand()/2)
-          .attr("y", function(d) { return y(d.cons/1000000); })
-          .attr("height", function(d) { return height - y(d.cons/1000000); });
-          //.on('mouseover', use_tip.show)
-          //.on('mouseout', use_tip.hide);
-
-
-/*
-            svg.selectAll(".gen_rect")
-            .data(data_gen.power)
-            .transition()
-            .duration(1000)
-            //.enter().append("rect")
-           // .attr("class", "bar")
-            .attr("fill", "steelblue")
-            .attr("x", function(d) { return x(d.date_gen); })
-            .attr("width", x.rangeBand() / 2)
-            .attr("y", function(d) { return y(d.gen/1000000); })
-            .attr("height", function(d) { return height - y(d.gen/1000000); });
-            //.on('mouseover', gen_tip.show)
-            //.on('mouseout', gen_tip.hide);
-
-            svg.selectAll(".cons_rect")
-            .data(data_cons.power)
-            .transition()
-            .duration(1000)
-            //.enter().append("rect")
-           // .attr("class", "bar")
-            .attr("fill", "red")
-            .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
-            .attr("width", x.rangeBand()/2)
-            .attr("y", function(d) { return y(d.cons/1000000); })
-            .attr("height", function(d) { return height - y(d.cons/1000000); });
-          //  .on('mouseover', use_tip.show)
-          //  .on('mouseout', use_tip.hide);
-
-  */
-
-
+      svg.append("text")
+          .attr("x", (width / 2))
+          .attr("y", 0 - (margin.top / 2))
+          .attr("text-anchor", "middle")
+          .style("font-size", "12px")
+          .style("text-decoration", "underline")
+          .text("Daily Energy Usage (Panel " + panel + ")");
 
         });
       });
-
     }
 
-    function CStart(){
-      var url_cons = Get_Consumed();
-      var url_gen = Get_Generated();
+    function Update_Continuous_Graph(panel){
+      if(panel == 1)
+         var url = Get_Panel1();
+      else if(panel == 2)
+         var url = Get_Panel2();
+      else if(panel == 3)
+         var url = Get_Panel3();
+
 
       var margin = {top: 20, right: 20, bottom: 50, left: 50},
           width = 800 - margin.left - margin.right,
           height = 400 - margin.top - margin.bottom;
 
-      var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse; // for dates like "2014-01-01"
-      //var parseDate = d3.time.format("%Y-%m-%dT00:00:00Z").parse;  // for dates like "2014-01-01T00:00:00Z"
+      var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
       var x = d3.time.scale()
           .range([0, width]);
@@ -387,31 +367,32 @@
 
       var line = d3.svg.line()
           .x(function(d) { return x(d.date); })
-          .y(function(d) { return y(d.cons/1000000); });
+          .y(function(d) { return y(d.cons); });
 
-        d3.json(url_cons, function(error, data) {
-           data.power.forEach(function(d){
-              d.date = parseDate(d.date);
-              d.cons = +d.power;
+
+        d3.json(url, function(error, data) {
+           data.data.forEach(function(d){
+              d.date = parseDate(d.time);
+              d.cons = +d.energy;
          });
 
-        y.domain([d3.min(data.power, function(d) { return d.cons/1000000; }) - 0.01, d3.max(data.power, function(d){return d.cons/1000000;}) + 0.01]);
-        x.domain(d3.extent(data.power, function(d) { return d.date; }));
+        y.domain([d3.min(data.data, function(d) { return d.cons; }) - 0.01, d3.max(data.data, function(d){return d.cons;}) + 0.01]);
+        x.domain(d3.extent(data.data, function(d) { return d.date; }));
 
         var svg = d3.select("body").transition();
 
-           // Make the changes
-               svg.select(".line")   // change the line
+               svg.select(".line")
                    .duration(1000)
-                   .attr("d", line(data.power));
-               svg.select(".x.axis") // change the x axis
+                   .attr("d", line(data.data));
+               svg.select(".x.axis")
                    .duration(1000)
                    .call(xAxis);
-               svg.select(".y.axis") // change the y axis
+               svg.select(".y.axis")
                    .duration(1000)
                    .call(yAxis);
-
-           });
+               svg.select(".title")
+                   .text("Energy Usage over Time (Panel "+ panel + ")");
+          });
     }
 
     function Daily(){
@@ -420,8 +401,8 @@
         $('label[for="to"]').show(500);
         $('#from').show(500);
         $('#to').show(500);
-        $('#DateRange').show(500);
-        $('#DateRangeCont').hide(500);
+        $('.Panel').hide();
+        $('.Panel_Daily').show(500);
 
         var svg = d3.select("body");
         svg.selectAll("svg").remove();
@@ -429,23 +410,17 @@
         daily = true;
         continuous = false;
 
-      //  var url_gen = "http://localhost:8000/api/device/466419817/daily/generated_power/1446537600/1446710400?format=json";
-      //  var url_cons = "http://localhost:8000/api/device/466419817/daily/consumed_power/1446537600/1446710400?format=json";
-
-        var url_gen = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446710400&device=PowerS&granularity=60&list_format=energy";
-        var url_cons = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446710400&device=Panel1&granularity=60&list_format=energy";
+        var url_gen = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446796800&list_format=energy&type=P&device=PowerS&granularity=86400";
+        var url_p1 = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446796800&list_format=energy&type=P&device=Panel1&granularity=86400";
 
         var margin = {top: 20, right: 20, bottom: 70, left: 40},
             width = 600 - margin.left - margin.right,
             height = 300 - margin.top - margin.bottom;
 
-        // Parse the date / time
         var	parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
         var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
         var y = d3.scale.linear().range([height, 0]);
-
-        //var separation = x.rangeBand() / 2;
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -468,32 +443,36 @@
           .attr('class', 'd3-tip')
           .offset([-10, 0])
           .html(function(d) {
-            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons/ 1000000 + " kW</span>";
+            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons + " kW</span>";
           })
 
        var gen_tip = d3.tip()
           .attr('class', 'd3-tip')
           .offset([-10, 0])
           .html(function(d) {
-            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen/ 1000000 + " kW</span>";
+            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen + " kW</span>";
           })
 
           svg.call(use_tip);
           svg.call(gen_tip);
 
           d3.json(url_gen, function(error, data_gen) {
-            d3.json(url_cons, function(error, data_cons) {
-            data_gen.power.forEach(function(d) {
-              d.date_gen = parseDate(d.date);
-              d.gen = +d.power;
-          });
-            data_cons.power.forEach(function(d) {
-              d.date_cons = parseDate(d.date);
-              d.cons = +d.power;
-            });
+            d3.json(url_p1, function(error, data_p1) {
 
-        x.domain(data_cons.power.map(function(d) { return d.date_cons; }));
-        y.domain([0, d3.max(data_cons.power, function(d) { return d.cons / 1000000; })]);
+                  data_gen.data.reverse();
+                  data_p1.data.reverse();
+
+                  data_gen.data.forEach(function(d) {
+                    d.date_gen = parseDate(d.time);
+                    d.gen = +d.energy;
+                  });
+                  data_p1.data.forEach(function(d) {
+                    d.date_p1 = parseDate(d.time);
+                    d.p1 = +d.energy;
+                  });
+
+        x.domain(data_gen.data.map(function(d) { return d.date_gen }));
+        y.domain([0, d3.max(data_gen.data, function(d) { return d.gen; })]);
 
           svg.append("g")
             .attr("class", "x axis")
@@ -516,41 +495,46 @@
             .text("kW");
 
             svg.selectAll("bar")
-            .data(data_gen.power)
+            .data(data_gen.data)
             .enter().append("rect")
             .attr("class", "gen_rect")
-           // .attr("class", "bar")
             .style("fill", "steelblue")
             .attr("x", function(d) { return x(d.date_gen); })
             .attr("width", x.rangeBand() / 2)
-            .attr("y", function(d) { return y(d.gen/1000000); })
-            .attr("height", function(d) { return height - y(d.gen/1000000); })
+            .attr("y", function(d) { return y(d.gen); })
+            .attr("height", function(d) { return height - y(d.gen); })
             .on('mouseover', gen_tip.show)
             .on('mouseout', gen_tip.hide);
 
             svg.selectAll("bar")
-            .data(data_cons.power)
+            .data(data_p1.data)
             .enter().append("rect")
             .attr("class", "cons_rect")
-           // .attr("class", "bar")
             .style("fill", "red")
-            .attr("x", function(d) { return x(d.date_cons) + x.rangeBand()/2; })
+            .attr("x", function(d) { return x(d.date_p1) + x.rangeBand()/2; })
             .attr("width", x.rangeBand()/2)
-            .attr("y", function(d) { return y(d.cons/1000000); })
-            .attr("height", function(d) { return height - y(d.cons/1000000); })
+            .attr("y", function(d) { return y(d.p1); })
+            .attr("height", function(d) { return height - y(d.p1); })
             .on('mouseover', use_tip.show)
             .on('mouseout', use_tip.hide);
+
+      svg.append("text")
+          .attr("x", (width / 2))
+          .attr("y", 0 - (margin.top / 2))
+          .attr("text-anchor", "middle")
+          .style("font-size", "12px")
+          .style("text-decoration", "underline")
+          .text("Daily Energy Usage (Panel 1)");
         });
       });
-
 }
       else{
         $('label[for="from"]').hide(500);
         $('label[for="to"]').hide(500);
         $('#from').hide(500);
         $('#to').hide(500);
-        $('#DateRange').hide(500);
-        $('#DateRangeCont').hide(500);
+        $('.Panel').hide(500);
+        $('.Panel_Daily').hide();
 
         var svg = d3.select("body");
         svg.selectAll("svg").remove();
@@ -562,7 +546,6 @@
 
     function Continuous(){
       if(continuous == false || daily == true){
-      //  console.log("Work in Progress!");
         $('label[for="from"]').show(500);
         $('label[for="to"]').show(500);
         $('#from').hide(500);
@@ -571,6 +554,8 @@
         $('#DateRangeCont').show(500);
         $('#from').show(500);
         $('#to').show(500);
+        $('.Panel').show(500);
+        $('.Panel_Daily').hide();
 
         var svg = d3.select("body");
         svg.selectAll("svg").remove();
@@ -578,22 +563,18 @@
         continuous = true;
         daily = false;
 
-        //var url = "http://localhost:8000/api/device/466419817/daily/generated_power/1446537600/1446710400?format=json";
-        var url = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446710400&device=Panel1&granularity=60&list_format=energy";
+        var url = "http://db.sead.systems:8080/466419817?start_time=1445756400&end_time=1445842800&list_format=energy&type=P&device=Panel1&granularity=60";
 
         var margin = {top: 20, right: 20, bottom: 50, left: 50},
             width = 800 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
-        var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse; // for dates like "2014-01-01"
-        //var parseDate = d3.time.format("%Y-%m-%dT00:00:00Z").parse;  // for dates like "2014-01-01T00:00:00Z"
+        var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
         var x = d3.time.scale()
-        //.domain([new Date(sample_consumed[0].date), d3.time.day.offset(new Date(sample_consumed[sample_consumed.length - 1].date), 1)])
             .range([0, width]);
 
         var y = d3.scale.linear()
-        // .domain([0, d3.max(sample_consumed, function(d) { return +d.power; })])
             .range([height, 0]);
 
         var xAxis = d3.svg.axis()
@@ -606,8 +587,7 @@
 
         var line = d3.svg.line()
             .x(function(d) { return x(d.date); })
-            .y(function(d) { return y(d.cons/1000000); });
-
+            .y(function(d) { return y(d.cons); });
 
         var svg = d3.select("body").append("svg")
           .attr("width", width + margin.left + margin.right)
@@ -616,13 +596,13 @@
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
           d3.json(url, function(error, data) {
-             data.power.forEach(function(d){
-                d.date = parseDate(d.date);
-                d.cons = +d.power;
+             data.data.forEach(function(d){
+                d.date = parseDate(d.time);
+                d.cons = +d.energy;
            });
 
-          y.domain([d3.min(data.power, function(d) { return d.cons/1000000; }) - 0.01, d3.max(data.power, function(d){return d.cons/1000000;}) + 0.01]);
-          x.domain(d3.extent(data.power, function(d) { return d.date; }));
+          y.domain([d3.min(data.data, function(d) { return d.cons; }) - 0.01, d3.max(data.data, function(d){return d.cons;}) + 0.01]);
+          x.domain(d3.extent(data.data, function(d) { return d.date; }));
 
           svg.append("g")
               .attr("class", "x axis")
@@ -640,20 +620,29 @@
               .text("kW");
 
           svg.append("path")
-              .datum(data.power)
+              .datum(data.data)
               .attr("class", "line")
               .attr("d", line);
-          });
 
+          svg.append("text")
+              .attr("class", "title")
+              .attr("x", (width / 2))
+              .attr("y", 0 - (margin.top / 2) + 50)
+              .attr("text-anchor", "middle")
+              .style("font-size", "12px")
+              .style("text-decoration", "underline")
+              .text("Energy Usage over Time (Panel 1)");
+          });
     }
       else{
-      //  console.log("Work in Progress!");
         $('label[for="from"]').hide(500);
         $('label[for="to"]').hide(500);
         $('#from').hide(500);
         $('#to').hide(500);
         $('#DateRange').hide(500);
         $('#DateRangeCont').hide(500);
+        $('.Panel').hide(500);
+        $('.Panel_Daily').hide();
 
         var svg = d3.select("body");
         svg.selectAll("svg").remove();
@@ -666,85 +655,99 @@
    function Get_Generated(){
     var start = getStart();
     var end = getEnd();
-    //console.log(start);
-    //console.log(end);
-
-    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end + "&device=PowerS&granularity=3600&list_format=energy";
-    //console.log(url);
-      //  var svg = d3.select("body");
-      //  svg.selectAll("svg").remove();
-
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=PowerS&granularity=60";
     return url;
    }
 
-   function Get_Consumed(){
+   function Get_Panel1(){
     var start = getStart();
     var end = getEnd();
-    //console.log(start);
-    //console.log(end);
-
-    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end + "&device=Panel1&granularity=3600&list_format=energy";
-    //console.log(url);
-        //var svg = d3.select("body");
-        //svg.selectAll("svg").remove();
-
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel1&granularity=60";
     return url;
    }
-
-   function Get_Minute(){
+   function Get_Panel2(){
     var start = getStart();
     var end = getEnd();
-    //console.log(start);
-    //console.log(end);
-
-    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end + "&device=Panel1&granularity=60&list_format=energy";
-    //console.log(url);
-      //  var svg = d3.select("body");
-      //  svg.selectAll("svg").remove();
-
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel2&granularity=60";
+    return url;
+   }
+   function Get_Panel3(){
+    var start = getStart();
+    var end = getEnd();
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel3&granularity=60";
+    return url;
+   }
+   function Get_Generated_Daily(){
+    var start = getStart();
+    var end = getEnd();
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=PowerS&granularity=86400";
     return url;
    }
 
-    function getStart(){
-        //get dates from datepicker widget
-        var StartDate = $("#from").datepicker( "getDate" );
-        //convert to unix timestamp
-        var startunix = Date.parse(StartDate)/1000;
-        return startunix;
-    }
-    function getEnd(){
-      //get dates from datepicker widget
-      var EndDate = $("#to").datepicker( "getDate" );
-      //convert to unix timestamp
-      var endunix = Date.parse(EndDate)/1000;
-      return endunix;
-    }
+   function Get_Panel1_Daily(){
+    var start = getStart();
+    var end = getEnd();
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel1&granularity=86400";
+    return url;
+   }
+   function Get_Panel2_Daily(){
+    var start = getStart();
+    var end = getEnd();
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel2&granularity=86400";
+    return url;
+   }
+   function Get_Panel3_Daily(){
+    var start = getStart();
+    var end = getEnd();
+    var url = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel3&granularity=86400";
+    return url;
+   }
 
-    //datepicker widget
-    $(function() {
-      $( "#from" ).datepicker({
-        minDate: new Date(2015, 11 - 1, 3 ),
-        maxDate: new Date(2015, 11 - 1, 7 ),
-        //defaultDate: "+1w",
-        //changeMonth: true,
-        //numberOfMonths: 3,
-        onSelect: function(dateText, inst) {
-           var dateAsString = dateText; //the first parameter of this function
-           var StartDate = $(this).datepicker( 'getDate' ); //the getDate method
-        }
-      });
-      $( "#to" ).datepicker({
-        minDate: new Date(2015, 11 - 1, 3 ),
-        maxDate: new Date(2015, 11 - 1, 7 ),
-        //defaultDate: "+1w",
-        //changeMonth: true,
-        //numberOfMonths: 3,
-        onSelect: function(dateText, inst) {
-           var dateAsString = dateText; //the first parameter of this function
-           var EndDate = $(this).datepicker( 'getDate' ); //the getDate method
-        }
-      });
+   function Get_Total_Power(){
+     var start = getStart();
+     var end = getEnd();
+     var panel1 = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel1&granularity=86400";
+     var panel2 = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel2&granularity=86400";
+     var panel3 = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel3&granularity=86400";
+
+     d3.json(panel1.data, function(error, p1data){
+       d3.json(panel2.data, function(error, p2data){
+         d3.json(panel3.data, function(error, p3data){
+
+         });
+       });
+     });
+
+
+   }
+
+  function getStart(){
+      var StartDate = $("#from").datepicker( "getDate" );
+      var startunix = Date.parse(StartDate)/1000;
+      return startunix;
+  }
+
+  function getEnd(){
+    var EndDate = $("#to").datepicker( "getDate" );
+    var endunix = Date.parse(EndDate)/1000;
+    return endunix;
+  }
+
+  //datepicker widget
+  $(function() {
+    $( "#from" ).datepicker({
+      onSelect: function(dateText, inst) {
+         var dateAsString = dateText;
+         var StartDate = $(this).datepicker( 'getDate' );
+      }
     });
+    $( "#to" ).datepicker({
+      onSelect: function(dateText, inst) {
+         var dateAsString = dateText;
+         var EndDate = $(this).datepicker( 'getDate' );
+      }
+    });
+  });
 
     </script>
   </body>
