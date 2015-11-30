@@ -703,24 +703,6 @@
     return url;
    }
 
-   function Get_Total_Power(){
-     var start = getStart();
-     var end = getEnd();
-     var panel1 = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel1&granularity=86400";
-     var panel2 = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel2&granularity=86400";
-     var panel3 = "http://db.sead.systems:8080/466419817?start_time=" + start + "&end_time=" + end +"&list_format=energy&type=P&device=Panel3&granularity=86400";
-
-     d3.json(panel1.data, function(error, p1data){
-       d3.json(panel2.data, function(error, p2data){
-         d3.json(panel3.data, function(error, p3data){
-
-         });
-       });
-     });
-
-
-   }
-
   function getStart(){
       var StartDate = $("#from").datepicker( "getDate" );
       var startunix = Date.parse(StartDate)/1000;
