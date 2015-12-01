@@ -30,25 +30,37 @@ To install the necessary dependencies of this project open a terminal and type t
     pip3 install requests
     ```
 
-4. Install postgresql
+4. Install Django Rest Framework
+
+    ```sh
+    pip3 install djangorestframework
+    ```
+
+5. Install Rest Framework Swagger
+
+    ```sh
+    pip3 install django-rest-swagger
+    ```
+
+6. Install postgresql
 
     ```sh
     brew install postgress
     ```
 
-5. Initialize database
+7. Initialize database
 
     ```sh
     initdb /usr/local/var/postgres
     ```
 
-6. Launch database
+8. Launch database
 
     ```sh
     postgres -D /usr/local/var/postgres
     ```
 
-7. Or configure it to launch as a background process on login
+9. Or configure it to launch as a background process on login
     ```sh
     mkdir -p ~/Library/LaunchAgents
     ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
