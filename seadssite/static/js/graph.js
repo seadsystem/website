@@ -244,8 +244,8 @@ function Update_Daily_Graph(panel) {
 
 function getEvents(panel){
 
-  //var svg = d3.select("body");
-  //svg.select(".EventGraphs").remove();
+  var svg = d3.select("body");
+  svg.select("#EventLine").remove();
 
   var start = getStart();
   var end = getEnd();
@@ -269,18 +269,20 @@ function getEvents(panel){
   var x = d3.time.scale()
       .range([0, width]);
 
+
   var y = d3.scale.linear()
       .range([height, 0]);
 
   var xAxis = d3.svg.axis()
       .scale(x)
-      .orient("bottom");
+      .orient("bottom")
+      .tickFormat(d3.time.format("%Y-%m-%d"));
 
   var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left");
 
-  var svg = d3.select("g")
+  var svg = d3.select("g");
 
   var line = d3.svg.line()
       .x(function(d){
@@ -297,8 +299,7 @@ function getEvents(panel){
           d.val = +d.event;
       });
 
-/*
-      var scale = d3.scale.linear().domain([0, d3.max(data.data, function(d){ return d.val;})]).range([0, 10]);
+      var scale = d3.scale.linear().domain([0, d3.max(data.data, function(d){ return d.val;})]).range([0, 60]);
 
       data.data.forEach(function(d){
         d.val = scale(+d.val);
@@ -310,17 +311,16 @@ function getEvents(panel){
       }) - 0.01, d3.max(data.data, function (d) {
           return d.val;
       }) + 0.01]);
-*/
-      svg.selectAll("circle")
-      .data(data.data).enter()
-      .append("circle")
-      .attr("cx", function (d) { return d.date; })
-      .attr("cy", function (d) { return height/2; })
-      .attr("r", "8px")
-      .attr("fill", "red");
 
+      svg.append("path")
+          .datum(data.data)
+          .attr("class", "line")
+          .attr("id", "EventLine")
+          .style("stroke", "red")
+          .attr("d", line);
 
-    });
+        });
+
   }
 
 function Update_Continuous_Graph(panel) {
@@ -340,6 +340,8 @@ function Update_Continuous_Graph(panel) {
         getEvents(3);
           }
     else if (panel == 4){
+      var svg = d3.select("body");
+      svg.select("#EventLine").remove();
         var url = getEnergyUrl(start, end, "PowerS", 60);
           }
 
