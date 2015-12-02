@@ -16,10 +16,12 @@ $('.Panel_Daily').hide();
 
 $('#daily').hide();
 $('#continuous').hide();
+
+$('#PowerS_Daily').hide();
 //-----------------------------------------------
 
 
-// FIXME theres probably a better alternative to glabals
+// FIXME theres probably a better alternative to globals
 var daily = false;
 var continuous = false;
 
@@ -37,6 +39,7 @@ function Start() {
     $('#continuous').hide(500);
     $('#daily').show(500);
     $('#continuous').show(500);
+    $('#PowerS_Daily').hide();
 
     var svg = d3.select("body");
     svg.selectAll("svg").remove();
@@ -55,13 +58,13 @@ function Update_Daily_Graph(panel) {
     var end = getEnd();
 
     if (panel == 1)
-        var url_cons = getEnergyUrl(start, end, "Panel1", 86400);
+        var url = getEnergyUrl(start, end, "Panel1", 86400);
     else if (panel == 2)
-        var url_cons = getEnergyUrl(start, end, "Panel1", 86400);
+        var url = getEnergyUrl(start, end, "Panel1", 86400);
     else if (panel == 3)
-        var url_cons = getEnergyUrl(start, end, "Panel1", 86400);
-
-    var url_gen = getEnergyUrl(start, end, "PowerS", 86400);
+        var url = getEnergyUrl(start, end, "Panel1", 86400);
+    else if (panel == 4)
+       var url = getEnergyUrl(start, end, "PowerS", 86400);
 
     var margin = {top: 20, right: 20, bottom: 70, left: 40},
         width = 600 - margin.left - margin.right,
@@ -89,44 +92,21 @@ function Update_Daily_Graph(panel) {
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
-    var use_tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons + " kW</span>";
-        })
-
-    var gen_tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen + " kW</span>";
-        })
-
     d3.select("svg")
         .remove();
 
-    svg.call(use_tip);
-    svg.call(gen_tip);
-
-    d3.json(url_gen, function (error, data_gen) {
-        d3.json(url_cons, function (error, data_cons) {
-            data_gen.data.reverse();
-            data_cons.data.reverse();
-            data_gen.data.forEach(function (d) {
-                d.date_gen = parseDate(d.time);
-                d.gen = +d.energy;
-            });
-            data_cons.data.forEach(function (d) {
-                d.date_cons = parseDate(d.time);
+        d3.json(url, function (error, data) {
+            data.data.reverse();
+            data.data.forEach(function (d) {
+                d.date = parseDate(d.time);
                 d.cons = +d.energy;
             });
 
-            x.domain(data_gen.data.map(function (d) {
-                return d.date_gen;
+            x.domain(data.data.map(function (d) {
+                return d.date;
             }));
-            y.domain([0, d3.max(data_gen.data, function (d) {
-                return d.gen;
+            y.domain([0, d3.max(data.data, function (d) {
+                return d.cons;
             })]);
 
             svg.append("g")
@@ -149,79 +129,40 @@ function Update_Daily_Graph(panel) {
                 .style("text-anchor", "end")
                 .text("kW-");
 
-            var gen_bars = svg.selectAll(".gen_rect")
-                .data(data_gen.data, function (d) {
-                    return d.date_gen;
+            var gen_bars = svg.selectAll("rect")
+                .data(data.data, function (d) {
+                    return d.date;
                 });
             gen_bars.enter()
                 .append("rect")
                 .style("fill", "steelblue")
                 .attr("x", function (d) {
-                    return x(d.date_gen);
+                    return x(d.date);
                 })
                 .attr("y", function (d) {
-                    return y(d.gen)
+                    return y(d.cons)
                 })
-                .attr("width", x.rangeBand())
+                .attr("width", function(d){ return x(d.date);})
                 .attr("height", function (d) {
-                    return height - y(d.gen)
+                    return height - y(d.cons)
                 });
 
             //Update rectangles
             gen_bars.transition()
                 .duration(1000)
                 .attr("x", function (d) {
-                    return x(d.date_gen);
+                    return x(d.date);
                 })
                 .attr("y", function (d) {
-                    return y(d.gen)
+                    return y(d.cons)
                 })
-                .attr("width", x.rangeBand() / 2)
+                .attr("width", x.rangeBand() )
                 .attr("height", function (d) {
-                    return height - y(d.gen)
+                    return height - y(d.cons)
                 });
 
             //Exit rectangles
             gen_bars.exit()
-                .transition()
-                .duration(500)
-                .attr("x", width)
-                .remove();
-
-            var cons_bars = svg.selectAll(".cons_rect")
-                .data(data_cons.data, function (d) {
-                    return d.date_cons;
-                });
-            cons_bars.enter()
-                .append("rect")
-                .style("fill", "red")
-                .attr("x", function (d) {
-                    return x(d.date_cons) + x.rangeBand() / 2;
-                })
-                .attr("y", function (d) {
-                    return y(d.cons)
-                })
-                .attr("width", x.rangeBand() / 2)
-                .attr("height", function (d) {
-                    return height - y(d.cons)
-                });
-
-            //Update rectangles
-            cons_bars.transition()
-                .duration(1000)
-                .attr("x", function (d) {
-                    return x(d.date_cons) + x.rangeBand() / 2;
-                })
-                .attr("y", function (d) {
-                    return y(d.cons)
-                })
-                .attr("width", x.rangeBand() / 2)
-                .attr("height", function (d) {
-                    return height - y(d.cons)
-                });
-
-            //Exit rectangles
-            cons_bars.exit()
                 .transition()
                 .duration(500)
                 .attr("x", width)
@@ -234,24 +175,114 @@ function Update_Daily_Graph(panel) {
                 .style("font-size", "12px")
                 .style("text-decoration", "underline")
                 .text("Daily Energy Usage (Panel " + panel + ")");
-
         });
-    });
 }
 
 /* FIXME: this can be combined with Update_Daily_Graph(), Daily(), and Continuous() for more readability and code
    reuse */
+
+function getEvents(panel){
+
+  var svg = d3.select("body");
+  svg.select("#EventLine").remove();
+
+  var start = getStart();
+  var end = getEnd();
+
+  if (panel == 1){
+      var url = getEventUrl(start, end, "Panel1");
+        }
+  else if (panel == 2){
+      var url = getEventUrl(start, end, "Panel2");
+        }
+  else if (panel == 3){
+      var url = getEventUrl(start, end, "Panel3");
+        }
+
+  var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+
+  var margin = {top: 20, right: 20, bottom: 50, left: 50},
+      width = 800 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+
+  var x = d3.time.scale()
+      .range([0, width]);
+
+
+  var y = d3.scale.linear()
+      .range([height, 0]);
+
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .tickFormat(d3.time.format("%Y-%m-%d"));
+
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+
+  var svg = d3.select("g");
+
+  var line = d3.svg.line()
+      .x(function(d){
+        return x(d.date);
+      })
+      .y(function (d) {
+          return y(d.val);
+      });
+
+  d3.json(url, function (error, data) {
+      data.data.reverse();
+      data.data.forEach(function (d) {
+          d.date = parseDate(d.time);
+          d.val = +d.event;
+      });
+
+      var scale = d3.scale.linear().domain([0, d3.max(data.data, function(d){ return d.val;})]).range([0, 60]);
+
+      data.data.forEach(function(d){
+        d.val = scale(+d.val);
+      });
+
+      x.domain(d3.extent(data.data, function(d) { return d.date; }));
+      y.domain([d3.min(data.data, function (d) {
+          return d.val;
+      }) - 0.01, d3.max(data.data, function (d) {
+          return d.val;
+      }) + 0.01]);
+
+      svg.append("path")
+          .datum(data.data)
+          .attr("class", "line")
+          .attr("id", "EventLine")
+          .style("stroke", "red")
+          .attr("d", line);
+
+        });
+
+  }
+  /* FIXME: The getEvents() method is commented out due to lack of functionality */
 function Update_Continuous_Graph(panel) {
     var start = getStart();
     var end = getEnd();
 
-    if (panel == 1)
+    if (panel == 1){
         var url = getEnergyUrl(start, end, "Panel1", 60);
-    else if (panel == 2)
+        //getEvents(1);
+          }
+    else if (panel == 2){
         var url = getEnergyUrl(start, end, "Panel2", 60);
-    else if (panel == 3)
+        //getEvents(2);
+          }
+    else if (panel == 3){
         var url = getEnergyUrl(start, end, "Panel3", 60);
-
+        //getEvents(3);
+          }
+    else if (panel == 4){
+      var svg = d3.select("body");
+      svg.select("#EventLine").remove();
+        var url = getEnergyUrl(start, end, "PowerS", 60);
+          }
 
     var margin = {top: 20, right: 20, bottom: 50, left: 50},
         width = 800 - margin.left - margin.right,
@@ -278,9 +309,8 @@ function Update_Continuous_Graph(panel) {
             return x(d.date);
         })
         .y(function (d) {
-            return y(d.cons);
+            return y(d.cons * 60);
         });
-
 
     d3.json(url, function (error, data) {
         data.data.forEach(function (d) {
@@ -289,9 +319,9 @@ function Update_Continuous_Graph(panel) {
         });
 
         y.domain([d3.min(data.data, function (d) {
-            return d.cons;
+            return d.cons * 60;
         }) - 0.01, d3.max(data.data, function (d) {
-            return d.cons;
+            return d.cons * 60;
         }) + 0.01]);
         x.domain(d3.extent(data.data, function (d) {
             return d.date;
@@ -324,6 +354,7 @@ function Daily() {
     $('#to').show(500);
     $('.Panel').hide();
     $('.Panel_Daily').show(500);
+    $('#PowerS_Daily').show(500);
     //-----------------------------------------------
 
     var svg = d3.select("body");
@@ -359,24 +390,7 @@ function Daily() {
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
-    var use_tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons + " kW</span>";
-        })
-
-    var gen_tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen + " kW</span>";
-        })
-
-    svg.call(use_tip);
-    svg.call(gen_tip);
 }
-
 /* FIXME: this can be combined with Update_Continuous_Graph(), Update_Daily_Graph(), and Daily() for more readability and code
    reuse */
 function Continuous() {
@@ -392,6 +406,7 @@ function Continuous() {
     $('#to').show(500);
     $('.Panel').show(500);
     $('.Panel_Daily').hide();
+    $('#PowerS_Daily').hide();
     //-----------------------------------------------
 
     var svg = d3.select("body");
@@ -400,6 +415,9 @@ function Continuous() {
     // FIXME theres probably a better alternative to glabals
     continuous = true;
     daily = false;
+
+   //sample url for beginning line graph. Transitions in Update_Continuous_Graph() will not work otherwise.
+    var url = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446796800&list_format=energy&type=P&device=Panel1&granularity=60";
 
     var margin = {top: 20, right: 20, bottom: 50, left: 50},
         width = 800 - margin.left - margin.right,
@@ -421,19 +439,34 @@ function Continuous() {
         .scale(y)
         .orient("left");
 
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
     var line = d3.svg.line()
         .x(function (d) {
             return x(d.date);
         })
         .y(function (d) {
             return y(d.cons);
-        });
+    });
 
-    var svg = d3.select("body").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    d3.json(url, function (error, data) {
+      data.data.forEach(function (d) {
+          d.date = parseDate(d.time);
+          d.cons = +d.energy;
+      });
+
+      y.domain([d3.min(data.data, function (d) {
+          return d.cons;
+      }) - 0.01, d3.max(data.data, function (d) {
+          return d.cons;
+      }) + 0.01]);
+      x.domain(d3.extent(data.data, function (d) {
+          return d.date;
+      }));
 
     svg.append("g")
         .attr("class", "x axis")
@@ -451,6 +484,7 @@ function Continuous() {
         .text("kW");
 
     svg.append("path")
+        .datum(data.data)
         .attr("class", "line")
         .attr("d", line);
 
@@ -462,6 +496,9 @@ function Continuous() {
         .style("font-size", "12px")
         .style("text-decoration", "underline")
         .text("Energy Usage over Time (Panel 1)");
+
+      });
+
 }
 
 function getEnergyUrl(start, end, device, granularity) {
@@ -469,6 +506,14 @@ function getEnergyUrl(start, end, device, granularity) {
     var deviceId = pathArray[2];
     return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + device + "&granularity=" + granularity;
 }
+
+
+function getEventUrl(start, end, device) {
+    var pathArray = window.location.pathname.split( '/' );
+    var deviceId = pathArray[2];
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=event&events=1.5&type=P&device=" + device;
+}
+
 
 function getStart() {
     var StartDate = $("#from").datepicker("getDate");
