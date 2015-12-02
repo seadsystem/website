@@ -16,6 +16,8 @@ $('.Panel_Daily').hide();
 
 $('#daily').hide();
 $('#continuous').hide();
+
+$('#PowerS_Daily').hide();
 //-----------------------------------------------
 
 
@@ -37,6 +39,7 @@ function Start() {
     $('#continuous').hide(500);
     $('#daily').show(500);
     $('#continuous').show(500);
+    $('#PowerS_Daily').hide();
 
     var svg = d3.select("body");
     svg.selectAll("svg").remove();
@@ -55,13 +58,13 @@ function Update_Daily_Graph(panel) {
     var end = getEnd();
 
     if (panel == 1)
-        var url_cons = getEnergyUrl(start, end, "Panel1", 86400);
+        var url = getEnergyUrl(start, end, "Panel1", 86400);
     else if (panel == 2)
-        var url_cons = getEnergyUrl(start, end, "Panel1", 86400);
+        var url = getEnergyUrl(start, end, "Panel1", 86400);
     else if (panel == 3)
-        var url_cons = getEnergyUrl(start, end, "Panel1", 86400);
-
-    var url_gen = getEnergyUrl(start, end, "PowerS", 86400);
+        var url = getEnergyUrl(start, end, "Panel1", 86400);
+    else if (panel == 4)
+       var url = getEnergyUrl(start, end, "PowerS", 86400);
 
     var margin = {top: 20, right: 20, bottom: 70, left: 40},
         width = 600 - margin.left - margin.right,
@@ -89,44 +92,21 @@ function Update_Daily_Graph(panel) {
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
-    var use_tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons + " kW</span>";
-        })
-
-    var gen_tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen + " kW</span>";
-        })
-
     d3.select("svg")
         .remove();
 
-    svg.call(use_tip);
-    svg.call(gen_tip);
-
-    d3.json(url_gen, function (error, data_gen) {
-        d3.json(url_cons, function (error, data_cons) {
-            data_gen.data.reverse();
-            data_cons.data.reverse();
-            data_gen.data.forEach(function (d) {
-                d.date_gen = parseDate(d.time);
-                d.gen = +d.energy;
-            });
-            data_cons.data.forEach(function (d) {
-                d.date_cons = parseDate(d.time);
+        d3.json(url, function (error, data) {
+            data.data.reverse();
+            data.data.forEach(function (d) {
+                d.date = parseDate(d.time);
                 d.cons = +d.energy;
             });
 
-            x.domain(data_gen.data.map(function (d) {
-                return d.date_gen;
+            x.domain(data.data.map(function (d) {
+                return d.date;
             }));
-            y.domain([0, d3.max(data_gen.data, function (d) {
-                return d.gen;
+            y.domain([0, d3.max(data.data, function (d) {
+                return d.cons;
             })]);
 
             svg.append("g")
@@ -149,79 +129,40 @@ function Update_Daily_Graph(panel) {
                 .style("text-anchor", "end")
                 .text("kW-");
 
-            var gen_bars = svg.selectAll(".gen_rect")
-                .data(data_gen.data, function (d) {
-                    return d.date_gen;
+            var gen_bars = svg.selectAll("rect")
+                .data(data.data, function (d) {
+                    return d.date;
                 });
             gen_bars.enter()
                 .append("rect")
                 .style("fill", "steelblue")
                 .attr("x", function (d) {
-                    return x(d.date_gen);
+                    return x(d.date);
                 })
                 .attr("y", function (d) {
-                    return y(d.gen)
+                    return y(d.cons)
                 })
-                .attr("width", x.rangeBand())
+                .attr("width", function(d){ return x(d.date);})
                 .attr("height", function (d) {
-                    return height - y(d.gen)
+                    return height - y(d.cons)
                 });
 
             //Update rectangles
             gen_bars.transition()
                 .duration(1000)
                 .attr("x", function (d) {
-                    return x(d.date_gen);
+                    return x(d.date);
                 })
                 .attr("y", function (d) {
-                    return y(d.gen)
+                    return y(d.cons)
                 })
-                .attr("width", x.rangeBand() / 2)
+                .attr("width", x.rangeBand() )
                 .attr("height", function (d) {
-                    return height - y(d.gen)
+                    return height - y(d.cons)
                 });
 
             //Exit rectangles
             gen_bars.exit()
-                .transition()
-                .duration(500)
-                .attr("x", width)
-                .remove();
-
-            var cons_bars = svg.selectAll(".cons_rect")
-                .data(data_cons.data, function (d) {
-                    return d.date_cons;
-                });
-            cons_bars.enter()
-                .append("rect")
-                .style("fill", "red")
-                .attr("x", function (d) {
-                    return x(d.date_cons) + x.rangeBand() / 2;
-                })
-                .attr("y", function (d) {
-                    return y(d.cons)
-                })
-                .attr("width", x.rangeBand() / 2)
-                .attr("height", function (d) {
-                    return height - y(d.cons)
-                });
-
-            //Update rectangles
-            cons_bars.transition()
-                .duration(1000)
-                .attr("x", function (d) {
-                    return x(d.date_cons) + x.rangeBand() / 2;
-                })
-                .attr("y", function (d) {
-                    return y(d.cons)
-                })
-                .attr("width", x.rangeBand() / 2)
-                .attr("height", function (d) {
-                    return height - y(d.cons)
-                });
-
-            //Exit rectangles
-            cons_bars.exit()
                 .transition()
                 .duration(500)
                 .attr("x", width)
@@ -234,9 +175,7 @@ function Update_Daily_Graph(panel) {
                 .style("font-size", "12px")
                 .style("text-decoration", "underline")
                 .text("Daily Energy Usage (Panel " + panel + ")");
-
         });
-    });
 }
 
 /* FIXME: this can be combined with Update_Daily_Graph(), Daily(), and Continuous() for more readability and code
@@ -322,22 +261,22 @@ function getEvents(panel){
         });
 
   }
-
+  /* FIXME: The getEvents() method is commented out due to lack of functionality */
 function Update_Continuous_Graph(panel) {
     var start = getStart();
     var end = getEnd();
 
     if (panel == 1){
         var url = getEnergyUrl(start, end, "Panel1", 60);
-        getEvents(1);
+        //getEvents(1);
           }
     else if (panel == 2){
         var url = getEnergyUrl(start, end, "Panel2", 60);
-        getEvents(2);
+        //getEvents(2);
           }
     else if (panel == 3){
         var url = getEnergyUrl(start, end, "Panel3", 60);
-        getEvents(3);
+        //getEvents(3);
           }
     else if (panel == 4){
       var svg = d3.select("body");
@@ -372,7 +311,6 @@ function Update_Continuous_Graph(panel) {
         .y(function (d) {
             return y(d.cons * 60);
         });
-
 
     d3.json(url, function (error, data) {
         data.data.forEach(function (d) {
@@ -416,6 +354,7 @@ function Daily() {
     $('#to').show(500);
     $('.Panel').hide();
     $('.Panel_Daily').show(500);
+    $('#PowerS_Daily').show(500);
     //-----------------------------------------------
 
     var svg = d3.select("body");
@@ -451,24 +390,7 @@ function Daily() {
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
-    var use_tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Power Consumed:</strong> <span style='color:red'>" + d.cons + " kW</span>";
-        })
-
-    var gen_tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Power Generated:</strong> <span style='color:red'>" + d.gen + " kW</span>";
-        })
-
-    svg.call(use_tip);
-    svg.call(gen_tip);
 }
-
 /* FIXME: this can be combined with Update_Continuous_Graph(), Update_Daily_Graph(), and Daily() for more readability and code
    reuse */
 function Continuous() {
@@ -484,6 +406,7 @@ function Continuous() {
     $('#to').show(500);
     $('.Panel').show(500);
     $('.Panel_Daily').hide();
+    $('#PowerS_Daily').hide();
     //-----------------------------------------------
 
     var svg = d3.select("body");
@@ -493,6 +416,7 @@ function Continuous() {
     continuous = true;
     daily = false;
 
+   //sample url for beginning line graph. Transitions in Update_Continuous_Graph() will not work otherwise.
     var url = "http://db.sead.systems:8080/466419817?start_time=1446537600&end_time=1446796800&list_format=energy&type=P&device=Panel1&granularity=60";
 
     var margin = {top: 20, right: 20, bottom: 50, left: 50},
@@ -582,6 +506,8 @@ function getEnergyUrl(start, end, device, granularity) {
     var deviceId = pathArray[2];
     return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + device + "&granularity=" + granularity;
 }
+
+
 function getEventUrl(start, end, device) {
     var pathArray = window.location.pathname.split( '/' );
     var deviceId = pathArray[2];
