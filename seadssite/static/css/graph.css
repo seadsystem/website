@@ -30,6 +30,11 @@ body {
     shape-rendering: crispEdges;
 }
 
+.dot{
+  stroke: #000;
+  fill: red;
+}
+
 .x.axis path {
     display: none;
 }
