@@ -6,4 +6,5 @@ urlpatterns = patterns('seadssite',
                        url(r'^dashboard/$', v.DashboardView),
                        url(r'^dashboard/[0-9]+/$', 'views.graph', name='graph'),
                        url(r'^dashboard/[0-9]+/appliances/$', v.DevicesView),
+                       url(r'^register/', v.register),
                        url(r'^help/$', v.help),)
