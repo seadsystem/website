@@ -16772,18 +16772,34 @@ var chart1 = null;
 function generate_chart1(data) {
     c3.generate({
     bindto: '#chart2',
-    data: {       
+    data: { 
+        x: 'x',
+        xFormat: '%Y-%m-%d %H:%M:%S',   
         columns: [
-            ['data:'].concat(data.data.map(
+            ['x'].concat(data.data.map(
+                function(x) {
+                    return x.time;
+                }
+            )),
+
+            ['data'].concat(data.data.map(
                 function(x) {
                     return x.energy;
                 }
             ))
         ]
-        }
+    },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    // this also works for non timeseries data
+                    format: '%m-%d %H:%M'
+                }
+            }
+        }    
     });
 }
-
 
 
 
