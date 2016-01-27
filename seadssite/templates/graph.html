@@ -2,29 +2,30 @@
 {% load staticfiles %}
 {% block content %}
 
-    <html>
-    <meta charset="utf-8">
-    <head>
-        <link rel="stylesheet" type="text/css" href="{% static "css/graph.css" %}">
-        <script src="{% static "js/bundle.js" %}"></script>
+<html>
+  <meta charset="utf-8">
+  <head>
+    <link rel="stylesheet" type="text/css" href="{% static "css/graph.css" %}">
+    <script src="{% static "js/bundle.js" %}"></script>
 
-    </head>
+  </head>
 
-    <body>
+  <body>
 
 
     <div id="chart"></div>
 
     <div align="center" class="wrap">
-        <div class="btn" id="daily" title="View Daily Energy Usage">
-            <input  id="daily_button"
-                    name="Daily Usage"
-                    type="button"
-                    value="Daily Usage"/>
-        </div>
+      <div class="btn" id="daily" title="View Daily Energy Usage">
+        <input  id="daily_button"
+                name="Daily Usage"
+                type="button"
+                value="Daily Usage"/>
+      </div>
 
-        <input type="text" id="datepicker">
-
-    </body>
-    </html>
+      <input type="text" id="datepicker">
+    </div>
+      
+  </body>
+</html>
 {% endblock %}
