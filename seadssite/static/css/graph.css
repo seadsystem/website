@@ -39,7 +39,7 @@
 
 /*-- Line --*/
 .c3-line {
-  stroke-width: 1px; }
+  stroke-width: 2px; }
 
 /*-- Point --*/
 .c3-circle._expanded_ {
@@ -62,7 +62,7 @@
   opacity: 1; }
 
 .c3-target.c3-focused path.c3-line, .c3-target.c3-focused path.c3-step {
-  stroke-width: 2px; }
+  stroke-width: 3px; }
 
 .c3-target.c3-defocused {
   opacity: 0.3 !important; }

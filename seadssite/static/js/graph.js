@@ -57,12 +57,15 @@ function generate_day_chart(data) {
                 }
             )),
 
-            ['energy (kW)'].concat(data.data.map(
+            ['energy'].concat(data.data.map(
                 function(x) {
                     return x.energy;
                 }
             ))
-        ]
+        ], 
+        types: {
+            energy: 'area',
+        }
     },
         axis: {
             x: {
