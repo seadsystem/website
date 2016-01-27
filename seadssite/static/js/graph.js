@@ -4,24 +4,30 @@ var c3 = require('c3');
 
 //var url = "http://db.sead.systems:8080/466419818?start_time=1446537600&end_time=1446624000&list_format=energy&type=P&device=Panel1&granularity=3600";
 
-function create_url(date) {
-    if (!date) {
-        date = Date.now();
-        var end = Math.floor(date / 1000);
-        var start = end - 86400;
-    } else {
-        var start = Math.floor(date / 1000);
-        var end = start + 86400;
-    }
-    return "http://db.sead.systems:8080/" + "466419818" + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel1" + "&granularity=" + "3600";
+function create_url(start, end) {
+    var num_nodes = 100;
+    var granularity = Math.ceil((end-start)/num_nodes);
+    return "http://db.sead.systems:8080/" + "466419818" + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel1" + "&granularity=" + granularity;
  
 }
 
 function date_picker(event) {
     var date = $("#datepicker").datepicker("getDate");
-    get_graph_data(create_url(date));
+
+    var start = Math.floor(date / 1000);
+    var end = start + 86400;
+    get_graph_data(create_url(start, end));
 }
 
+function range_picker(event) {
+    var startDate = $("#start").data("DateTimePicker").getDate();
+    var endDate = $("#end").data("DateTimePicker").getDate();
+
+    var start = Math.floor(startDate / 1000);
+    var end = Math.floor(endDate / 1000);
+
+    get_graph_data( create_url(start, end) );
+}
 
 function get_graph_data(url) {
     var test_request = new XMLHttpRequest();
@@ -82,8 +88,16 @@ function generate_day_chart(data) {
 $(document).ready(function() {
     //onload
     $("#daily_button").on("click", date_picker);
-    $("#datepicker").datepicker()
-    get_graph_data(create_url());
+    $("#datepicker").datepicker();
+
+    $("#range_button").on("click", range_picker);
+    $("#start").datetimepicker();
+    $("#end").datetimepicker();
+
+    var date = Date.now();
+    var end = Math.floor(date / 1000);
+    var start = end - 86400;
+    get_graph_data( create_url(start, end) );
 });
 //var pie = c3.generate({
 //     bindto: '#chart2',
