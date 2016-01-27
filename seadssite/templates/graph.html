@@ -6,19 +6,24 @@
     <meta charset="utf-8">
     <head>
         <link rel="stylesheet" type="text/css" href="{% static "css/graph.css" %}">
+        <script src="{% static "js/bundle.js" %}"></script>
+
     </head>
 
     <body>
 
 
-    <div id="chart2"></div>
     <div id="chart"></div>
 
+    <div align="center" class="wrap">
+        <div class="btn" id="daily" title="View Daily Energy Usage">
+            <input  id="daily_button"
+                    name="Daily Usage"
+                    type="button"
+                    value="Daily Usage"/>
+        </div>
 
-
-
-    <script src="{% static "js/bundle.js" %}"></script>
-
+        <input type="text" id="datepicker">
 
     </body>
     </html>
