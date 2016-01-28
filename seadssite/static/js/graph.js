@@ -2,7 +2,8 @@
 
 var c3 = require('c3');
 
-var DAY_SECONDS = 60*60*24;
+var HOUR_SECONDS = 60*60;
+var DAY_SECONDS = HOUR_SECONDS*24;
 
 //var url = "http://db.sead.systems:8080/466419818?start_time=1446537600&end_time=1446624000&list_format=energy&type=P&device=Panel1&granularity=3600";
 
@@ -13,7 +14,23 @@ function create_url(start, end) {
     return "http://db.sead.systems:8080/" + "466419818" + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel1" + "&granularity=" + granularity;
 }
 
-function pick_daily(event) {
+var repeater = null;
+//repeat in ms
+function pick(func, repeat) {
+    if (repeater) {
+	clearInterval(repeater);
+	repeater = null;
+    }
+    if (repeat) {
+	repeater = setInterval(func, repeat);
+    }
+    func();
+}
+function make_picker(func, repeat) {
+    return function(event) {return pick(func, repeat);};
+}
+
+function pick_daily() {
     var date = $("#daily-date").datepicker("getDate");
 
     var start = Math.floor(date / 1000);
@@ -21,13 +38,21 @@ function pick_daily(event) {
     fetch_graph(create_url(start, end));
 }
 
-function pick_range(event) {
+function pick_range() {
     var startDate = $("#range-start").data("DateTimePicker").getDate();
     var endDate = $("#range-end").data("DateTimePicker").getDate();
 
     var start = Math.floor(startDate / 1000);
     var end = Math.floor(endDate / 1000);
 
+    fetch_graph(create_url(start, end));
+}
+
+function pick_live() {
+    //console.log("test");
+    
+    var end = Math.floor(Date.now()/1000);
+    var start = end - HOUR_SECONDS;
     fetch_graph(create_url(start, end));
 }
 
@@ -87,17 +112,16 @@ function generate_chart(data) {
 
 $(document).ready(function() {
     //onload
-    $("#daily-button").on("click", pick_daily);
+    $("#live-button").on("click", make_picker(pick_live, 10*1000));
+
+    $("#daily-button").on("click", make_picker(pick_daily));
     $("#daily-date").datepicker();
 
-    $("#range-button").on("click", pick_range);
+    $("#range-button").on("click", make_picker(pick_range));
     $("#range-start").datetimepicker();
     $("#range-end").datetimepicker();
 
-    var date = Date.now();
-    var end = Math.floor(date / 1000);
-    var start = end - DAY_SECONDS;
-    fetch_graph(create_url(start, end));
+    pick(pick_live, 10*1000);
 });
 //var pie = c3.generate({
 //     bindto: '#chart2',
