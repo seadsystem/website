@@ -2,78 +2,78 @@
 
 var c3 = require('c3');
 
+var DAY_SECONDS = 60*60*24;
+
 //var url = "http://db.sead.systems:8080/466419818?start_time=1446537600&end_time=1446624000&list_format=energy&type=P&device=Panel1&granularity=3600";
 
 function create_url(start, end) {
-    var num_nodes = 100;
+    var num_nodes = 250;
     var granularity = Math.ceil((end-start)/num_nodes);
+    //console.log(granularity)
     return "http://db.sead.systems:8080/" + "466419818" + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel1" + "&granularity=" + granularity;
- 
 }
 
-function date_picker(event) {
-    var date = $("#datepicker").datepicker("getDate");
+function pick_daily(event) {
+    var date = $("#daily-date").datepicker("getDate");
 
     var start = Math.floor(date / 1000);
-    var end = start + 86400;
-    get_graph_data(create_url(start, end));
+    var end = start + DAY_SECONDS;
+    fetch_graph(create_url(start, end));
 }
 
-function range_picker(event) {
-    var startDate = $("#start").data("DateTimePicker").getDate();
-    var endDate = $("#end").data("DateTimePicker").getDate();
+function pick_range(event) {
+    var startDate = $("#range-start").data("DateTimePicker").getDate();
+    var endDate = $("#range-end").data("DateTimePicker").getDate();
 
     var start = Math.floor(startDate / 1000);
     var end = Math.floor(endDate / 1000);
 
-    get_graph_data( create_url(start, end) );
+    fetch_graph(create_url(start, end));
 }
 
-function get_graph_data(url) {
-    var test_request = new XMLHttpRequest();
-    test_request.onreadystatechange = function() {
-        //console.log(test_request.readyState);
-        if (test_request.readyState == XMLHttpRequest.DONE) {
-            if (test_request.status == 200) {
-                //console.log(test_request.responseText);
-                generate_day_chart(JSON.parse(test_request.responseText));
+function fetch_graph(url) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+        //console.log(request.readyState);
+        if (request.readyState == XMLHttpRequest.DONE) {
+            if (request.status == 200) { //200 OK
+                //console.log(request.responseText);
+                generate_chart(JSON.parse(request.responseText));
             } else {
                 console.log("it broke");
             }
         }
     };
 
-
-    test_request.open("GET", url, true);
-    test_request.send();
+    request.open("GET", url, true);
+    request.send();
 }
 
 var chart1 = null;
 
-function generate_day_chart(data) {
+function generate_chart(data) {
     c3.generate({
-    bindto: '#chart',
-    data: { 
-        x: 'x',
-        xFormat: '%Y-%m-%d %H:%M:%S',   
-        columns: [
-            ['x'].concat(data.data.map(
-                function(x) {
-                    return x.time;
-                }
-            )),
-
-            ['energy'].concat(data.data.map(
-                function(x) {
-                    return x.energy;
-                }
-            ))
-        ], 
-        types: {
-            energy: 'area',
-        }
-    },
-        axis: {
+	bindto: '#chart',
+	data: { 
+            x: 'x',
+            xFormat: '%Y-%m-%d %H:%M:%S',   
+            columns: [
+		['x'].concat(data.data.map(
+                    function(x) {
+			return x.time;
+                    }
+		)),
+		['energy'].concat(data.data.map(
+                    function(x) {
+			return x.energy;
+                    }
+		))
+            ], 
+            types: {
+		energy: 'area',
+            }
+	},
+	axis: {
             x: {
                 type: 'timeseries',
                 tick: {
@@ -87,17 +87,17 @@ function generate_day_chart(data) {
 
 $(document).ready(function() {
     //onload
-    $("#daily_button").on("click", date_picker);
-    $("#datepicker").datepicker();
+    $("#daily-button").on("click", pick_daily);
+    $("#daily-date").datepicker();
 
-    $("#range_button").on("click", range_picker);
-    $("#start").datetimepicker();
-    $("#end").datetimepicker();
+    $("#range-button").on("click", pick_range);
+    $("#range-start").datetimepicker();
+    $("#range-end").datetimepicker();
 
     var date = Date.now();
     var end = Math.floor(date / 1000);
-    var start = end - 86400;
-    get_graph_data( create_url(start, end) );
+    var start = end - DAY_SECONDS;
+    fetch_graph(create_url(start, end));
 });
 //var pie = c3.generate({
 //     bindto: '#chart2',

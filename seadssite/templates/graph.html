@@ -11,31 +11,26 @@
   </head>
 
   <body>
-
-
     <div id="chart"></div>
 
-    <div align="center" class="wrap">
-      <div class="btn" id="daily" title="View Daily Energy Usage">
-        <input  id="daily_button"
-                name="Daily Usage"
-                type="button"
-                value="Daily Usage"/>
-      </div>
+    <div align="center" class="wrap" id="chart-controls">
 
-      <input type="text" id="datepicker">
-    </div>
-    <div align="center" class="wrap">
-      <div class="btn" id="range" title="View Range Energy Usage">
-        <input  id="range_button"
-                name="Select Range"
-                type="button"
-                value="Select Range"/>
+      <div class="chart-control">
+        <input  id="daily-button"
+                value="Daily Usage"
+                type="button"/>
+	<input type="text" id="daily-date">
       </div>
-
-      <input type="text" id="start">      
-      <input type="text" id="end">
+      
+      <div class="chart-control">
+	<input  id="range-button"
+                value="Select Range"
+                type="button"/>
+	<input type="text" id="range-start">      
+	<input type="text" id="range-end">
+      </div>
     </div>
+    
   </body>
 </html>
 {% endblock %}
