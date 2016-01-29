@@ -11,8 +11,11 @@ function create_url(start, end) {
     var num_nodes = 250;
     var granularity = Math.ceil((end-start)/num_nodes);
     //console.log(granularity)
-    return "http://db.sead.systems:8080/" + "466419818" + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel1" + "&granularity=" + granularity;
+    var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
+    var deviceId = pathArray[2];
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel1" + "&granularity=" + granularity;
 }
+
 
 var repeater = null;
 //repeat in ms
@@ -112,7 +115,7 @@ function generate_chart(data) {
 
 $(document).ready(function() {
     //onload
-    $("#live-button").on("click", make_picker(pick_live, 10*1000));
+    $("#live-button").on("click", make_picker(pick_live, 60*1000));
 
     $("#daily-button").on("click", make_picker(pick_daily));
     $("#daily-date").datepicker();
@@ -123,44 +126,4 @@ $(document).ready(function() {
 
     pick(pick_live, 10*1000);
 });
-//var pie = c3.generate({
-//     bindto: '#chart2',
-//     data: {
-//         // iris data from R
-//         columns: [
-//             ['data1', 30],
-//             ['data2', 120],
-//         ],
-//         type : 'pie',
-//         onclick: function (d, i) { console.log("onclick", d, i); },
-//         onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-//         onmouseout: function (d, i) { console.log("onmouseout", d, i); }
-//     }
-// });
-
-
-
-// function generate_chart(data) {
-//     //console.log(data.data);
-//     c3.generate({
-//         data: {
-//             json: [
-//                data.data
-//             ],
-//             keys: {
-//                 // x: 'name', // it's possible to specify 'x' when category axis
-//                 value: ['energy', 'time'],
-//             }
-//         },
-//         axis: {
-//             x: {
-//                 type: 'timeseries',
-//                 tick: {
-//                     // this also works for non timeseries data
-//                     values: ['2013-01-05', '2013-01-10']
-//                 }
-//             }
-//         }
-//     });
-// }
 
