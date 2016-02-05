@@ -91,7 +91,7 @@ psql -d postgres
 
 #### The rest of these instructions are the same on OSX and Ubuntu
 
-# NOTE: psql folds all identifiers to lowercase! CREATE USER myUsername will actually create a user called "myusername"
+NOTE: psql folds all identifiers to lowercase! CREATE USER myUsername will actually create a user called "myusername"
 
 ```sh
 $ psql
