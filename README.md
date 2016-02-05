@@ -91,17 +91,19 @@ psql -d postgres
 
 #### The rest of these instructions are the same on OSX and Ubuntu
 
+# NOTE: psql folds all identifiers to lowercase! CREATE USER myUsername will actually create a user called "myusername"
+
 ```sh
 $ psql
-> CREATE DATABASE myDB;
+> CREATE DATABASE mydb;
 ```
 Next, create your username and password( keep the single quotes around 'myPassword'):
 ```sh
-> CREATE USER myUsername WITH PASSWORD 'myPassword';
+> CREATE USER myusername WITH PASSWORD 'myPassword';
 ```
 You should also be sure to explicitly grant all priveleges to your new user:
 ```sh
-GRANT ALL PRIVILEGES ON DATABASE myDB TO myUsername;
+GRANT ALL PRIVILEGES ON DATABASE mydb TO myusername;
 ```
 Now, quit out of psql:
 ```sh
@@ -115,8 +117,8 @@ Now, we can configure the Django server in this repository to work with your myD
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'myDB',
-        'USER': 'myUsername',
+        'NAME': 'mydb',
+        'USER': 'myusername',
         'PASSWORD': 'myPassword',
         'HOST': 'localhost',
         'PORT': '',

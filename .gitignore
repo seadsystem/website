@@ -4,4 +4,5 @@ __pycache__
 __pycache__/*sgitgit
 __pycache__/*.*
 *.pyc
+SeadsFront/settings.py
 *~
