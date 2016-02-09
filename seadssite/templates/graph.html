@@ -7,36 +7,30 @@
   <head>
     <link rel="stylesheet" type="text/css" href="{% static "css/graph.css" %}">
     <script src="{% static "js/bundle.js" %}"></script>
-
   </head>
-
   <body>
+    <H1 align="center"> Daily </H1>
     <div id="chart"></div>
 
     <div align="center" class="wrap" id="chart-controls">
-
-      <div class="chart-control">
-	<input  id="live-button"
-                value="Live data (1h)"
-                type="button"/>
-      </div>
-      
-      <div class="chart-control">
-        <input  id="daily-button"
-                value="Daily Usage"
-                type="button"/>
-	<input type="text" id="daily-date">
-      </div>
-      
-      <div class="chart-control">
-	<input  id="range-button"
-                value="Select Range"
-                type="button"/>
-	<input type="text" id="range-start">      
-	<input type="text" id="range-end">
-      </div>
-      
+    <div class="chart-control">
+      <input  id="live-button" value="Live data (1h)" type="button"/>
     </div>
+    <div class="chart-control">
+      <input  id="daily-button" value="Daily Usage" type="button"/>
+      <input type="text" id="daily-date"/>
+    </div>
+    <div class="chart-control">
+      <input  id="range-button" value="Select Range" type="button"/>
+      <input type="text" id="range-start">      
+      <input type="text" id="range-end">
+    </div>
+    </div>
+
+    <div id="pie"><</div>
+    <div id="bar"></div>
+
+
     
   </body>
 </html>

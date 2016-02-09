@@ -7,13 +7,76 @@ var DAY_SECONDS = HOUR_SECONDS*24;
 
 //var url = "http://db.sead.systems:8080/466419818?start_time=1446537600&end_time=1446624000&list_format=energy&type=P&device=Panel1&granularity=3600";
 
+
+function pie() {
+    c3.generate({
+        bindto: '#pie',
+        data: {
+            // iris data from R
+            columns: [
+                ['data1', 30],
+                ['data2', 120],
+            ],
+            type : 'pie',
+        }
+    });    
+}
+
+
+function bar(data) { 
+    c3.generate({
+        padding: {
+            top: 40,
+            right: 100,
+            bottom: 0,
+            left: 100,
+        },
+        bindto: '#bar',
+        data: {
+            x: 'x',
+            xFormat: '%Y-%m-%d %H:%M:%S', 
+            columns: [
+            ['x'].concat(data.data.map(
+                    function(x) {
+            return x.time;
+                    }
+            )),
+            ['energy'].concat(data.data.map(
+                    function(x) {
+                return x.energy;
+                    }
+            ))
+        ],
+        type: 'bar'
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    // this also works for non timeseries data
+                    format: '%a'
+                }
+            }
+        }, 
+        bar: {
+            width: {
+                ratio: 0.5 // this makes bar width 50% of length between ticks
+            }
+            // or
+            //width: 100 // this makes bar width 100px
+        }
+    });
+}
+
+
+
 function create_url(start, end) {
-    var num_nodes = 250;
+    var num_nodes = 150;
     var granularity = Math.ceil((end-start)/num_nodes);
     //console.log(granularity)
     var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
     var deviceId = pathArray[2];
-    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel1" + "&granularity=" + granularity;
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel3" + "&granularity=" + granularity;
 }
 
 
@@ -77,11 +140,35 @@ function fetch_graph(url) {
     request.send();
 }
 
+function fetch_bar_graph(url) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+        //console.log(request.readyState);
+        if (request.readyState == XMLHttpRequest.DONE) {
+            if (request.status == 200) { //200 OK
+                //console.log(request.responseText);
+                bar(JSON.parse(request.responseText));
+            } else {
+                console.log("it broke");
+            }
+        }
+    };
+
+    request.open("GET", url, true);
+    request.send();
+}
+
 var chart1 = null;
 
 function generate_chart(data) {
     c3.generate({
-	bindto: '#chart',
+    padding: {
+        top: 0,
+        right: 100,
+        bottom: 0,
+        left: 100,
+    },
+    bindto: '#chart',
 	data: { 
             x: 'x',
             xFormat: '%Y-%m-%d %H:%M:%S',   
@@ -113,6 +200,8 @@ function generate_chart(data) {
     });
 }
 
+
+
 $(document).ready(function() {
     //onload
     $("#live-button").on("click", make_picker(pick_live, 60*1000));
@@ -123,7 +212,14 @@ $(document).ready(function() {
     $("#range-button").on("click", make_picker(pick_range));
     $("#range-start").datetimepicker();
     $("#range-end").datetimepicker();
-
+    
     pick(pick_live, 10*1000);
+    pie();
+
+    //Just generating url for weekly energy data here for now as test
+    var end = Math.floor(Date.now()/1000);
+    var start = end - 691200;
+    var url = "http://db.sead.systems:8080/466419818?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=Panel1&granularity=86400";
+    fetch_bar_graph(url);
 });
 
