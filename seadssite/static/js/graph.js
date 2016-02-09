@@ -53,7 +53,7 @@ function bar(data) {
             x: {
                 type: 'timeseries',
                 tick: {
-                    // this also works for non timeseries data
+                    // displays day of week
                     format: '%a'
                 }
             }
@@ -161,34 +161,39 @@ function fetch_bar_graph(url) {
 var chart1 = null;
 
 function generate_chart(data) {
-    c3.generate({
-    padding: {
-        top: 0,
-        right: 100,
-        bottom: 0,
-        left: 100,
-    },
-    bindto: '#chart',
-	data: { 
-            x: 'x',
-            xFormat: '%Y-%m-%d %H:%M:%S',   
-            columns: [
-		['x'].concat(data.data.map(
-                    function(x) {
-			return x.time;
-                    }
-		)),
-		['energy'].concat(data.data.map(
-                    function(x) {
-			return x.energy;
-                    }
-		))
-            ], 
-            types: {
-		energy: 'area',
-            }
-	},
-	axis: {
+    var chart = c3.generate({
+        padding: {
+            top: 0,
+            right: 100,
+            bottom: 0,
+            left: 100,
+        },
+        bindto: '#chart',
+    	data: { 
+            selection: {
+                enabled: true,
+                draggable: true,
+                grouped: true
+            },
+                x: 'x',
+                xFormat: '%Y-%m-%d %H:%M:%S',   
+                columns: [
+    		['x'].concat(data.data.map(
+                        function(x) {
+    			             return x.time;
+                        }
+    		)),
+    		['energy'].concat(data.data.map(
+                        function(x) {
+    			             return x.energy;
+                        }
+    		))
+                ], 
+                types: {
+                    energy: 'area',
+                }
+    	},
+    	axis: {
             x: {
                 type: 'timeseries',
                 tick: {
@@ -197,6 +202,10 @@ function generate_chart(data) {
                 }
             }
         }    
+    });
+
+    $("#chart").mousedown(function() {
+        chart.unselect(['energy']);
     });
 }
 
