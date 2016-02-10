@@ -1,3 +1,4 @@
+/*-- Chart formatting --*/
 #pie {
         width: 50%; 
         float: left; 
@@ -7,6 +8,25 @@
         width: 50%; 
         float: right; 
     }
+
+
+/*-- Buttons and date picker section --*/
+section {
+    width: 80%;
+    margin: auto;
+}
+div#one {
+    width: 30%;
+    float: left;
+}
+div#two {
+    width: 50%;
+    float: left;
+}
+div#three {
+    width: 20%;
+    float: right;
+}
 
 
 /*-- Chart --*/

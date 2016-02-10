@@ -12,20 +12,22 @@
     <H1 align="center"> Daily </H1>
     <div id="chart"></div>
 
-    <div align="center" class="wrap" id="chart-controls">
-    <div class="chart-control">
-      <input  id="live-button" value="Live data (1h)" type="button"/>
-    </div>
-    <div class="chart-control">
-      <input  id="daily-button" value="Daily Usage" type="button"/>
-      <input type="text" id="daily-date"/>
-    </div>
-    <div class="chart-control">
-      <input  id="range-button" value="Select Range" type="button"/>
-      <input type="text" id="range-start">      
-      <input type="text" id="range-end">
-    </div>
-    </div>
+    <section>
+        <div align="center" class="wrap" id="chart-controls">
+        <div id="one" class="chart-control">
+          <input  id="daily-button" value="24hr Usage" type="button"/>
+          <input type="text" id="daily-date" value="select date"/>
+        </div>
+        <div id="two" class="chart-control">
+          <input  id="range-button" value="Select Range" type="button"/>
+          <input type="text" id="range-start" value="select start date">      
+          <input type="text" id="range-end" value="select end date">
+        </div>
+        <div id="three" class="chart-control">
+          <input  id="live-button" value="Live data (1h)" type="button"/>
+        </div>
+        </div>
+    </section>
 
     <div id="pie"><</div>
     <div id="bar"></div>
