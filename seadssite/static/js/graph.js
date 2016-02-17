@@ -68,7 +68,9 @@ function bar(data) {
     });
 }
 
+function update_graph() {
 
+}
 
 function create_url(start, end) {
     var num_nodes = 150;
@@ -76,7 +78,8 @@ function create_url(start, end) {
     //console.log(granularity)
     var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
     var deviceId = pathArray[2];
-    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + "Panel3" + "&granularity=" + granularity;
+    var panel = $('input[type=radio][name=panels]:checked').val();
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
 
 
@@ -114,9 +117,7 @@ function pick_range() {
     fetch_graph(create_url(start, end));
 }
 
-function pick_live() {
-    //console.log("test");
-    
+function pick_live() {    
     var end = Math.floor(Date.now()/1000);
     var start = end - HOUR_SECONDS;
     fetch_graph(create_url(start, end));
@@ -230,20 +231,37 @@ function post_data_to_server(label) {
 }
 
 
+
 $(document).ready(function() {
     //onload
+
+    //when radio buttons are changed
+    $('input[type=radio][name=panels]').change(function() {
+        if(this.value == 'Panel1') {
+            pick_live();  
+        } else if(this.value == 'Panel2') {
+            pick_live();
+        } else if(this.value == 'Panel3') {
+            pick_live();
+        }
+    });
+
     $("#live-button").on("click", make_picker(pick_live, 60*1000));
 
     $("#daily-button").on("click", make_picker(pick_daily));
     var dateNow = new Date();
     $('#daily-date').datetimepicker({
-                    defaultDate: dateNow
-                });
+        defaultDate: dateNow
+    });
 
 
     $("#range-button").on("click", make_picker(pick_range));
-    $("#range-start").datetimepicker();
-    $("#range-end").datetimepicker();
+    $("#range-start").datetimepicker({
+        defaultDate: dateNow
+    });
+    $("#range-end").datetimepicker({
+        defaultDate: dateNow
+    });
 
     
     $("#event-submit").on("click", function() {
@@ -257,11 +275,12 @@ $(document).ready(function() {
 
         post_data_to_server(label);
 
-        console.log(label);
+        //console.log(label);
         $('#myModal').modal('toggle');
 
 
     });
+
 
     pick(pick_live, 10*1000);
     pie();

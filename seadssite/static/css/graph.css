@@ -9,6 +9,9 @@
         float: right; 
     }
 
+input[type="radio"]{
+  margin: 0 15px 0 7px;
+}
 
 
 /*-- Buttons and date picker section --*/
