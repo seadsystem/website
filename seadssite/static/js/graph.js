@@ -207,8 +207,27 @@ function generate_chart(data) {
     $("#chart").mousedown(function() {
         chart.unselect(['energy']);
     });
+
+    $("#chart").mouseup(function() {
+        var elements = chart.selected('energy');
+        if (elements.length === 0) return;
+
+        var start = new Date(elements[0].x);//.getTime() / 1000;
+        var end = new Date(elements[elements.length - 1].x);//.getTime() / 1000;
+
+        $('#myModal').modal('toggle');
+
+        $("#start-date").datetimepicker();
+        $("#end-date").datetimepicker();
+
+        $('#start-date').data('DateTimePicker').setDate(start);
+        $('#end-date').data('DateTimePicker').setDate(end);
+    });
 }
 
+function post_data_to_server(label) {
+    //POST
+}
 
 
 $(document).ready(function() {
@@ -216,12 +235,34 @@ $(document).ready(function() {
     $("#live-button").on("click", make_picker(pick_live, 60*1000));
 
     $("#daily-button").on("click", make_picker(pick_daily));
-    $("#daily-date").datepicker();
+    var dateNow = new Date();
+    $('#daily-date').datetimepicker({
+                    defaultDate: dateNow
+                });
+
 
     $("#range-button").on("click", make_picker(pick_range));
     $("#range-start").datetimepicker();
     $("#range-end").datetimepicker();
+
     
+    $("#event-submit").on("click", function() {
+        var label = {
+            start: $("#start-date").data("DateTimePicker").getDate().unix(),
+            end: $("#end-date").data("DateTimePicker").getDate().unix(),
+            name: $("#label-name").val()
+        };
+
+        //validate data is sane
+
+        post_data_to_server(label);
+
+        console.log(label);
+        $('#myModal').modal('toggle');
+
+
+    });
+
     pick(pick_live, 10*1000);
     pie();
 

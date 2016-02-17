@@ -10,6 +10,7 @@
     }
 
 
+
 /*-- Buttons and date picker section --*/
 section {
     width: 80%;
@@ -26,6 +27,10 @@ div#two {
 div#three {
     width: 20%;
     float: right;
+}
+
+.datepicker {
+  z-index: 10000 !important;
 }
 
 
@@ -73,6 +78,9 @@ div#three {
   stroke-width: 2px; }
 
 /*-- Point --*/
+.c3-circle {
+  display: none; }
+
 .c3-circle._expanded_ {
   stroke-width: 1px;
   stroke: white; }
