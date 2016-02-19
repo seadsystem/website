@@ -5,7 +5,6 @@ var c3 = require('c3');
 var HOUR_SECONDS = 60 * 60;
 var DAY_SECONDS = HOUR_SECONDS * 24;
 
-//var url = "http://db.sead.systems:8080/466419818?start_time=1446537600&end_time=1446624000&list_format=energy&type=P&device=Panel1&granularity=3600";
 
 function pie() {
     c3.generate({
@@ -74,7 +73,6 @@ function create_url(start, end, gran) {
         var granularity = Math.ceil((end - start) / num_nodes);
     }
 
-    //console.log(granularity)
     var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
     var deviceId = pathArray[2];
     var panel = $('input[type=radio][name=panels]:checked').val();
@@ -135,10 +133,8 @@ function bar() {
 function fetch_graph(url) {
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
-        //console.log(request.readyState);
         if (request.readyState == XMLHttpRequest.DONE) {
             if (request.status == 200) { //200 OK
-                //console.log(request.responseText);
                 generate_chart(JSON.parse(request.responseText));
             } else {
                 console.log("it broke");
@@ -153,10 +149,8 @@ function fetch_graph(url) {
 function fetch_bar_graph(url) {
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
-        //console.log(request.readyState);
         if (request.readyState == XMLHttpRequest.DONE) {
             if (request.status == 200) { //200 OK
-                //console.log(request.responseText);
                 generate_bar_graph(JSON.parse(request.responseText));
             } else {
                 console.log("it broke");
@@ -220,8 +214,8 @@ function generate_chart(data) {
         var elements = chart.selected('energy');
         if (elements.length === 0) return;
 
-        var start = new Date(elements[0].x); //.getTime() / 1000;
-        var end = new Date(elements[elements.length - 1].x); //.getTime() / 1000;
+        var start = new Date(elements[0].x); 
+        var end = new Date(elements[elements.length - 1].x); 
 
         $('#myModal').modal('toggle');
 
@@ -235,10 +229,6 @@ function generate_chart(data) {
         $('#start-date').data('DateTimePicker').setDate(start);
         $('#end-date').data('DateTimePicker').setDate(end);
     });
-}
-
-function post_data_to_server(label) {
-    //POST
 }
 
 
@@ -313,8 +303,6 @@ $(document).ready(function() {
             $("#bad").show();
         }
 
-
-        //console.log(label);
     });
 
     pick(pick_live, 10 * 1000);
@@ -322,7 +310,4 @@ $(document).ready(function() {
     pie();
 
     bar();
-
-    //generating url for weekly energy data here for now as test
-    //var url = "http://db.sead.systems:8080/466419818?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=Panel1&granularity=86400";
 });

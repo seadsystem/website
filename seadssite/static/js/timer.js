@@ -4,7 +4,6 @@ var start_time = null;
 var end_time = null;
 
 function confirm_modal(start_time, end_time) {
-    //console.log("" + start_time + " " + end_time);
 
     $('#confirm-modal').modal('toggle');
 }
@@ -78,7 +77,6 @@ $(document).ready(function() { //onload
                 name: $("#label-name").val()
             };
             reset_button(); 
-            //post_data_to_server(label);
             $('#confirm-modal').modal('toggle');
         } else {
             $("#bad").show();
