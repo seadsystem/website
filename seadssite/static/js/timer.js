@@ -78,7 +78,7 @@ $(document).ready(function() { //onload
                 name: $("#label-name").val()
             };
             reset_button(); 
-            post_data_to_server(label);
+            //post_data_to_server(label);
             $('#confirm-modal').modal('toggle');
         } else {
             $("#bad").show();
