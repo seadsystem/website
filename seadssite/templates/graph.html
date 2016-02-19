@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% block content %}
-
 <html>
   <meta charset="utf-8">
   <head>
@@ -10,7 +9,6 @@
   </head>
   <body>
     <div class="alert alert-success" id="success-alert">
-      <button type="button" class="close" data-dismiss="alert">x</button>
       <strong>Success! </strong>
       You have added a new label
     </div>
@@ -23,9 +21,8 @@
       </form>
     </div>
     <div id="chart"></div>
-
     <section>
-        <div align="center" class="wrap" id="chart-controls">
+      <div align="center" class="wrap" id="chart-controls">
         <div id="one" class="chart-control">
           <input  id="daily-button" value="24hr Usage" type="button"/>
           <input type="text" id="daily-date"/>
@@ -38,51 +35,42 @@
         <div id="three" class="chart-control">
           <input  id="live-button" value="Live data (1h)" type="button"/>
         </div>
-        </div>
+      </div>
     </section>
-
     <div id="pie"></div>
     <div id="bar"></div>
-    
-
-
     <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-    <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="modalLabel">New Label</h4>
-      </div>
-      <div class="modal-body">
-          <table>
-              <tr>
-                  <td>Start: </td> 
-                  <td><input type="text" id="start-date"/></td>
-              </tr>
-              <tr>
-                  <td>End: </td> 
-                  <td><input type="text" id="end-date"/></td>
-              </tr>
-          </table>
-        <form>
-          <div class="form-group">
-            <label for="message-text" class="control-label">Label Name:</label>
-            <input type="text" class="form-control" id="label-name">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modalLabel">New Label</h4>
           </div>
-        </form>
+          <div class="modal-body">
+            <h5 id="bad" color="red">Entries not valid</h5>
+            <table>
+              <tr>
+                <td>Start: </td>
+                <td><input type="text" id="start-date"/></td>
+              </tr>
+              <tr>
+                <td>End: </td>
+                <td><input type="text" id="end-date"/></td>
+              </tr>
+            </table>
+            <form>
+              <div class="form-group">
+                <label for="message-text" class="control-label">Label Name:</label>
+                <input type="text" class="form-control" id="label-name">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" id="modal-close">Close</button>
+            <button id="event-submit" type="button" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button id="event-submit" type="button" class="btn btn-primary">Submit</button>
-      </div>
-
-
     </div>
-  </div>
-</div>
-
-
-    
   </body>
 </html>
 {% endblock %}

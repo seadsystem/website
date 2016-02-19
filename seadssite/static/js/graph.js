@@ -2,11 +2,10 @@
 
 var c3 = require('c3');
 
-var HOUR_SECONDS = 60*60;
-var DAY_SECONDS = HOUR_SECONDS*24;
+var HOUR_SECONDS = 60 * 60;
+var DAY_SECONDS = HOUR_SECONDS * 24;
 
 //var url = "http://db.sead.systems:8080/466419818?start_time=1446537600&end_time=1446624000&list_format=energy&type=P&device=Panel1&granularity=3600";
-
 
 function pie() {
     c3.generate({
@@ -17,13 +16,12 @@ function pie() {
                 ['data1', 30],
                 ['data2', 120],
             ],
-            type : 'pie',
+            type: 'pie',
         }
-    });    
+    });
 }
 
-
-function generate_bar_graph(data) { 
+function generate_bar_graph(data) {
     c3.generate({
         padding: {
             top: 40,
@@ -34,20 +32,19 @@ function generate_bar_graph(data) {
         bindto: '#bar',
         data: {
             x: 'x',
-            xFormat: '%Y-%m-%d %H:%M:%S', 
+            xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
-            ['x'].concat(data.data.map(
+                ['x'].concat(data.data.map(
                     function(x) {
-            return x.time;
+                        return x.time;
                     }
-            )),
-            ['energy'].concat(data.data.map(
+                )), ['energy'].concat(data.data.map(
                     function(x) {
-                return x.energy;
+                        return x.energy;
                     }
-            ))
-        ],
-        type: 'bar'
+                ))
+            ],
+            type: 'bar'
         },
         axis: {
             x: {
@@ -57,7 +54,7 @@ function generate_bar_graph(data) {
                     format: '%a'
                 }
             }
-        }, 
+        },
         bar: {
             width: {
                 ratio: 0.5 // this makes bar width 50% of length between ticks
@@ -68,18 +65,15 @@ function generate_bar_graph(data) {
     });
 }
 
-function update_graph() {
-
-}
 
 function create_url(start, end, gran) {
-    if(gran) {
+    if (gran) {
         var granularity = gran;
     } else {
         var num_nodes = 150;
-        var granularity = Math.ceil((end-start)/num_nodes);
+        var granularity = Math.ceil((end - start) / num_nodes);
     }
-    
+
     //console.log(granularity)
     var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
     var deviceId = pathArray[2];
@@ -92,16 +86,19 @@ var repeater = null;
 //repeat in ms
 function pick(func, repeat) {
     if (repeater) {
-	clearInterval(repeater);
-	repeater = null;
+        clearInterval(repeater);
+        repeater = null;
     }
     if (repeat) {
-	repeater = setInterval(func, repeat);
+        repeater = setInterval(func, repeat);
     }
     func();
 }
+
 function make_picker(func, repeat) {
-    return function(event) {return pick(func, repeat);};
+    return function(event) {
+        return pick(func, repeat);
+    };
 }
 
 function pick_daily() {
@@ -122,17 +119,17 @@ function pick_range() {
     fetch_graph(create_url(start, end));
 }
 
-function pick_live() {    
-    var end = Math.floor(Date.now()/1000);
+function pick_live() {
+    var end = Math.floor(Date.now() / 1000);
     var start = end - HOUR_SECONDS;
     fetch_graph(create_url(start, end));
 }
 
 function bar() {
-    var end = Math.floor(Date.now()/1000);
+    var end = Math.floor(Date.now() / 1000);
     var start = end - 691200;
     var gran = 86400;
-    fetch_bar_graph( create_url(start, end, gran) );
+    fetch_bar_graph(create_url(start, end, gran));
 }
 
 function fetch_graph(url) {
@@ -171,8 +168,6 @@ function fetch_bar_graph(url) {
     request.send();
 }
 
-var chart1 = null;
-
 function generate_chart(data) {
     var chart = c3.generate({
         padding: {
@@ -182,51 +177,51 @@ function generate_chart(data) {
             left: 100,
         },
         bindto: '#chart',
-    	data: { 
+        data: {
             selection: {
                 enabled: true,
                 draggable: true,
                 grouped: true
             },
-                x: 'x',
-                xFormat: '%Y-%m-%d %H:%M:%S',   
-                columns: [
-    		['x'].concat(data.data.map(
-                        function(x) {
-    			             return x.time;
-                        }
-    		)),
-    		['energy'].concat(data.data.map(
-                        function(x) {
-    			             return x.energy;
-                        }
-    		))
-                ], 
-                types: {
-                    energy: 'area',
-                }
-    	},
-    	axis: {
+            x: 'x',
+            xFormat: '%Y-%m-%d %H:%M:%S',
+            columns: [
+                ['x'].concat(data.data.map(
+                    function(x) {
+                        return x.time;
+                    }
+                )), ['energy'].concat(data.data.map(
+                    function(x) {
+                        return x.energy;
+                    }
+                ))
+            ],
+            types: {
+                energy: 'area',
+            }
+        },
+        axis: {
             x: {
                 type: 'timeseries',
                 tick: {
-                    // this also works for non timeseries data
                     format: '%H:%M'
                 }
             }
-        }    
+        }
     });
 
+    /*-- Deselect points when dragging on graph --*/
     $("#chart").mousedown(function() {
         chart.unselect(['energy']);
     });
 
+    /*-- Invoke modal for labelling --*/
     $("#chart").mouseup(function() {
         var elements = chart.selected('energy');
         if (elements.length === 0) return;
 
-        var start = new Date(elements[0].x);//.getTime() / 1000;
-        var end = new Date(elements[elements.length - 1].x);//.getTime() / 1000;
+        var start = new Date(elements[0].x); //.getTime() / 1000;
+        var end = new Date(elements[elements.length - 1].x); //.getTime() / 1000;
 
         $('#myModal').modal('toggle');
 
@@ -247,26 +242,35 @@ function post_data_to_server(label) {
 }
 
 
-
 $(document).ready(function() {
     //onload
 
+    //hide success alert dialogue
     $("#success-alert").hide();
+    $("#bad").hide();
     //when radio buttons are changed
     $('input[type=radio][name=panels]').change(function() {
-        if(this.value == 'Panel1') {
-            pick_live();  
-            bar();
-        } else if(this.value == 'Panel2') {
+        if (this.value == 'Panel1') {
             pick_live();
             bar();
-        } else if(this.value == 'Panel3') {
+        } else if (this.value == 'Panel2') {
+            pick_live();
+            bar();
+        } else if (this.value == 'Panel3') {
             pick_live();
             bar();
         }
     });
 
-    $("#live-button").on("click", make_picker(pick_live, 60*1000));
+    /*-- Initialize datepickers and buttons --*/
+    $("#live-button").on("click", make_picker(pick_live, 60 * 1000));
+
+    $("#modal-close").on("click", function() {
+        $('#myModal').modal('toggle');
+        $("#bad").hide();
+        $("#label-name").val('');
+    });
+
 
     $("#daily-button").on("click", make_picker(pick_daily));
     var dateNow = new Date();
@@ -286,35 +290,34 @@ $(document).ready(function() {
         defaultDate: dateNow
     });
 
-    
-    $("#event-submit").on("click", function() {
-        var label = {
-            start: $("#start-date").data("DateTimePicker").getDate().unix(),
-            end: $("#end-date").data("DateTimePicker").getDate().unix(),
-            name: $("#label-name").val()
-        };
 
-        if($("#label-name").val() != '') {
+    $("#event-submit").on("click", function() {
+        if ($("#label-name").val() !== '' && $("#start-date").data("DateTimePicker").getDate().unix() !== null && 
+                                            $("#end-date").data("DateTimePicker").getDate().unix() !== null) {
+            
+            var label = {
+                start: $("#start-date").data("DateTimePicker").getDate().unix(),
+                end: $("#end-date").data("DateTimePicker").getDate().unix(),
+                name: $("#label-name").val()
+            };
+
             post_data_to_server(label);
             $("#label-name").val('');
             $('#myModal').modal('toggle');
-            $("#success-alert").alert();
-            $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-                $("#success-alert").alert('hide');
-            }); 
+            $("#success-alert").show();
+            $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
+                $("#success-alert").hide();
+            });
+            $("#bad").hide();
         } else {
-            //display text to tell user to enter a label
+            $("#bad").show();
         }
 
-        
+
         //console.log(label);
-        
-
-
     });
 
-
-    pick(pick_live, 10*1000);
+    pick(pick_live, 10 * 1000);
 
     pie();
 
@@ -323,4 +326,3 @@ $(document).ready(function() {
     //generating url for weekly energy data here for now as test
     //var url = "http://db.sead.systems:8080/466419818?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=Panel1&granularity=86400";
 });
-

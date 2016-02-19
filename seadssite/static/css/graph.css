@@ -9,8 +9,14 @@
         float: right; 
     }
 
-input[type="radio"]{
+/*-- Radio button formatting --*/
+input[type="radio"] {
   margin: 0 15px 0 7px;
+}
+
+h5 {
+  color: red;
+  font-weight: bold;
 }
 
 
