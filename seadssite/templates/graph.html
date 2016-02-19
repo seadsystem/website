@@ -9,6 +9,11 @@
     <script src="{% static "js/bundle.js" %}"></script>
   </head>
   <body>
+    <div class="alert alert-success" id="success-alert">
+      <button type="button" class="close" data-dismiss="alert">x</button>
+      <strong>Success! </strong>
+      You have added a new label
+    </div>
     <H1 align="center"> Daily </H1>
     <div align="center" class="wrap" id="panel_buttons">
       <form action="" class="panels">
@@ -38,6 +43,8 @@
 
     <div id="pie"></div>
     <div id="bar"></div>
+    
+
 
     <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog modal-sm">

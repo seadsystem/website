@@ -23,7 +23,7 @@ function pie() {
 }
 
 
-function bar(data) { 
+function generate_bar_graph(data) { 
     c3.generate({
         padding: {
             top: 40,
@@ -72,9 +72,14 @@ function update_graph() {
 
 }
 
-function create_url(start, end) {
-    var num_nodes = 150;
-    var granularity = Math.ceil((end-start)/num_nodes);
+function create_url(start, end, gran) {
+    if(gran) {
+        var granularity = gran;
+    } else {
+        var num_nodes = 150;
+        var granularity = Math.ceil((end-start)/num_nodes);
+    }
+    
     //console.log(granularity)
     var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
     var deviceId = pathArray[2];
@@ -100,7 +105,7 @@ function make_picker(func, repeat) {
 }
 
 function pick_daily() {
-    var date = $("#daily-date").datepicker("getDate");
+    var date = $("#daily-date").data("DateTimePicker").getDate();
 
     var start = Math.floor(date / 1000);
     var end = start + DAY_SECONDS;
@@ -121,6 +126,13 @@ function pick_live() {
     var end = Math.floor(Date.now()/1000);
     var start = end - HOUR_SECONDS;
     fetch_graph(create_url(start, end));
+}
+
+function bar() {
+    var end = Math.floor(Date.now()/1000);
+    var start = end - 691200;
+    var gran = 86400;
+    fetch_bar_graph( create_url(start, end, gran) );
 }
 
 function fetch_graph(url) {
@@ -148,7 +160,7 @@ function fetch_bar_graph(url) {
         if (request.readyState == XMLHttpRequest.DONE) {
             if (request.status == 200) { //200 OK
                 //console.log(request.responseText);
-                bar(JSON.parse(request.responseText));
+                generate_bar_graph(JSON.parse(request.responseText));
             } else {
                 console.log("it broke");
             }
@@ -218,8 +230,12 @@ function generate_chart(data) {
 
         $('#myModal').modal('toggle');
 
-        $("#start-date").datetimepicker();
-        $("#end-date").datetimepicker();
+        $("#start-date").datetimepicker({
+            format: 'MM/DD/YYYY HH:mm'
+        });
+        $("#end-date").datetimepicker({
+            format: 'MM/DD/YYYY HH:mm'
+        });
 
         $('#start-date').data('DateTimePicker').setDate(start);
         $('#end-date').data('DateTimePicker').setDate(end);
@@ -235,14 +251,18 @@ function post_data_to_server(label) {
 $(document).ready(function() {
     //onload
 
+    $("#success-alert").hide();
     //when radio buttons are changed
     $('input[type=radio][name=panels]').change(function() {
         if(this.value == 'Panel1') {
             pick_live();  
+            bar();
         } else if(this.value == 'Panel2') {
             pick_live();
+            bar();
         } else if(this.value == 'Panel3') {
             pick_live();
+            bar();
         }
     });
 
@@ -250,16 +270,19 @@ $(document).ready(function() {
 
     $("#daily-button").on("click", make_picker(pick_daily));
     var dateNow = new Date();
-    $('#daily-date').datetimepicker({
-        defaultDate: dateNow
+    $("#daily-date").datetimepicker({
+        format: 'MM/DD/YYYY HH:mm',
+        defaultDate: moment(dateNow).hours(0).minutes(0).seconds(0).milliseconds(0)
     });
 
 
     $("#range-button").on("click", make_picker(pick_range));
     $("#range-start").datetimepicker({
+        format: 'MM/DD/YYYY HH:mm',
         defaultDate: dateNow
     });
     $("#range-end").datetimepicker({
+        format: 'MM/DD/YYYY HH:mm',
         defaultDate: dateNow
     });
 
@@ -271,24 +294,33 @@ $(document).ready(function() {
             name: $("#label-name").val()
         };
 
-        //validate data is sane
+        if($("#label-name").val() != '') {
+            post_data_to_server(label);
+            $("#label-name").val('');
+            $('#myModal').modal('toggle');
+            $("#success-alert").alert();
+            $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                $("#success-alert").alert('hide');
+            }); 
+        } else {
+            //display text to tell user to enter a label
+        }
 
-        post_data_to_server(label);
-
+        
         //console.log(label);
-        $('#myModal').modal('toggle');
+        
 
 
     });
 
 
     pick(pick_live, 10*1000);
+
     pie();
 
-    //Just generating url for weekly energy data here for now as test
-    var end = Math.floor(Date.now()/1000);
-    var start = end - 691200;
-    var url = "http://db.sead.systems:8080/466419818?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=Panel1&granularity=86400";
-    fetch_bar_graph(url);
+    bar();
+
+    //generating url for weekly energy data here for now as test
+    //var url = "http://db.sead.systems:8080/466419818?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=Panel1&granularity=86400";
 });
 
