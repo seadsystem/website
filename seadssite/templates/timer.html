@@ -2,6 +2,33 @@
 {% load staticfiles %}
 {% block content %}
 
-There's nothing here.
+<div id="timer-alert" class="alert alert-info"></div>
+
+<div class="modal fade bs-example-modal-sm" id="confirm-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalLabel">New Label</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+	    <label for="message-text" class="control-label">Label Name:</label>
+	    <input type="text" class="form-control" id="label-name">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="cancel-butt" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button id="event-submit" type="button" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<input type='button' value='Start Timer' id='butt'></input>
+
+<script src="{% static "js/timer.js" %}"></script>
 
 {% endblock %}
