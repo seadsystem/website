@@ -14,14 +14,14 @@ input[type="radio"] {
   margin: 0 15px 0 7px;
 }
 
-h5 {
+#bad {
   color: red;
   font-weight: bold;
 }
 
 
 /*-- Buttons and date picker section --*/
-section {
+section#chart-tools {
     width: 80%;
     margin: auto;
 }
@@ -38,8 +38,16 @@ div#three {
     float: right;
 }
 
+section#labelling-tools {
+    padding-top: 40px;
+}
+
 .datepicker {
   z-index: 10000 !important;
+}
+
+h5 {
+  margin-top: 5px;
 }
 
 

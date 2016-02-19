@@ -21,21 +21,25 @@
       </form>
     </div>
     <div id="chart"></div>
-    <section>
+    <section id="chart-tools">
       <div align="center" class="wrap" id="chart-controls">
         <div id="one" class="chart-control">
-          <input  id="daily-button" value="24hr Usage" type="button"/>
+          <button id="daily-button" type="button" class="btn btn-primary btn-sm">24hr Usage</button>
           <input type="text" id="daily-date"/>
         </div>
         <div id="two" class="chart-control">
-          <input  id="range-button" value="Select Range" type="button"/>
+          <button id="range-button" type="button" class="btn btn-primary btn-sm">Select Range</button>
           <input type="text" id="range-start">      
           <input type="text" id="range-end">
         </div>
         <div id="three" class="chart-control">
-          <input  id="live-button" value="Live data (1h)" type="button"/>
+          <button id="live-button" type="button" class="btn btn-primary btn-sm">Live Data (1hr)</button>
         </div>
       </div>
+    </section>
+    <section id="labelling-tools" align="center">
+      <a href="/timer/" class="btn btn-info btn-sm">Live Labelling</a>
+      <H5> (Or select an area to label by dragging on line graph) </H5>
     </section>
     <div id="pie"></div>
     <div id="bar"></div>
@@ -46,7 +50,7 @@
             <h4 class="modal-title" id="modalLabel">New Label</h4>
           </div>
           <div class="modal-body">
-            <h5 id="bad" color="red">Entries not valid</h5>
+            <h5 id="bad">Entries not valid</h5>
             <table>
               <tr>
                 <td>Start: </td>
