@@ -1,3 +1,56 @@
+/*-- Chart formatting --*/
+#pie {
+        width: 50%; 
+        float: left; 
+    }
+
+#bar {
+        width: 50%; 
+        float: right; 
+    }
+
+/*-- Radio button formatting --*/
+input[type="radio"] {
+  margin: 0 15px 0 7px;
+}
+
+#bad {
+  color: red;
+  font-weight: bold;
+}
+
+
+/*-- Buttons and date picker section --*/
+section#chart-tools {
+    width: 80%;
+    margin: auto;
+}
+div#one {
+    width: 30%;
+    float: left;
+}
+div#two {
+    width: 50%;
+    float: left;
+}
+div#three {
+    width: 20%;
+    float: right;
+}
+
+section#labelling-tools {
+    padding-top: 40px;
+}
+
+.datepicker {
+  z-index: 10000 !important;
+}
+
+h5 {
+  margin-top: 5px;
+}
+
+
 /*-- Chart --*/
 .c3 svg {
   font: 10px sans-serif; }
@@ -42,6 +95,9 @@
   stroke-width: 2px; }
 
 /*-- Point --*/
+.c3-circle {
+  display: none; }
+
 .c3-circle._expanded_ {
   stroke-width: 1px;
   stroke: white; }

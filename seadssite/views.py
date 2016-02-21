@@ -122,6 +122,16 @@ def DashboardView(request):
 
     return render(request, 'dashboard.html', {'devices': connected_user_devices})
 
+def TimerView(request):
+    # get needed variables set up, and try to make sure only the users devices are shown
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/?next=%s' % request.path)
+    current_user = request.user
+
+    connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
+
+    return render(request, 'timer.html', {'devices': connected_user_devices})
+
 def DevicesView(request):
     # get needed variables set up, and try to make sure only the users devices are shown
     current_user = request.user

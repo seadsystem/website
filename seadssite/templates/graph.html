@@ -1,43 +1,80 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% block content %}
-
 <html>
   <meta charset="utf-8">
   <head>
     <link rel="stylesheet" type="text/css" href="{% static "css/graph.css" %}">
     <script src="{% static "js/bundle.js" %}"></script>
-
   </head>
-
   <body>
-    <div id="chart"></div>
-
-    <div align="center" class="wrap" id="chart-controls">
-
-      <div class="chart-control">
-	<input  id="live-button"
-                value="Live data (1h)"
-                type="button"/>
-      </div>
-      
-      <div class="chart-control">
-        <input  id="daily-button"
-                value="Daily Usage"
-                type="button"/>
-	<input type="text" id="daily-date">
-      </div>
-      
-      <div class="chart-control">
-	<input  id="range-button"
-                value="Select Range"
-                type="button"/>
-	<input type="text" id="range-start">      
-	<input type="text" id="range-end">
-      </div>
-      
+    <div class="alert alert-success" id="success-alert">
+      <strong>Success! </strong>
+      You have added a new label
     </div>
-    
+    <H1 align="center"> Daily </H1>
+    <div align="center" class="wrap" id="panel_buttons">
+      <form action="" class="panels">
+        Panel 1<input  id="panel1" name="panels" value="Panel1" type="radio" checked/>
+        Panel 2<input  id="panel2" name="panels" value="Panel2" type="radio"/>
+        Panel 3<input  id="panel3" name="panels" value="Panel3" type="radio"/>
+      </form>
+    </div>
+    <div id="chart"></div>
+    <section id="chart-tools">
+      <div align="center" class="wrap" id="chart-controls">
+        <div id="one" class="chart-control">
+          <button id="daily-button" type="button" class="btn btn-primary btn-sm">24hr Usage</button>
+          <input type="text" id="daily-date"/>
+        </div>
+        <div id="two" class="chart-control">
+          <button id="range-button" type="button" class="btn btn-primary btn-sm">Select Range</button>
+          <input type="text" id="range-start">      
+          <input type="text" id="range-end">
+        </div>
+        <div id="three" class="chart-control">
+          <button id="live-button" type="button" class="btn btn-primary btn-sm">Live Data (1hr)</button>
+        </div>
+      </div>
+    </section>
+    <section id="labelling-tools" align="center">
+      <a href="/timer/" class="btn btn-info btn-sm">Live Labelling</a>
+      <H5> (Or select an area to label by dragging on line graph) </H5>
+    </section>
+    <div id="pie"></div>
+    <div id="bar"></div>
+    <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modalLabel">New Label</h4>
+          </div>
+          <div class="modal-body">
+            <h5 id="bad">Entries not valid</h5>
+            <table>
+              <tr>
+                <td>Start: </td>
+                <td><input type="text" id="start-date"/></td>
+              </tr>
+              <tr>
+                <td>End: </td>
+                <td><input type="text" id="end-date"/></td>
+              </tr>
+            </table>
+            <form>
+              <div class="form-group">
+                <label for="message-text" class="control-label">Label Name:</label>
+                <input type="text" class="form-control" id="label-name">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" id="modal-close">Close</button>
+            <button id="event-submit" type="button" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
 {% endblock %}
