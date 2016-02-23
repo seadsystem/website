@@ -64,6 +64,32 @@ function generate_bar_graph(data) {
     });
 }
 
+function post_data_to_server(label) {
+    console.log("Sending " + JSON.stringify(label));
+
+    var post = new XMLHttpRequest();
+    var url = "http://db.sead.systems:8080/42/label";
+    var params = JSON.stringify({data: label});
+    post.open("POST", url, true);
+
+    //post.setRequestHeader("Content-type", "application/json");
+    post.setRequestHeader("Content-type", "text/plain");
+    post.setRequestHeader("Content-length", params.length);
+    post.setRequestHeader("Connection", "close");
+
+    post.onreadystatechange = function() {
+        if (post.readyState == XMLHttpRequest.DONE) {
+            if (post.status == 200) { //200 OK
+                console.log("Response:");
+        console.log(post.responseText);
+            } else {
+                console.log("it broke");
+            }
+        }
+    }
+    post.send(params);
+}
+
 
 function create_url(start, end, gran) {
     if (gran) {
@@ -286,9 +312,9 @@ $(document).ready(function() {
                                             $("#end-date").data("DateTimePicker").getDate().unix() !== null) {
             
             var label = {
-                start: $("#start-date").data("DateTimePicker").getDate().unix(),
-                end: $("#end-date").data("DateTimePicker").getDate().unix(),
-                name: $("#label-name").val()
+                start_time: $("#start-date").data("DateTimePicker").getDate().unix(),
+                end_time: $("#end-date").data("DateTimePicker").getDate().unix(),
+                label: $("#label-name").val()
             };
 
             post_data_to_server(label);
