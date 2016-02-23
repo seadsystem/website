@@ -23,10 +23,10 @@ function pie() {
 function generate_bar_graph(data) {
     c3.generate({
         padding: {
-            top: 40,
+            top: 0,
             right: 100,
             bottom: 0,
-            left: 100,
+            left: 50,
         },
         bindto: '#bar',
         data: {

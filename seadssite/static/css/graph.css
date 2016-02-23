@@ -6,7 +6,7 @@
 
 #bar {
         width: 50%; 
-        float: right; 
+        float: left; 
     }
 
 /*-- Radio button formatting --*/
@@ -17,6 +17,10 @@ input[type="radio"] {
 #bad {
   color: red;
   font-weight: bold;
+}
+
+#test {
+  width: 80%;
 }
 
 

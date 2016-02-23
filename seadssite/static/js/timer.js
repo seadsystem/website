@@ -8,6 +8,30 @@ function confirm_modal(start_time, end_time) {
     $('#confirm-modal').modal('toggle');
 }
 
+function post_data_to_server(label) {
+    console.log("Sending " + JSON.stringify(label));
+
+    var post = new XMLHttpRequest();
+    var url = "http://db.sead.systems:8080/-1/label";
+    var params = JSON.stringify(label);
+    post.open("POST", url, true);
+
+    post.setRequestHeader("Content-type", "application/json");
+    post.setRequestHeader("Content-length", params.length);
+    post.setRequestHeader("Connection", "close");
+
+    post.onreadystatechange = function() {
+        if (post.readyState == XMLHttpRequest.DONE) {
+            if (post.status == 200) { //200 OK
+                console.log(request.responseText);
+            } else {
+                console.log("it broke");
+            }
+        }
+    }
+    post.send(params);
+}
+
 function timer_alert(text) {
     $('#timer-alert').text(text);
     $("#timer-alert").show();
@@ -52,6 +76,7 @@ $(document).ready(function() { //onload
                 end: end_time,
                 name: $("#label-name").val()
             };
+            post_data_to_server(label);
             reset_button(); 
             $('#confirm-modal').modal('toggle');
         } else {
