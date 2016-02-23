@@ -15,7 +15,11 @@ function post_data_to_server(label) {
     console.log("Sending " + JSON.stringify(label));
 
     var post = new XMLHttpRequest();
-    var url = "http://db.sead.systems:8080/42/label";
+
+    var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
+    var deviceId = pathArray[2];
+    var url = "http://db.sead.systems:8080/" + deviceId + "/label";
+    
     var params = JSON.stringify({data: label});
     post.open("POST", url, true);
 
