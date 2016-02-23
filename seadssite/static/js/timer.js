@@ -9,21 +9,26 @@ function confirm_modal(start_time, end_time) {
 }
 
 function post_data_to_server(label) {
+    //console.log(label.start_time / 1000);
+    //label = {"start_time":1454570334,"end_time":1454570334, "label": "fridge"};
+    
     console.log("Sending " + JSON.stringify(label));
 
     var post = new XMLHttpRequest();
-    var url = "http://db.sead.systems:8080/-1/label";
-    var params = JSON.stringify(label);
+    var url = "http://db.sead.systems:8080/42/label";
+    var params = JSON.stringify({data: label});
     post.open("POST", url, true);
 
-    post.setRequestHeader("Content-type", "application/json");
+    //post.setRequestHeader("Content-type", "application/json");
+    post.setRequestHeader("Content-type", "text/plain");
     post.setRequestHeader("Content-length", params.length);
     post.setRequestHeader("Connection", "close");
 
     post.onreadystatechange = function() {
         if (post.readyState == XMLHttpRequest.DONE) {
             if (post.status == 200) { //200 OK
-                console.log(request.responseText);
+                console.log("Response:");
+		console.log(post.responseText);
             } else {
                 console.log("it broke");
             }
@@ -48,17 +53,21 @@ function reset_button() {
     $("#bad").hide();
 }
 
+function current_timestamp() {
+    return Math.round(Date.now()/1000);
+}
+
 $(document).ready(function() { //onload
     $('#timer-alert').hide();
     $("#bad").hide();
 
     $('#timer-button').click(function() {
         if (start_time == null) {
-            start_time = Date.now();
+            start_time = current_timestamp();
             $('#timer-button').val("Stop Timer");
             timer_alert("Timer is now active!");
         } else if (end_time == null) {
-            end_time = Date.now();
+            end_time = current_timestamp();
             timer_alert("Timer is now stopped.");
             confirm_modal(start_time, end_time);
         }
@@ -72,9 +81,9 @@ $(document).ready(function() { //onload
 
         if($("#label-name").val() !== '') {
             var label = {
-                start: start_time,
-                end: end_time,
-                name: $("#label-name").val()
+                start_time: start_time,
+                end_time: end_time,
+                label: $("#label-name").val()
             };
             post_data_to_server(label);
             reset_button(); 
