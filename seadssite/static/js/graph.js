@@ -191,48 +191,66 @@ function fetch_bar_graph(url) {
     request.send();
 }
 
+var chart = null;
 function generate_chart(data) {
-    var chart = c3.generate({
-        padding: {
-            top: 0,
-            right: 100,
-            bottom: 0,
-            left: 100,
-        },
-        bindto: '#chart',
-        data: {
-            selection: {
-                enabled: true,
-                draggable: true,
-                grouped: true
+    if (chart == null) {
+	chart = c3.generate({
+            padding: {
+		top: 0,
+		right: 100,
+		bottom: 0,
+		left: 100,
             },
-            x: 'x',
-            xFormat: '%Y-%m-%d %H:%M:%S',
-            columns: [
-                ['x'].concat(data.data.map(
-                    function(x) {
-                        return x.time;
+            bindto: '#chart',
+            data: {
+		selection: {
+                    enabled: true,
+                    draggable: true,
+                    grouped: true
+		},
+		x: 'x',
+		xFormat: '%Y-%m-%d %H:%M:%S',
+		columns: [
+                    ['x'].concat(data.data.map(
+			function(x) {
+                            return x.time;
+			}
+                    )), ['energy'].concat(data.data.map(
+			function(x) {
+                            return x.energy;
+			}
+                    ))
+		],
+		types: {
+                    energy: 'area',
+		}
+            },
+            axis: {
+		x: {
+                    type: 'timeseries',
+                    tick: {
+			format: '%H:%M'
                     }
-                )), ['energy'].concat(data.data.map(
-                    function(x) {
-                        return x.energy;
-                    }
-                ))
-            ],
-            types: {
-                energy: 'area',
+		}
             }
-        },
-        axis: {
-            x: {
-                type: 'timeseries',
-                tick: {
-                    format: '%H:%M'
-                }
-            }
-        }
-    });
-
+	});
+    } else {
+	//console.log("do it work?");
+	chart.load({
+	    columns: [
+		['x'].concat(data.data.map(
+		    function(x) {
+			return x.time;
+		    }
+		)), ['energy'].concat(data.data.map(
+		    function(x) {
+			return x.energy;
+		    }
+		))
+	    ]}
+	);
+    }
+    
     /*-- Deselect points when dragging on graph --*/
     $("#chart").mousedown(function() {
         chart.unselect(['energy']);
