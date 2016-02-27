@@ -9,10 +9,6 @@ function confirm_modal(start_time, end_time) {
 }
 
 function post_data_to_server(label) {
-    //console.log(label.start_time / 1000);
-    //label = {"start_time":1454570334,"end_time":1454570334, "label": "fridge"};
-    
-    console.log("Sending " + JSON.stringify(label));
 
     var post = new XMLHttpRequest();
 
@@ -23,7 +19,6 @@ function post_data_to_server(label) {
     var params = JSON.stringify({data: label});
     post.open("POST", url, true);
 
-    //post.setRequestHeader("Content-type", "application/json");
     post.setRequestHeader("Content-type", "text/plain");
     post.setRequestHeader("Content-length", params.length);
     post.setRequestHeader("Connection", "close");

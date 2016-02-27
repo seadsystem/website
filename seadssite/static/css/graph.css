@@ -14,12 +14,13 @@ input[type="radio"] {
   margin: 0 15px 0 7px;
 }
 
+/*-- Error text --*/
 #bad {
   color: red;
   font-weight: bold;
 }
 
-#test {
+#text-table {
   width: 80%;
 }
 
