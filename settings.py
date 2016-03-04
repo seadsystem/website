@@ -30,7 +30,7 @@ DEBUG = False
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['thawing-escarpment-10731.herokuapp.com', '0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['seads.herokuapp.com', '0.0.0.0', 'localhost']
 
 
 # Application definition
@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework_swagger',
     'seadssite',
+    'SeadsFront',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -69,8 +70,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mydb',
-        'USER': 'ram',
-        'PASSWORD': 'rocky7',
+        'USER': 'myusername',
+        'PASSWORD': 'myPassword',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -80,8 +81,6 @@ DATABASES = {
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles','images')
