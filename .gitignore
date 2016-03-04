@@ -5,6 +5,7 @@ __pycache__/*sgitgit
 __pycache__/*.*
 *.pyc
 *~
+settings.py
 venv
 staticfiles
 .env
