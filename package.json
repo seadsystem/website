@@ -1,0 +1,18 @@
+{
+  "name": "website",
+  "version": "1.0.0",
+  "description": "This is a preliminary setup for our seads Frontend website, which will eventually include d3 visualizations. Currently, this website will only work with a local postgres database, which can be installed with the instructions below.",
+  "main": "bundle.js",
+  "dependencies": {
+    "browserify": "13.0.0",
+    "c3": "0.4.11-rc4"
+  },
+  "scripts": {
+  "postinstall": "browserify seadssite/static/js/graph.js -o seadssite/static/js/bundle.js",
+  "start": "nf start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seadsystem/website.git"
+  }
+}
