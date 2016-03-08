@@ -75,7 +75,6 @@ function post_data_to_server(label) {
     var params = JSON.stringify({data: label});
     post.open("POST", url, true);
 
-    //post.setRequestHeader("Content-type", "application/json");
     post.setRequestHeader("Content-type", "text/plain");
     post.setRequestHeader("Content-length", params.length);
     post.setRequestHeader("Connection", "close");
@@ -235,20 +234,19 @@ function generate_chart(data) {
             }
 	});
     } else {
-	//console.log("do it work?");
-	chart.load({
-	    columns: [
-		['x'].concat(data.data.map(
-		    function(x) {
-			return x.time;
-		    }
-		)), ['energy'].concat(data.data.map(
-		    function(x) {
-			return x.energy;
-		    }
-		))
-	    ]}
-	);
+    	chart.load({
+    	    columns: [
+    		['x'].concat(data.data.map(
+    		    function(x) {
+    			return x.time;
+    		    }
+    		)), ['energy'].concat(data.data.map(
+    		    function(x) {
+    			return x.energy;
+    		    }
+    		))
+    	    ]}
+    	);
     }
     
     /*-- Deselect points when dragging on graph --*/
@@ -264,7 +262,7 @@ function generate_chart(data) {
         var start = new Date(elements[0].x); 
         var end = new Date(elements[elements.length - 1].x); 
 
-        $('#myModal').modal('toggle');
+        $('#myModal').modal('show');
 
         $("#start-date").datetimepicker({
             format: 'MM/DD/YYYY HH:mm'
@@ -280,6 +278,8 @@ function generate_chart(data) {
 
 
 $(document).ready(function() {
+
+    console.log("TEST");
     //onload
 
     //Live labelling click event
@@ -347,7 +347,7 @@ $(document).ready(function() {
 
             post_data_to_server(label);
             $("#label-name").val('');
-            $('#myModal').modal('toggle');
+            $('#myModal').modal('hide');
             $("#success-alert").show();
             $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
                 $("#success-alert").hide();
