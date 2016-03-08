@@ -26,22 +26,15 @@ function generate_bar_graph(data) {
             top: 0,
             right: 100,
             bottom: 0,
-            left: 50,
+            left: 100,
         },
         bindto: '#bar',
         data: {
             x: 'x',
             xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
-                ['x'].concat(data.data.map(
-                    function(x) {
-                        return x.time;
-                    }
-                )), ['energy'].concat(data.data.map(
-                    function(x) {
-                        return x.energy;
-                    }
-                ))
+                ['x'].concat(data.data.map( function(x) { return x.time; })), 
+                ['energy'].concat(data.data.map( function(x) { return x.energy; }))
             ],
             type: 'bar'
         },
@@ -69,7 +62,8 @@ function post_data_to_server(label) {
 
     var post = new XMLHttpRequest();
 
-    var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
+    // device ID is 3rd entry in url seperatered by a '/'
+    var pathArray = window.location.pathname.split('/'); 
     var deviceId = pathArray[2];
     var url = "http://db.sead.systems:8080/" + deviceId + "/label";
     var params = JSON.stringify({data: label});
@@ -101,10 +95,12 @@ function create_url(start, end, gran) {
         var granularity = Math.ceil((end - start) / num_nodes);
     }
 
-    var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
+    // device ID is 3rd entry in url seperatered by a '/'
+    var pathArray = window.location.pathname.split('/'); 
     var deviceId = pathArray[2];
     var panel = $('input[type=radio][name=panels]:checked').val();
-    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
+            + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
 
 
@@ -193,60 +189,44 @@ function fetch_bar_graph(url) {
 var chart = null;
 function generate_chart(data) {
     if (chart == null) {
-	chart = c3.generate({
+        chart = c3.generate({
             padding: {
-		top: 0,
-		right: 100,
-		bottom: 0,
-		left: 100,
+                top: 0,
+                right: 100,
+                bottom: 0,
+                left: 100,
             },
             bindto: '#chart',
             data: {
-		selection: {
+                selection: {
                     enabled: true,
                     draggable: true,
                     grouped: true
-		},
-		x: 'x',
-		xFormat: '%Y-%m-%d %H:%M:%S',
-		columns: [
-                    ['x'].concat(data.data.map(
-			function(x) {
-                            return x.time;
-			}
-                    )), ['energy'].concat(data.data.map(
-			function(x) {
-                            return x.energy;
-			}
-                    ))
-		],
-		types: {
-                    energy: 'area',
-		}
+                },
+                x: 'x',
+                xFormat: '%Y-%m-%d %H:%M:%S',
+                columns:[ ['x'].concat(data.data.map(function(x){ return x.time; } )), 
+                        ['energy'].concat(data.data.map(function(x){ return x.energy; })) ],
+                        types: { energy: 'area', }
             },
             axis: {
-		x: {
+                x: {
                     type: 'timeseries',
                     tick: {
-			format: '%H:%M'
+                        format: '%H:%M'
                     }
-		}
+                }
+            },
+            point: {
+                r: 1.5
             }
-	});
+        });
     } else {
-    	chart.load({
-    	    columns: [
-    		['x'].concat(data.data.map(
-    		    function(x) {
-    			return x.time;
-    		    }
-    		)), ['energy'].concat(data.data.map(
-    		    function(x) {
-    			return x.energy;
-    		    }
-    		))
-    	    ]}
-    	);
+        chart.load({
+            columns: [
+            ['x'].concat(data.data.map(function(x){ return x.time; })), 
+            ['energy'].concat(data.data.map( function(x){ return x.energy; })) ]
+        });
     }
     
     /*-- Deselect points when dragging on graph --*/
@@ -278,8 +258,6 @@ function generate_chart(data) {
 
 
 $(document).ready(function() {
-
-    console.log("TEST");
     //onload
 
     //Live labelling click event

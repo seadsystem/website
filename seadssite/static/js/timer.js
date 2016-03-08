@@ -27,7 +27,7 @@ function post_data_to_server(label) {
         if (post.readyState == XMLHttpRequest.DONE) {
             if (post.status == 200) { //200 OK
                 console.log("Response:");
-		console.log(post.responseText);
+                console.log(post.responseText);
             } else {
                 console.log("it broke");
             }
