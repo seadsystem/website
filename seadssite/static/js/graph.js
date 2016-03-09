@@ -14,16 +14,13 @@ function fetch_pie() {
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
-            pie, true);
+             pie, true);
 }
 
 function pie(responses) {
     var data = [];
     for (var i = 0; i < responses.length; i++) {
-    data[i] = [
-        'Panel ' + (i+1),
-        JSON.parse(responses[i]).data[0].energy
-    ];
+        data[i] = ['Panel ' + (i+1), JSON.parse(responses[i]).data[0].energy];
     }
     c3.generate({
         bindto: '#pie',
@@ -92,7 +89,7 @@ function post_data_to_server(label) {
         if (post.readyState == XMLHttpRequest.DONE) {
             if (post.status == 200) { //200 OK
                 console.log("Response:");
-        console.log(post.responseText);
+                console.log(post.responseText);
             } else {
                 console.log("it broke");
             }
@@ -170,7 +167,7 @@ function bar() {
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
-            generate_bar_graph);
+             generate_bar_graph);
     
 }
 
@@ -180,48 +177,48 @@ function fetch_aggregate(urls, callback, seperate) {
     var reqs = [];
     
     var onCompleted = function() {
-    for (var i = 0; i < urls.length; i++) {
-        if (responses[i] == null) return;
-    }
-    if (seperate) {
-        callback(responses);
-    } else {
-        var dat = JSON.parse(responses[0]).data;
-        for (var i = 1; i < responses.length; i++) {
-        var new_dat = JSON.parse(responses[i]).data;
-        for (var j = 0; j < dat.length; j++) {
-            dat[j].energy = +dat[j].energy + +new_dat[j].energy;
+        for (var i = 0; i < urls.length; i++) {
+            if (responses[i] == null) return;
         }
+        if (seperate) {
+            callback(responses);
+        } else {
+            var dat = JSON.parse(responses[0]).data;
+            for (var i = 1; i < responses.length; i++) {
+                var new_dat = JSON.parse(responses[i]).data;
+                for (var j = 0; j < dat.length; j++) {
+                    dat[j].energy = +dat[j].energy + +new_dat[j].energy;
+                }
+            }
+            callback({data: dat});
         }
-        callback({data: dat});
-    }
     };
     
     var onFailed = function() {
-    console.log("it broke");
+        console.log("it broke");
     };
     
     for (var i = 0; i < urls.length; i++) {
-    responses[i] = null;
+        responses[i] = null;
     }
     for (var i = 0; i < urls.length; i++) {
-    var request = new XMLHttpRequest();
-    request.seads_index = i;
-    request.onreadystatechange = function() {
-            if (this.readyState == XMLHttpRequest.DONE) {
-        if (this.status == 200) { //200 OK
-            if (responses[this.seads_index] == null) {
-            responses[this.seads_index] = this.responseText;
-            onCompleted();
-            }
-        } else {
-                    onFailed();
-        }
-            }
-    };
+        var request = new XMLHttpRequest();
+        request.seads_index = i;
+        request.onreadystatechange = function() {
+                if (this.readyState == XMLHttpRequest.DONE) {
+                    if (this.status == 200) { //200 OK
+                        if (responses[this.seads_index] == null) {
+                            responses[this.seads_index] = this.responseText;
+                            onCompleted();
+                        }
+                    } else {
+                        onFailed();
+                    }
+                }
+        };
 
-    request.open("GET", urls[i], true);
-    request.send();
+        request.open("GET", urls[i], true);
+        request.send();
     }
 }
 

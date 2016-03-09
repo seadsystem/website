@@ -30,7 +30,7 @@ DEBUG = False
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['seads.herokuapp.com', '0.0.0.0']
+ALLOWED_HOSTS = ['seads.herokuapp.com']
 
 
 # Application definition
