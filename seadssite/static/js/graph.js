@@ -6,21 +6,40 @@ var HOUR_SECONDS = 60 * 60;
 var DAY_SECONDS = HOUR_SECONDS * 24;
 
 
-function pie() {
+function fetch_pie() {
+    var end = Math.floor(Date.now() / 1000);
+    var start = end - DAY_SECONDS*2;
+    var gran = DAY_SECONDS;
+    //fetch_bar_graph(create_url(start, end, gran));
+
+    //console.log(create_url(start, end, gran, "Panel1"));
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+            pie, true);
+}
+
+function pie(responses) {
+    var data = [];
+    for (var i = 0; i < responses.length; i++) {
+    data[i] = [
+        'Panel ' + (i+1),
+        JSON.parse(responses[i]).data[0].energy
+    ];
+    }
     c3.generate({
         bindto: '#pie',
         data: {
             // iris data from R
-            columns: [
-                ['data1', 30],
-                ['data2', 120],
-            ],
+            columns: data,
             type: 'pie',
         }
     });
 }
 
 function generate_bar_graph(data) {
+    //console.log(JSON.stringify(data));
     c3.generate({
         padding: {
             top: 0,
@@ -87,7 +106,7 @@ function post_data_to_server(label) {
 }
 
 
-function create_url(start, end, gran) {
+function create_url(start, end, gran, panel) {
     if (gran) {
         var granularity = gran;
     } else {
@@ -98,7 +117,7 @@ function create_url(start, end, gran) {
     // device ID is 3rd entry in url seperatered by a '/'
     var pathArray = window.location.pathname.split('/'); 
     var deviceId = pathArray[2];
-    var panel = $('input[type=radio][name=panels]:checked').val();
+    if (!panel) panel = $('input[type=radio][name=panels]:checked').val();
     return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
             + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
@@ -148,10 +167,74 @@ function pick_live() {
 }
 
 function bar() {
-    var end = Math.floor(Date.now() / 1000);
-    var start = end - 691200;
-    var gran = 86400;
-    fetch_bar_graph(create_url(start, end, gran));
+    var end = Math.floor(Math.floor((Date.now() / 1000)/DAY_SECONDS)*DAY_SECONDS);
+    var start = end - DAY_SECONDS*8;
+    var gran = DAY_SECONDS;
+    //fetch_bar_graph(create_url(start, end, gran));
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+            generate_bar_graph);
+    
+}
+
+function fetch_aggregate(urls, callback, seperate) {
+    if (!seperate) seperate = false;
+    var responses = [];
+    var reqs = [];
+    
+    var onCompleted = function() {
+    //console.log(responses);
+    for (var i = 0; i < urls.length; i++) {
+        if (responses[i] == null) return;
+    }
+    //console.log(responses);
+    if (seperate) {
+        callback(responses);
+    } else {
+        var dat = JSON.parse(responses[0]).data;
+        for (var i = 1; i < responses.length; i++) {
+        var new_dat = JSON.parse(responses[i]).data;
+        for (var j = 0; j < dat.length; j++) {
+            dat[j].energy = +dat[j].energy + +new_dat[j].energy;
+        }
+        }
+        callback({data: dat});
+    }
+    };
+    
+    var onFailed = function() {
+    console.log("it broke");
+    };
+
+    //console.log(urls.length);
+    
+    for (var i = 0; i < urls.length; i++) {
+    responses[i] = null;
+    }
+    for (var i = 0; i < urls.length; i++) {
+    var request = new XMLHttpRequest();
+    request.seads_index = i;
+    request.onreadystatechange = function() {
+        //console.log(this);
+            if (this.readyState == XMLHttpRequest.DONE) {
+        //console.log(this.seads_index);
+        if (this.status == 200) { //200 OK
+            if (responses[this.seads_index] == null) {
+            responses[this.seads_index] = this.responseText;
+            //console.log(this.seads_index);
+            onCompleted();
+            }
+        } else {
+                    onFailed();
+        }
+            }
+    };
+
+    request.open("GET", urls[i], true);
+    request.send();
+    }
 }
 
 function fetch_graph(url) {
@@ -339,7 +422,7 @@ $(document).ready(function() {
 
     pick(pick_live, 10 * 1000);
 
-    pie();
+    fetch_pie();
 
     bar();
 });
