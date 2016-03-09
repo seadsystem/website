@@ -10,9 +10,6 @@ function fetch_pie() {
     var end = Math.floor(Date.now() / 1000);
     var start = end - DAY_SECONDS*2;
     var gran = DAY_SECONDS;
-    //fetch_bar_graph(create_url(start, end, gran));
-
-    //console.log(create_url(start, end, gran, "Panel1"));
     
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
@@ -39,7 +36,6 @@ function pie(responses) {
 }
 
 function generate_bar_graph(data) {
-    //console.log(JSON.stringify(data));
     c3.generate({
         padding: {
             top: 0,
@@ -170,7 +166,6 @@ function bar() {
     var end = Math.floor(Math.floor((Date.now() / 1000)/DAY_SECONDS)*DAY_SECONDS);
     var start = end - DAY_SECONDS*8;
     var gran = DAY_SECONDS;
-    //fetch_bar_graph(create_url(start, end, gran));
     
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
@@ -185,11 +180,9 @@ function fetch_aggregate(urls, callback, seperate) {
     var reqs = [];
     
     var onCompleted = function() {
-    //console.log(responses);
     for (var i = 0; i < urls.length; i++) {
         if (responses[i] == null) return;
     }
-    //console.log(responses);
     if (seperate) {
         callback(responses);
     } else {
@@ -207,8 +200,6 @@ function fetch_aggregate(urls, callback, seperate) {
     var onFailed = function() {
     console.log("it broke");
     };
-
-    //console.log(urls.length);
     
     for (var i = 0; i < urls.length; i++) {
     responses[i] = null;
@@ -217,13 +208,10 @@ function fetch_aggregate(urls, callback, seperate) {
     var request = new XMLHttpRequest();
     request.seads_index = i;
     request.onreadystatechange = function() {
-        //console.log(this);
             if (this.readyState == XMLHttpRequest.DONE) {
-        //console.log(this.seads_index);
         if (this.status == 200) { //200 OK
             if (responses[this.seads_index] == null) {
             responses[this.seads_index] = this.responseText;
-            //console.log(this.seads_index);
             onCompleted();
             }
         } else {

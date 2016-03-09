@@ -23,14 +23,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'kj5skzu%)hnpvy9z)2f6wdl3hw-pynf=dvex%!b29ienbddfg&'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['seads.herokuapp.com', '0.0.0.0']
 
 
 # Application definition
@@ -67,13 +67,15 @@ ROOT_URLCONF = 'SeadsFront.urls'
 
 WSGI_APPLICATION = 'SeadsFront.wsgi.application'
 
+USERNAME = os.environ['USERNAME']
+PASSWORD = os.environ['PASSWORD']
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mydb',
-        'USER': 'myusername',
-        'PASSWORD': 'myPassword',
+        'USER': USERNAME,
+        'PASSWORD': PASSWORD,
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -130,7 +132,7 @@ LOGIN_REDIRECT_URL = '/'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'seadssystems@gmail.com'
-EMAIL_HOST_PASSWORD = 'seads123'
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 EMAIL_PORT = 587
 
 
