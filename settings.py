@@ -30,7 +30,7 @@ DEBUG = False
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['seads.herokuapp.com', '0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -67,12 +67,15 @@ ROOT_URLCONF = 'SeadsFront.urls'
 
 WSGI_APPLICATION = 'SeadsFront.wsgi.application'
 
+USERNAME = os.environ['USERNAME']
+PASSWORD = os.environ['PASSWORD']
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mydb',
-        'USER': 'myusername',
-        'PASSWORD': 'myPassword',
+        'USER': USERNAME,
+        'PASSWORD': PASSWORD,
         'HOST': 'localhost',
         'PORT': '',
     }
