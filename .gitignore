@@ -12,3 +12,4 @@ staticfiles
 .DS_Store
 bundle.js
 node_modules
+
