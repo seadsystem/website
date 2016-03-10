@@ -1,0 +1,23 @@
+{
+	"name": "SEADS",
+	"description": "Seads front end website.",
+	"repository": "https://github.com/seadsystem/website",
+	"addons": ["heroku-postgresql:hobby-dev"],
+	"buildpacks": [
+		{
+			"url": "https://github.com/heroku/heroku-buildpack-nodejs"
+		},
+		{
+			"url": "https://github.com/heroku/heroku-buildpack-python"
+		}
+	],
+	"env": {
+		"SECRET_KEY": {
+			"description": "This gets generated",
+			"generator": "secret"
+		}
+	},
+	"scripts": {
+		"postdeploy": "psql $DATABASE_URL"
+	}
+}
