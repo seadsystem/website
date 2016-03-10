@@ -67,8 +67,8 @@ ROOT_URLCONF = 'SeadsFront.urls'
 
 WSGI_APPLICATION = 'SeadsFront.wsgi.application'
 
-USERNAME = os.environ['USERNAME']
-PASSWORD = os.environ['PASSWORD']
+# USERNAME = os.environ['USERNAME']
+# PASSWORD = os.environ['PASSWORD']
 
 DATABASES = {
     'default': {
@@ -129,14 +129,17 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 LOGIN_REDIRECT_URL = '/'
 
+EMAIL = os.environ['EMAIL']
+EMAIL_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'seadssystems@gmail.com'
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_HOST_USER = EMAIL
+EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
 EMAIL_PORT = 587
 
 
 # for password reset
-ADMINS =(('Seads', 'seadssystems@gmail.com'),)
+ADMINS =(('Seads', EMAIL),)
 MANAGERS=ADMINS
 

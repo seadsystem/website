@@ -1,7 +1,7 @@
 {
   "name": "website",
   "version": "1.0.0",
-  "description": "This is a preliminary setup for our seads Frontend website, which will eventually include d3 visualizations. Currently, this website will only work with a local postgres database, which can be installed with the instructions below.",
+  "description": "Seads front end website.",
   "main": "bundle.js",
   "dependencies": {
     "browserify": "13.0.0",
