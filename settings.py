@@ -30,7 +30,7 @@ DEBUG = False
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['seads.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -49,7 +49,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework_swagger',
     'seadssite',
-    'SeadsFront',
     'api',
 )
 
@@ -67,24 +66,9 @@ ROOT_URLCONF = 'SeadsFront.urls'
 
 WSGI_APPLICATION = 'SeadsFront.wsgi.application'
 
-# USERNAME = os.environ['USERNAME']
-# PASSWORD = os.environ['PASSWORD']
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mydb',
-        'USER': USERNAME,
-        'PASSWORD': PASSWORD,
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
 
 # Update database configuration with $DATABASE_URL.
-
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
 
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles','images')
@@ -128,18 +112,3 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
 LOGIN_REDIRECT_URL = '/'
-
-EMAIL = os.environ['EMAIL']
-EMAIL_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = EMAIL
-EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
-EMAIL_PORT = 587
-
-
-# for password reset
-ADMINS =(('Seads', EMAIL),)
-MANAGERS=ADMINS
-

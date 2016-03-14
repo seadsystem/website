@@ -16,8 +16,9 @@
 			"description": "This gets generated",
 			"generator": "secret"
 		}
-	},
+	}, 
 	"scripts": {
-		"postdeploy": "psql $DATABASE_URL"
+		"postdeploy": "python3 manage.py makemigrations",
+		"postdeploy": "python3 manage.py migrate"
 	}
 }
