@@ -60,16 +60,7 @@ def register(request):
             user = authenticate(username=request.POST['username'], password=request.POST['password'])
             login(request, user)
 
-            # sending a welcome email to the new user
-            # for html/css: http://stackoverflow.com/questions/3237519/sending-html-email-in-django
-            print("the email is about to be sent")
-            to_email = request.POST['email']
-            subject, from_email, to = 'Hi', 'seadssystems@gmail.com', [to_email]
-            html_content = render_to_string('welcome.html', {'varname':'value', 'first_name':first_name_save})
-            text_content = strip_tags(html_content)
-            msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
+            # sending a welcome email to the new user needs to be implemented here
 
             return HttpResponseRedirect('/')
 
@@ -171,4 +162,10 @@ def list(request):
     return render_to_response('list.html')
 
 def graph(request):
-    return render_to_response('graph.html')
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/?next=%s' % request.path)
+    current_user = request.user
+
+    connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
+
+    return render(request, 'graph.html', {'devices': connected_user_devices})

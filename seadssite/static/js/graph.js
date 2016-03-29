@@ -6,15 +6,27 @@ var HOUR_SECONDS = 60 * 60;
 var DAY_SECONDS = HOUR_SECONDS * 24;
 
 
-function pie() {
+function fetch_pie() {
+    var end = Math.floor(Date.now() / 1000);
+    var start = end - DAY_SECONDS*2;
+    var gran = DAY_SECONDS;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             pie, true);
+}
+
+function pie(responses) {
+    var data = [];
+    for (var i = 0; i < responses.length; i++) {
+        data[i] = ['Panel ' + (i+1), JSON.parse(responses[i]).data[0].energy];
+    }
     c3.generate({
         bindto: '#pie',
         data: {
             // iris data from R
-            columns: [
-                ['data1', 30],
-                ['data2', 120],
-            ],
+            columns: data,
             type: 'pie',
         }
     });
@@ -23,7 +35,7 @@ function pie() {
 function generate_bar_graph(data) {
     c3.generate({
         padding: {
-            top: 40,
+            top: 0,
             right: 100,
             bottom: 0,
             left: 100,
@@ -33,15 +45,8 @@ function generate_bar_graph(data) {
             x: 'x',
             xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
-                ['x'].concat(data.data.map(
-                    function(x) {
-                        return x.time;
-                    }
-                )), ['energy'].concat(data.data.map(
-                    function(x) {
-                        return x.energy;
-                    }
-                ))
+                ['x'].concat(data.data.map( function(x) { return x.time; })), 
+                ['energy'].concat(data.data.map( function(x) { return x.energy; }))
             ],
             type: 'bar'
         },
@@ -64,8 +69,37 @@ function generate_bar_graph(data) {
     });
 }
 
+function post_data_to_server(label) {
+    console.log("Sending " + JSON.stringify(label));
 
-function create_url(start, end, gran) {
+    var post = new XMLHttpRequest();
+
+    // device ID is 3rd entry in url seperatered by a '/'
+    var pathArray = window.location.pathname.split('/'); 
+    var deviceId = pathArray[2];
+    var url = "http://db.sead.systems:8080/" + deviceId + "/label";
+    var params = JSON.stringify({data: label});
+    post.open("POST", url, true);
+
+    post.setRequestHeader("Content-type", "text/plain");
+    post.setRequestHeader("Content-length", params.length);
+    post.setRequestHeader("Connection", "close");
+
+    post.onreadystatechange = function() {
+        if (post.readyState == XMLHttpRequest.DONE) {
+            if (post.status == 200) { //200 OK
+                console.log("Response:");
+                console.log(post.responseText);
+            } else {
+                console.log("it broke");
+            }
+        }
+    }
+    post.send(params);
+}
+
+
+function create_url(start, end, gran, panel) {
     if (gran) {
         var granularity = gran;
     } else {
@@ -73,10 +107,12 @@ function create_url(start, end, gran) {
         var granularity = Math.ceil((end - start) / num_nodes);
     }
 
-    var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
+    // device ID is 3rd entry in url seperatered by a '/'
+    var pathArray = window.location.pathname.split('/'); 
     var deviceId = pathArray[2];
-    var panel = $('input[type=radio][name=panels]:checked').val();
-    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
+    if (!panel) panel = $('input[type=radio][name=panels]:checked').val();
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
+            + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
 
 
@@ -124,10 +160,66 @@ function pick_live() {
 }
 
 function bar() {
-    var end = Math.floor(Date.now() / 1000);
-    var start = end - 691200;
-    var gran = 86400;
-    fetch_bar_graph(create_url(start, end, gran));
+    var end = Math.floor(Math.floor((Date.now() / 1000)/DAY_SECONDS)*DAY_SECONDS);
+    var start = end - DAY_SECONDS*8;
+    var gran = DAY_SECONDS;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             generate_bar_graph);
+    
+}
+
+function fetch_aggregate(urls, callback, seperate) {
+    if (!seperate) seperate = false;
+    var responses = [];
+    var reqs = [];
+    
+    var onCompleted = function() {
+        for (var i = 0; i < urls.length; i++) {
+            if (responses[i] == null) return;
+        }
+        if (seperate) {
+            callback(responses);
+        } else {
+            var dat = JSON.parse(responses[0]).data;
+            for (var i = 1; i < responses.length; i++) {
+                var new_dat = JSON.parse(responses[i]).data;
+                for (var j = 0; j < dat.length; j++) {
+                    dat[j].energy = +dat[j].energy + +new_dat[j].energy;
+                }
+            }
+            callback({data: dat});
+        }
+    };
+    
+    var onFailed = function() {
+        console.log("it broke");
+    };
+    
+    for (var i = 0; i < urls.length; i++) {
+        responses[i] = null;
+    }
+    for (var i = 0; i < urls.length; i++) {
+        var request = new XMLHttpRequest();
+        request.seads_index = i;
+        request.onreadystatechange = function() {
+                if (this.readyState == XMLHttpRequest.DONE) {
+                    if (this.status == 200) { //200 OK
+                        if (responses[this.seads_index] == null) {
+                            responses[this.seads_index] = this.responseText;
+                            onCompleted();
+                        }
+                    } else {
+                        onFailed();
+                    }
+                }
+        };
+
+        request.open("GET", urls[i], true);
+        request.send();
+    }
 }
 
 function fetch_graph(url) {
@@ -162,48 +254,49 @@ function fetch_bar_graph(url) {
     request.send();
 }
 
+var chart = null;
 function generate_chart(data) {
-    var chart = c3.generate({
-        padding: {
-            top: 0,
-            right: 100,
-            bottom: 0,
-            left: 100,
-        },
-        bindto: '#chart',
-        data: {
-            selection: {
-                enabled: true,
-                draggable: true,
-                grouped: true
+    if (chart == null) {
+        chart = c3.generate({
+            padding: {
+                top: 0,
+                right: 100,
+                bottom: 0,
+                left: 100,
             },
-            x: 'x',
-            xFormat: '%Y-%m-%d %H:%M:%S',
-            columns: [
-                ['x'].concat(data.data.map(
-                    function(x) {
-                        return x.time;
+            bindto: '#chart',
+            data: {
+                selection: {
+                    enabled: true,
+                    draggable: true,
+                    grouped: true
+                },
+                x: 'x',
+                xFormat: '%Y-%m-%d %H:%M:%S',
+                columns:[ ['x'].concat(data.data.map(function(x){ return x.time; } )), 
+                        ['energy'].concat(data.data.map(function(x){ return x.energy; })) ],
+                        types: { energy: 'area', }
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%H:%M'
                     }
-                )), ['energy'].concat(data.data.map(
-                    function(x) {
-                        return x.energy;
-                    }
-                ))
-            ],
-            types: {
-                energy: 'area',
-            }
-        },
-        axis: {
-            x: {
-                type: 'timeseries',
-                tick: {
-                    format: '%H:%M'
                 }
+            },
+            point: {
+                r: 1.5
             }
-        }
-    });
-
+        });
+    } else {
+        chart.load({
+            columns: [
+            ['x'].concat(data.data.map(function(x){ return x.time; })), 
+            ['energy'].concat(data.data.map( function(x){ return x.energy; })) ]
+        });
+    }
+    
     /*-- Deselect points when dragging on graph --*/
     $("#chart").mousedown(function() {
         chart.unselect(['energy']);
@@ -217,7 +310,7 @@ function generate_chart(data) {
         var start = new Date(elements[0].x); 
         var end = new Date(elements[elements.length - 1].x); 
 
-        $('#myModal').modal('toggle');
+        $('#myModal').modal('show');
 
         $("#start-date").datetimepicker({
             format: 'MM/DD/YYYY HH:mm'
@@ -234,6 +327,13 @@ function generate_chart(data) {
 
 $(document).ready(function() {
     //onload
+
+    //Live labelling click event
+    $("#label-button").click(function(event){
+        var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
+        var deviceId = pathArray[2];
+        window.location.href = "/dashboard/" + deviceId + "/timer/";
+    });
 
     //hide success alert dialogue
     $("#success-alert").hide();
@@ -286,14 +386,14 @@ $(document).ready(function() {
                                             $("#end-date").data("DateTimePicker").getDate().unix() !== null) {
             
             var label = {
-                start: $("#start-date").data("DateTimePicker").getDate().unix(),
-                end: $("#end-date").data("DateTimePicker").getDate().unix(),
-                name: $("#label-name").val()
+                start_time: $("#start-date").data("DateTimePicker").getDate().unix(),
+                end_time: $("#end-date").data("DateTimePicker").getDate().unix(),
+                label: $("#label-name").val()
             };
 
             post_data_to_server(label);
             $("#label-name").val('');
-            $('#myModal').modal('toggle');
+            $('#myModal').modal('hide');
             $("#success-alert").show();
             $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
                 $("#success-alert").hide();
@@ -307,7 +407,7 @@ $(document).ready(function() {
 
     pick(pick_live, 10 * 1000);
 
-    pie();
+    fetch_pie();
 
     bar();
 });

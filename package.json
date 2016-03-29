@@ -1,0 +1,18 @@
+{
+  "name": "website",
+  "version": "1.0.0",
+  "description": "Seads front end website.",
+  "main": "bundle.js",
+  "dependencies": {
+    "browserify": "13.0.0",
+    "c3": "0.4.11-rc4"
+  },
+  "scripts": {
+  "postinstall": "browserify seadssite/static/js/graph.js -o seadssite/static/js/bundle.js",
+  "start": "nf start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seadsystem/website.git"
+  }
+}

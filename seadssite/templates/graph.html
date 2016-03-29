@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% block content %}
 <html>
   <meta charset="utf-8">
@@ -12,7 +12,7 @@
       <strong>Success! </strong>
       You have added a new label
     </div>
-    <H1 align="center"> Daily </H1>
+    <H3 align="center"> Daily Usage</H3>
     <div align="center" class="wrap" id="panel_buttons">
       <form action="" class="panels">
         Panel 1<input  id="panel1" name="panels" value="Panel1" type="radio" checked/>
@@ -38,9 +38,19 @@
       </div>
     </section>
     <section id="labelling-tools" align="center">
-      <a href="/timer/" class="btn btn-info btn-sm">Live Labelling</a>
-      <H5> (Or select an area to label by dragging on line graph) </H5>
+      <button id ="label-button" class="btn btn-info btn-sm">Live Labelling</button>
+      <H5> (Or select an area on the line graph to label a past event) </H5>
     </section>
+    <table id="text-table">
+      <tr>
+        <td>
+          <H3 align="center"> Usage per device </H3>
+        </td>
+        <td>
+          <H3 align="right"> Past Week </H3>
+        </td>
+      </tr>
+    </table>
     <div id="pie"></div>
     <div id="bar"></div>
     <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">

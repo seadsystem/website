@@ -4,5 +4,11 @@ __pycache__
 __pycache__/*sgitgit
 __pycache__/*.*
 *.pyc
-SeadsFront/settings.py
 *~
+SeadsFront/settings.py
+venv
+staticfiles
+.env
+.DS_Store
+bundle.js
+node_modules
