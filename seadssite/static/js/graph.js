@@ -28,6 +28,13 @@ function pie(responses) {
             // iris data from R
             columns: data,
             type: 'pie',
+        },
+        pie: {
+            label: {
+                format: function(value, ratio, id) {
+                    return value.toFixed(2);
+                }
+            }
         }
     });
 }
@@ -46,7 +53,7 @@ function generate_bar_graph(data) {
             xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
                 ['x'].concat(data.data.map( function(x) { return x.time; })), 
-                ['energy'].concat(data.data.map( function(x) { return x.energy; }))
+                ['energy'].concat(data.data.map( function(x) { return x.energy.toFixed(2); }))
             ],
             type: 'bar'
         },
@@ -279,7 +286,7 @@ function generate_chart(data, gran) {
                 columns:[ ['x'].concat(data.data.map(function(x){ return x.time; } )), 
                         ['energy'].concat(data.data.map(function(x){
                             var power = (x.energy * (3600 / gran));
-                            return power; 
+                            return power.toFixed(4); 
                         })) ],
                         types: { energy: 'area', }
             },
@@ -302,7 +309,7 @@ function generate_chart(data, gran) {
             ['energy'].concat(data.data.map( function(x){
                 //convert energy to power by multiplying energy by 3600/granularity  
                 var power = (x.energy * (3600/gran));
-                return power; 
+                return power.toFixed(4); 
             })) ]
         });
     }

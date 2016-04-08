@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 
 import os
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "dev_settings"
 
 from django.core.wsgi import get_wsgi_application
 from whitenoise.django import DjangoWhiteNoise
