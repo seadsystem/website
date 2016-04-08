@@ -278,7 +278,6 @@ function generate_chart(data, gran) {
                 xFormat: '%Y-%m-%d %H:%M:%S',
                 columns:[ ['x'].concat(data.data.map(function(x){ return x.time; } )), 
                         ['energy'].concat(data.data.map(function(x){
-                            console.log(gran);
                             var power = (x.energy * (3600 / gran));
                             return power; 
                         })) ],
