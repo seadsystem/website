@@ -223,11 +223,14 @@ function fetch_aggregate(urls, callback, seperate) {
 }
 
 function fetch_graph(url) {
+    //Split url by '=' symbol to isolate granularity value, which always becomes 7th element 
+    var splitUrl = url.split("=");
+    var gran = splitUrl[6];
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
         if (request.readyState == XMLHttpRequest.DONE) {
             if (request.status == 200) { //200 OK
-                generate_chart(JSON.parse(request.responseText));
+                generate_chart(JSON.parse(request.responseText), gran);
             } else {
                 console.log("it broke");
             }
@@ -255,7 +258,7 @@ function fetch_bar_graph(url) {
 }
 
 var chart = null;
-function generate_chart(data) {
+function generate_chart(data, gran) {
     if (chart == null) {
         chart = c3.generate({
             padding: {
@@ -274,7 +277,11 @@ function generate_chart(data) {
                 x: 'x',
                 xFormat: '%Y-%m-%d %H:%M:%S',
                 columns:[ ['x'].concat(data.data.map(function(x){ return x.time; } )), 
-                        ['energy'].concat(data.data.map(function(x){ return x.energy; })) ],
+                        ['energy'].concat(data.data.map(function(x){
+                            console.log(gran);
+                            var power = (x.energy * (3600 / gran));
+                            return power; 
+                        })) ],
                         types: { energy: 'area', }
             },
             axis: {
@@ -293,7 +300,11 @@ function generate_chart(data) {
         chart.load({
             columns: [
             ['x'].concat(data.data.map(function(x){ return x.time; })), 
-            ['energy'].concat(data.data.map( function(x){ return x.energy; })) ]
+            ['energy'].concat(data.data.map( function(x){
+                //convert energy to power by multiplying energy by 3600/granularity  
+                var power = (x.energy * (3600/gran));
+                return power; 
+            })) ]
         });
     }
     
