@@ -1,4 +1,4 @@
-from seadssite.models import UserProfile
+from seadssite.models.models import UserProfile
 from django.contrib.auth.models import User
 from django import forms
 from django.core.validators import RegexValidator

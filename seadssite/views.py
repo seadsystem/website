@@ -4,7 +4,7 @@ from django.shortcuts import render, render_to_response
 from django.contrib.auth import authenticate, login
 from django.views.generic.base import TemplateView
 from seadssite.forms import UserForm, UserProfileForm
-from .models import Device
+from .models.models import Device
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string

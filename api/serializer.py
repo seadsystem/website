@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from seadssite.models import UserProfile
+from seadssite.models.models import UserProfile
 from rest_framework import serializers
 
 class UserProfileSerializer(serializers.ModelSerializer):
