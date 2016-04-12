@@ -31,8 +31,8 @@ Quick demo of selenium used for scraping data from a Los Angeles real estate lis
 '''
 
 import unittest
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+#from selenium import webdriver
+#from selenium.webdriver.common.keys import Keys
 #from selenium.webdriver.common.by import By
 #from selenium.webdriver.support.ui import WebDriverWait
 """
@@ -40,7 +40,7 @@ class SeadsTesting(unittest.TestCase):
 	def setUp(self):
 		self.browser = webdriver.Firefox()
 """
-
+"""
 browser = webdriver.Firefox()
 browser.get("http:/google.com/")
 assert "Google" in browser.title
@@ -48,7 +48,7 @@ elem = browser.find_element_by_name("q")  # Finds the search box
 elem.send_keys("blahblah")     #types into the query
 elem.send_keys(Keys.RETURN)
 browser.close()
-
+"""
 
 
 """
