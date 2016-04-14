@@ -53,7 +53,7 @@ function generate_bar_graph(data) {
             xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
                 ['x'].concat(data.data.map( function(x) { return x.time; })), 
-                ['energy'].concat(data.data.map( function(x) { return Math.round(x.energy * 100) / 100})) //.toFixed(2); }))
+                ['energy'].concat(data.data.map( function(x) { return Math.round(x.energy * 100) / 100}))
             ],
             type: 'bar'
         },
@@ -118,6 +118,7 @@ function create_url(start, end, gran, panel) {
     var pathArray = window.location.pathname.split('/'); 
     var deviceId = pathArray[2];
     if (!panel) panel = $('input[type=radio][name=panels]:checked').val();
+    
     return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
             + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
@@ -286,7 +287,7 @@ function generate_chart(data, gran) {
                 columns:[ ['x'].concat(data.data.map(function(x){ return x.time; } )), 
                         ['energy'].concat(data.data.map(function(x){
                             var power = (x.energy * (3600 / gran));
-                            return Math.round(power * 10000) / 100; 
+                            return Math.round(power * 1000) / 1000; 
                         })) ],
                         types: { energy: 'area', }
             },
@@ -359,13 +360,10 @@ $(document).ready(function() {
     $('input[type=radio][name=panels]').change(function() {
         if (this.value == 'Panel1') {
             pick_live();
-            bar();
         } else if (this.value == 'Panel2') {
             pick_live();
-            bar();
         } else if (this.value == 'Panel3') {
             pick_live();
-            bar();
         }
     });
 

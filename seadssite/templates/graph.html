@@ -13,12 +13,15 @@
       You have added a new label
     </div>
     <H3 align="center"> Daily Usage</H3>
-    <div align="center" class="wrap" id="panel_buttons">
-      <form action="" class="panels">
-        Panel 1<input  id="panel1" name="panels" value="Panel1" type="radio" checked/>
-        Panel 2<input  id="panel2" name="panels" value="Panel2" type="radio"/>
-        Panel 3<input  id="panel3" name="panels" value="Panel3" type="radio"/>
-      </form>
+    <div class="text-center">
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default active">
+          <input type="radio" name="panels" value="Panel1" id="panel1" checked>Panel 1</label>
+        <label class="btn btn-default">
+          <input type="radio" name="panels" value="Panel2" id="panel2">Panel 2</label>
+        <label class="btn btn-default">
+          <input type="radio" name="panels" value="Panel3" id="panel3">Panel 3</label>
+      </div>
     </div>
     <div id="chart"></div>
     <section id="chart-tools">
