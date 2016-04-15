@@ -2,8 +2,6 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
-from seadssite.models import UserProfile
-
 # we should use email validation: http://stackoverflow.com/questions/3217682/checking-validity-of-email-in-django-python
 # http://stackoverflow.com/questions/20192144/creating-custom-user-registration-form-django
 
@@ -59,12 +57,6 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'first_name','last_name', 'email', 'password')
-
-
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ('phone', 'cell_provider')
 
 
 # How the native password reset needs to work
