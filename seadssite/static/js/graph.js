@@ -118,7 +118,7 @@ function create_url(start, end, gran, panel) {
     var pathArray = window.location.pathname.split('/'); 
     var deviceId = pathArray[2];
     if (!panel) panel = $('input[type=radio][name=panels]:checked').val();
-    
+
     return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
             + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
@@ -271,7 +271,7 @@ function generate_chart(data, gran) {
         chart = c3.generate({
             padding: {
                 top: 0,
-                right: 100,
+                right: 0,
                 bottom: 0,
                 left: 100,
             },
@@ -345,6 +345,15 @@ function generate_chart(data, gran) {
 
 $(document).ready(function() {
     //onload
+
+    $(".list-group button").click(function(e) {
+        if( $(this).hasClass( "active" ) ) {
+            $(this).removeClass("active");
+        } else {
+            $(".list-group button").removeClass("active");
+            $(this).addClass("active");
+        }
+    });
 
     //Live labelling click event
     $("#label-button").click(function(event){

@@ -24,6 +24,24 @@ input[type="radio"] {
   width: 80%;
 }
 
+.nopadding {
+   padding: 5 !important;
+   margin: 0 !important;
+}
+
+.list-group-item {
+  outline: 0;
+  box-shadow: none;
+}
+
+.list-group-item {
+  width:100%;
+}
+
+.list-group{
+    max-height: 250px;
+    overflow-y:auto; 
+}
 
 /*-- Buttons and date picker section --*/
 section#chart-tools {
