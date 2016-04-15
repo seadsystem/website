@@ -1,8 +1,8 @@
-from django.test import TestCase
-from seadssite.models.models import User
-from seadssite.models.models import Device
+from django.contrib.auth.models import User
 from django.core.exceptions import FieldError
+from django.test import TestCase
 
+from seadssite.models import Device
 
 
 class DeviceTestCase(TestCase):
@@ -44,6 +44,7 @@ class DeviceTestCase(TestCase):
         self.device2.deactivate_device()
         device = Device.objects.get(device_id=self.device2.device_id)
         self.assertEqual(self.device2.is_active, False)
+        self.assertIsNone(device.user)
 
     def test_deactivate_device_raises_already_disactivated(self):
         try:
@@ -54,13 +55,14 @@ class DeviceTestCase(TestCase):
             print(e)
 
     def test_reactivate_device(self):
-        self.device4.reactivate_device()
+        self.device4.reactivate_device(self.user1)
         device = Device.objects.get(device_id=self.device4.device_id)
         self.assertEqual(self.device4.is_active, True)
+        self.assertEqual(self.user1, device.user)
 
-    def test_deactivate_device_raises_already_disactivated(self):
+    def test_reactivate_device_raises_already_active(self):
         try:
-            self.device5.reactivate_device()
+            self.device5.reactivate_device(self.user1)
             self.assertRaisesMessage(FieldError, 'This device is currently active.')
         except FieldError as e:
             print(e)

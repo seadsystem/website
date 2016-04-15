@@ -1,6 +1,7 @@
-from django.contrib.auth.models import User
-from seadssite.models.models import UserProfile
 from rest_framework import serializers
+
+from seadssite.models import UserProfile
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
