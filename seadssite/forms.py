@@ -1,7 +1,9 @@
-from seadssite.models import UserProfile
-from django.contrib.auth.models import User
 from django import forms
+from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+
+from seadssite.models import UserProfile
+
 # we should use email validation: http://stackoverflow.com/questions/3217682/checking-validity-of-email-in-django-python
 # http://stackoverflow.com/questions/20192144/creating-custom-user-registration-form-django
 
