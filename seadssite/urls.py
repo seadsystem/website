@@ -22,6 +22,6 @@ urlpatterns = patterns('',
                        url(r'^dashboard/[0-9]+/$', v.graph),
                        url(r'^dashboard/[0-9]+/timer/$', v.TimerView),
                        url(r'^dashboard/[0-9]+/appliances/$', v.DevicesView),
-                       url(r'^register/', v.RegisterView.as_view()),
+                       url(r'^register', v.RegisterView.as_view()),
                        url(r'^help/$', v.help),
                        ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

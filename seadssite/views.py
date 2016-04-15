@@ -29,7 +29,7 @@ class RegisterView(View):
     sends a user to the registration page
     """
     form_class = UserForm
-    template_name = 'register.html'
+    template_name = 'registration/register.html'
 
     def get(self, request):
         user_form = self.form_class()
@@ -48,7 +48,7 @@ class RegisterView(View):
             return HttpResponseRedirect('/dashboard/')
             # TODO: sending a welcome email to the new user needs to be implemented here
         else:
-            return render(request, self.template_name,{'form': user_form})
+            return render(request, self.template_name, {'form': user_form})
 
 '''
 device dashboard page controller
