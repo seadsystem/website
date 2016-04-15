@@ -26,9 +26,11 @@ install:
   - pip install -r requirements.txt
   - pip install django==$DJANGO --quiet
   - pip install psycopg2 --quiet
+  - python manage.py makemigrations
+  - python manage.py migrate
 
 script:
-  - python manage.py test seadssite
+  - python manage.py test
 
 notifications:
   email: false
