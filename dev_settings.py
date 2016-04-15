@@ -46,10 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_swagger',
     'seadssite',
-    'api',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -62,9 +59,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'SeadsFront.urls'
+ROOT_URLCONF = 'seadssite.urls'
 
-WSGI_APPLICATION = 'SeadsFront.wsgi.application'
+WSGI_APPLICATION = 'seadssite.wsgi.application'
 
 
 # Update database configuration with $DATABASE_URL.
@@ -97,22 +94,9 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/seadssite/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'seadssite', 'static'),
-    os.path.join(PROJECT_ROOT, 'SeadsFront', 'static'),
+STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'seadssite', 'static'),)
 
-)
-
-TEMPLATE_DIRS = (
-    os.path.join(
-        os.path.dirname(__file__),
-        'seadssite/templates/',
-    ),
-    os.path.join(
-        os.path.dirname(__file__),
-        'SeadsFront/templates/',
-    ),
-)
+TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__),'seadssite/templates/'),)
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/

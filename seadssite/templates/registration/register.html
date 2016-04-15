@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+    <!-- required csrf token -->
+    <div class="container-fluid">
+        <div class="row">
+            <img src="{% static 'images/seadsLogo.png' %}" class="img-responsive center">
+            <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+                <form class="form-horizontal" role="form" name="register_user_form" action="/register/" method="post">
+                    {% csrf_token %}
+                    <!-- each of the required fields: Username, First/Last name, email, and password.-->
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.name }}"
+                                   class="form-field col-sm-4 col-md-3 col-lg-4 control-label">{{ field.label }}:</label>
+                            <div class="col-sm-8 col-md-9 col-lg-8">
+                                <input class="form-control overrideit" name="{{ field.name }}" type="text" id="{{ field.name }}" {% if field.value %} value={{ field.value }} {% else %} value='' {% endif %}>
+                            </div>
+                            <p class="text-center">{{ field.errors.as_text }}</p>
+                        </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <div class="col-sm-8 col-sm-offset-4 col-md-8 col-md-offset-4 col-lg-8 col-lg-offset-4">
+                            <button name="Submit" class="btn btn-block coloredsignin" type="submit" id="Submit"
+                                    name="submit" value="register">Register
+                            </button>
+                            <!-- will alert a user if any of their forms have errors, will be submitted otherwise -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div
+{% endblock %}

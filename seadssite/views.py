@@ -1,18 +1,20 @@
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.views.generic.base import TemplateView
+from django.views.generic import View
 
-from seadssite.forms import UserForm, UserProfileForm
+from seadssite.forms import UserForm
 from seadssite.models import Device
 
-'''
-load main page as "index"
-'''
+
 class IndexView(TemplateView):
-  template_name = 'index.html'
+    """
+    load main page as "index"
+    """
+    template_name = 'index.html'
+
 
 def help(request, template_name='registration/login.html'):
     # for SMS http://stackoverflow.com/questions/430582/sending-an-sms-to-a-cellphone-using-django
@@ -20,66 +22,33 @@ def help(request, template_name='registration/login.html'):
     send_mail('Login Information', 'This is a test', 'seadssystems@gmail.com', [email])
     return HttpResponseRedirect('/login')
 
-'''
-registration page controller
-sends a user to the registration page
-'''
-def register(request):
-    # is context needed?
-    context = RequestContext(request)
-    registered = False
-    # We have these save outside of any control in case there are errors, so the user doesn't need to re-enter anything
-    user_save = request.POST.get('username') or ''
-    phone_save = request.POST.get('phone') or ''
-    first_name_save = request.POST.get('first_name') or ''
-    last_name_save = request.POST.get('last_name') or ''
-    email_save = request.POST.get('email') or ''
-    cell_provider_save = request.POST.get('cell_provider') or ''
-    password_save = request.POST.get('password') or ''
 
-    # if a user "POST"s, check phone number, provider and user/profile form(models)
-    if request.method == 'POST':
-        print("user is about to register")
-        phone = request.POST['phone']
-        cell_provider = request.POST['cell_provider']
+class RegisterView(View):
+    """
+    registration page controller
+    sends a user to the registration page
+    """
+    form_class = UserForm
+    template_name = 'register.html'
+
+    def get(self, request):
+        user_form = self.form_class()
+        return render(request, 'registration/register.html', {'form': user_form})
+
+    def post(self, request):
         user_form = UserForm(data=request.POST)
-        profile_form = UserProfileForm(data=request.POST)
-
-        # If the two forms are valid...
-        if user_form.is_valid() and profile_form.is_valid():
+        if user_form.is_valid():
             # Creating a new user
-            user = user_form.save()
+            user = user_form.save(commit=False) #don't save to db, we do this after setting the password
             user.set_password(user.password)
             user.save()
-            profile = profile_form.save(commit=False)
-            profile.user = user
-            profile.save()
             # log the user in and send them to the homepage
             user = authenticate(username=request.POST['username'], password=request.POST['password'])
             login(request, user)
-
-            # sending a welcome email to the new user needs to be implemented here
-
-            return HttpResponseRedirect('/')
-
-        # if the forms are invalid show the user which part is invalid
+            return HttpResponseRedirect('/dashboard/')
+            # TODO: sending a welcome email to the new user needs to be implemented here
         else:
-            print (user_form.errors, profile_form.errors)
-
-            # If form is not valid, this would re-render inputtest.html with the errors in the form.
-            # render_to_response(request, 'register.html', {'data': 'hello'})
-            render_to_response('register.html', {'data': 'hello'})
-
-    # keep the fields populated so the user doesn't have to re-enter
-    else:
-        user_form = UserForm()
-        profile_form = UserProfileForm()
-
-    return render_to_response(
-            'register.html',
-            {'user_form': user_form, 'profile_form': profile_form, 'registered': registered, 'user': user_save, 'phone': phone_save, 'first_name':first_name_save, 'last_name':last_name_save, 'email':email_save, 'cell_prov':cell_provider_save, 'password':password_save},
-            context)
-
+            return render(request, self.template_name,{'form': user_form})
 
 '''
 device dashboard page controller
@@ -150,14 +119,6 @@ def DevicesView(request):
     user_devices = Device.objects.filter(user=current_user, is_active=True)
 
     return render(request, 'devices.html', {'devices': user_devices})
-'''
-Visualizaition of each DEVICE
-'''
-def VisualizationView(request, device_id):
-    return None
-
-def list(request):
-    return render_to_response('list.html')
 
 def graph(request):
     if not request.user.is_authenticated():
