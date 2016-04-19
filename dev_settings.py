@@ -28,17 +28,21 @@ SECRET_KEY = 'kj5skzu%)hnpvy9z)2f6wdl3hw-pynf=dvex%!b29ienbddfg&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = ['*']
 
-
-# Application definition
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
-)
-
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',
+            ],
+        },
+    },
+]
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -95,8 +99,6 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/seadssite/static/'
 
 STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'seadssite', 'static'),)
-
-TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__),'seadssite/templates/'),)
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/

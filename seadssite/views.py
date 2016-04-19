@@ -33,6 +33,7 @@ class RegisterView(View):
 
     def get(self, request):
         user_form = self.form_class()
+        print(user_form);
         return render(request, 'registration/register.html', {'form': user_form})
 
     def post(self, request):

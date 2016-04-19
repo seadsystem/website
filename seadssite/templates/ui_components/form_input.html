@@ -3,8 +3,7 @@
         <label for="{{ field.name }}"
                class="form-field col-sm-4 col-md-3 col-lg-4 control-label">{{ field.label }}:</label>
         <div class="col-sm-8 col-md-9 col-lg-8">
-            <input class="form-control overrideit" name="{{ field.name }}" type="text" id="{{ field.name }}"
-                    {% if field.value %} value={{ field.value }} {% else %} value='' {% endif %}>
+            {{ field }}
         </div>
         <p class="text-center">{{ field.errors.as_text }}</p>
     </div>

@@ -10,8 +10,8 @@ What the user must contain to be valid
 '''
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput())
-    first_name = forms.CharField(min_length=1, max_length=20, required=True,
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control overrideit'}))
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control overrideit'}), min_length=1, max_length=20, required=True,
         validators=[
             # what if someones legal name has numbers? this seems weird and unnecessary
             RegexValidator(
@@ -21,7 +21,7 @@ class UserForm(forms.ModelForm):
             ),
         ]
     )
-    last_name = forms.CharField(min_length=1, max_length=20, required=True,
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control overrideit'}), min_length=1, max_length=20, required=True,
         validators=[
             # what if someones legal name has numbers? this seems weird and unnecessary
             RegexValidator(
@@ -31,8 +31,8 @@ class UserForm(forms.ModelForm):
             ),
         ]
     )
-    username = forms.CharField(min_length=4, max_length=50, required=True)
-    email = forms.EmailField(min_length=4, max_length=220, required=True)
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control overrideit'}), min_length=4, max_length=50, required=True)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control overrideit'}), min_length=4, max_length=220, required=True)
 
     # there is an occasional bug where clickable ranges change when this changes ^. Here
     # is the original settings before in case this bug occurs.
