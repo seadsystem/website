@@ -19,9 +19,9 @@ function fetch_pie() {
 
 function pie(responses) {
     var data = [];
-    // for (var i = 0; i < responses.length; i++) {
-    //     data[i] = ['Panel ' + (i+1), JSON.parse(responses[i]).data[0].energy];
-    // }
+    for (var i = 0; i < responses.length; i++) {
+        data[i] = ['Panel ' + (i+1), JSON.parse(responses[i]).data[0].energy];
+    }
     c3.generate({
         padding: {
                 top: 0,
@@ -32,12 +32,7 @@ function pie(responses) {
         bindto: '#pie',
         data: {
             // iris data from R
-            columns: [
-            ['data1', 30],
-            ['data2', 120],
-            ['data3', 120],
-        ],
-
+            columns: data,
             type: 'pie',
         },
         pie: {
