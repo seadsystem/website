@@ -8,30 +8,106 @@
     <script src="{% static "js/bundle.js" %}"></script>
   </head>
   <body>
-    <div class="alert alert-success" id="success-alert">
-      <strong>Success! </strong>
-      You have added a new label
-    </div>
-    <H3 align="center"> Daily Usage</H3>
-    <div class="text-center">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default active">
-          <input type="radio" name="panels" value="Panel1" id="panel1" checked>Panel 1</label>
-        <label class="btn btn-default">
-          <input type="radio" name="panels" value="Panel2" id="panel2">Panel 2</label>
-        <label class="btn btn-default">
-          <input type="radio" name="panels" value="Panel3" id="panel3">Panel 3</label>
+    <div class="container">
+      <div class="row nopadding">        
+        <H3 align="center"> Daily Usage</H3><BR>
+        <div class="text-center">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default active">
+              <input type="radio" name="panels" value="Panel1" id="panel1" checked>Panel 1</label>
+            <label class="btn btn-default">
+              <input type="radio" name="panels" value="Panel2" id="panel2">Panel 2</label>
+            <label class="btn btn-default">
+              <input type="radio" name="panels" value="Panel3" id="panel3">Panel 3</label>
+          </div>
+        </div>
+      </div>
+      <div class="row nopadding">
+        <div class="col-lg-12 nopadding">
+          <div id="chart"></div>
+          <div class="row nopadding">
+            <div class="col-lg-3 col-md-3 col-sm-3">
+              <div class="form-group">
+                <H4 align="center">24hr Energy Usage</H4>
+                <div class='input-group date' id='daily-date'>
+                  <input type='text' class="form-control"/>
+                  <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3">
+              <H4 align="center">Start</H4>
+              <div class='input-group date' id='range-start'>
+                  <input type='text' class="form-control"/>
+                  <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3">
+              <H4 align="center">End</H4>
+              <div class='input-group date' id='range-end'>
+                <input type='text' class="form-control"/>
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-2 nopadding text-center">
+              <br/><br/>
+              <button id="label-button" class="btn btn-success btn-sm">Live Labelling</button>
+            </div>
+            <div class="col-md-1 nopadding">
+              <br/><br/>
+              <button id="live-button" type="button" class="btn btn-success btn-sm">Live Data</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="container">
       <div class="row">
-        <div class="col-sm-9 nopadding">
-          <div id="chart"></div>
-        </div>
-        <div class="col-sm-3 nopadding">
-          <div class="panel panel-primary">
+        <div class="col-md-4">
+          <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">
+              <h3 align="center" class="panel-title">
+                Real-time usage</h3>
+            </div>
+            <div class="row">
+              <div id="gauge" style="width:100%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 align="center" class="panel-title">
+                Usage per panel</h3>
+            </div>
+            <div class="row">
+              <div id="pie" style="width:100%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 align="center" class="panel-title">
+                Weekly usage</h3>
+            </div>
+            <div class="row">
+              <div id="bar" style="width:90%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 align="center" class="panel-title">
                 Appliances</h3>
             </div>
             <div class="list-group">
@@ -48,42 +124,21 @@
             </div>
           </div>
         </div>
+        <div class="col-md-8">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 align="center" class="panel-title">
+                Appliance graph</h3>
+            </div>
+            <div id="chart2"></div>
+          </div>
+        </div>
       </div>
     </div>
-
-    
-    <section id="chart-tools">
-      <div align="center" class="wrap" id="chart-controls">
-        <div id="one" class="chart-control">
-          <button id="daily-button" type="button" class="btn btn-primary btn-sm">24hr Usage</button>
-          <input type="text" id="daily-date"/>
-        </div>
-        <div id="two" class="chart-control">
-          <button id="range-button" type="button" class="btn btn-primary btn-sm">Select Range</button>
-          <input type="text" id="range-start"> to     
-          <input type="text" id="range-end">
-        </div>
-        <div id="three" class="chart-control">
-          <button id="live-button" type="button" class="btn btn-primary btn-sm">Live Data (1hr)</button>
-        </div>
-      </div>
-    </section>
-    <section id="labelling-tools" align="center">
-      <button id ="label-button" class="btn btn-info btn-sm">Live Labelling</button>
-      <H5> (Or select an area on the line graph to label a past event) </H5>
-    </section>
-    <table id="text-table">
-      <tr>
-        <td>
-          <H3 align="center"> Usage per device </H3>
-        </td>
-        <td>
-          <H3 align="right"> Past Week </H3>
-        </td>
-      </tr>
-    </table>
-    <div id="pie"></div>
-    <div id="bar"></div>
+    <div class="alert alert-success" id="success-alert">
+      <strong>Success! </strong>
+      You have added a new label
+    </div>
     <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
       <div class="modal-dialog modal-sm">
         <div class="modal-content">

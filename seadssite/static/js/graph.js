@@ -19,14 +19,25 @@ function fetch_pie() {
 
 function pie(responses) {
     var data = [];
-    for (var i = 0; i < responses.length; i++) {
-        data[i] = ['Panel ' + (i+1), JSON.parse(responses[i]).data[0].energy];
-    }
+    // for (var i = 0; i < responses.length; i++) {
+    //     data[i] = ['Panel ' + (i+1), JSON.parse(responses[i]).data[0].energy];
+    // }
     c3.generate({
+        padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+            },
         bindto: '#pie',
         data: {
             // iris data from R
-            columns: data,
+            columns: [
+            ['data1', 30],
+            ['data2', 120],
+            ['data3', 120],
+        ],
+
             type: 'pie',
         },
         pie: {
@@ -43,9 +54,9 @@ function generate_bar_graph(data) {
     c3.generate({
         padding: {
             top: 0,
-            right: 100,
+            right: 0,
             bottom: 0,
-            left: 100,
+            left: 50,
         },
         bindto: '#bar',
         data: {
@@ -168,7 +179,7 @@ function pick_live() {
 }
 
 function bar() {
-    var end = Math.floor(Math.floor((Date.now() / 1000)/DAY_SECONDS)*DAY_SECONDS);
+    var end = Math.floor((Date.now() / 1000)/DAY_SECONDS)*DAY_SECONDS;
     var start = end - DAY_SECONDS*8;
     var gran = DAY_SECONDS;
     
@@ -176,6 +187,18 @@ function bar() {
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
              generate_bar_graph);
+    
+}
+
+function gauge() {
+    var end = Math.floor(Date.now() / 1000 - 60)
+    var start = end - 60;
+    var gran = 10;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             generate_gauge);
     
 }
 
@@ -265,6 +288,48 @@ function fetch_bar_graph(url) {
     request.send();
 }
 
+function generate_gauge(data) {
+    var length = data.data.length;
+    var gauge = c3.generate({
+        padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+            },
+        bindto: '#gauge',
+        data: {
+            columns: [
+                ['data'].concat(Math.round((data.data[length-1].energy*360) * 1000) / 1000)
+            ],
+            type: 'gauge',
+        },
+        gauge: {
+           label: {
+               format: function(value, ratio) {
+                   return value;
+               },
+               show: true // to turn off the min/max labels.
+           },
+           min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+           max: 10, // 100 is default
+           units: ' kW',
+           width: 50 // for adjusting arc thickness
+        },
+        color: {
+            pattern: ['60B044', '#F6C600', '#F97600', '#FF0000'], // the three color levels for the percentage values.
+            threshold: {
+    //            unit: 'value', // percentage is default
+    //            max: 200, // 100 is default
+                values: [1, 2, 5, 10]
+            }
+        },
+        size: {
+            height: 200
+        }
+    });
+}
+
 var chart = null;
 function generate_chart(data, gran) {
     if (chart == null) {
@@ -273,7 +338,7 @@ function generate_chart(data, gran) {
                 top: 0,
                 right: 0,
                 bottom: 0,
-                left: 100,
+                left: 50,
             },
             bindto: '#chart',
             data: {
@@ -342,6 +407,22 @@ function generate_chart(data, gran) {
     });
 }
 
+function generate_appliance_chart() {
+    var chart = c3.generate({
+    bindto: '#chart2',
+    data: {
+        columns: [
+            ['data1', 300, 350, 300, 0, 0, 0],
+            ['data2', 130, 100, 140, 200, 150, 50]
+        ],
+        types: {
+            data1: 'area',
+            data2: 'area-spline'
+        }
+    }
+});
+}
+
 
 $(document).ready(function() {
     //onload
@@ -350,7 +431,6 @@ $(document).ready(function() {
         if( $(this).hasClass( "active" ) ) {
             $(this).removeClass("active");
         } else {
-            $(".list-group button").removeClass("active");
             $(this).addClass("active");
         }
     });
@@ -385,23 +465,21 @@ $(document).ready(function() {
         $("#label-name").val('');
     });
 
-
-    $("#daily-button").on("click", make_picker(pick_daily));
-    var dateNow = new Date();
     $("#daily-date").datetimepicker({
-        format: 'MM/DD/YYYY HH:mm',
-        defaultDate: moment(dateNow).hours(0).minutes(0).seconds(0).milliseconds(0)
+        format: 'MM/DD/YYYY'
     });
 
+    $("#daily-date").on("dp.change", make_picker(pick_daily));
 
-    $("#range-button").on("click", make_picker(pick_range));
+    var dateNow = new Date();
+    $("#range-start").on("dp.change", make_picker(pick_range));
+    $("#range-end").on("dp.change", make_picker(pick_range));
+
     $("#range-start").datetimepicker({
         format: 'MM/DD/YYYY HH:mm',
-        defaultDate: dateNow
     });
     $("#range-end").datetimepicker({
         format: 'MM/DD/YYYY HH:mm',
-        defaultDate: dateNow
     });
 
 
@@ -433,5 +511,10 @@ $(document).ready(function() {
 
     fetch_pie();
 
+    gauge();
+
     bar();
+
+    generate_appliance_chart();
+
 });
