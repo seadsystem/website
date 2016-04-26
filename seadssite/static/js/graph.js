@@ -6,18 +6,7 @@ var HOUR_SECONDS = 60 * 60;
 var DAY_SECONDS = HOUR_SECONDS * 24;
 
 
-function fetch_pie() {
-    var end = Math.floor(Date.now() / 1000);
-    var start = end - DAY_SECONDS*2;
-    var gran = DAY_SECONDS;
-    
-    fetch_aggregate([create_url(start, end, gran, "Panel1"),
-             create_url(start, end, gran, "Panel2"),
-             create_url(start, end, gran, "Panel3")],
-             pie, true);
-}
-
-function pie(responses) {
+function generate_pie_graph(responses) {
     var data = [];
     for (var i = 0; i < responses.length; i++) {
         data[i] = ['Panel ' + (i+1), JSON.parse(responses[i]).data[0].energy];
@@ -51,7 +40,7 @@ function generate_bar_graph(data) {
             top: 0,
             right: 0,
             bottom: 0,
-            left: 60,
+            left: 70,
         },
         bindto: '#bar',
         data: {
@@ -178,29 +167,6 @@ function pick_live() {
     fetch_graph(create_url(start, end));
 }
 
-function bar() {
-    var end = Math.floor((Date.now() / 1000)/DAY_SECONDS)*DAY_SECONDS;
-    var start = end - DAY_SECONDS*8;
-    var gran = DAY_SECONDS;
-    
-    fetch_aggregate([create_url(start, end, gran, "Panel1"),
-             create_url(start, end, gran, "Panel2"),
-             create_url(start, end, gran, "Panel3")],
-             generate_bar_graph);
-    
-}
-
-function gauge() {
-    var end = Math.floor(Date.now() / 1000 - 60)
-    var start = end - 60;
-    var gran = 10;
-    
-    fetch_aggregate([create_url(start, end, gran, "Panel1"),
-             create_url(start, end, gran, "Panel2"),
-             create_url(start, end, gran, "Panel3")],
-             generate_gauge);
-    
-}
 
 function fetch_aggregate(urls, callback, seperate) {
     if (!seperate) seperate = false;
@@ -476,7 +442,6 @@ $(document).ready(function() {
 
     $("#daily-date").on("dp.change", make_picker(pick_daily));
 
-    var dateNow = new Date();
     $("#range-start").on("dp.change", make_picker(pick_range));
     $("#range-end").on("dp.change", make_picker(pick_range));
 
@@ -514,11 +479,42 @@ $(document).ready(function() {
 
     pick(pick_live, 10 * 1000);
 
-    fetch_pie();
+    var dateNow = Date.now();
+    var end;
+    var start;
+    var gran;
 
-    gauge();
+    //fetch pie graph
+    end = Math.floor(dateNow / 1000);
+    start = end - DAY_SECONDS*2;
+    gran = DAY_SECONDS;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             generate_pie_graph, true);
 
-    bar();
+
+    //fetch gauge graph
+    end = Math.floor(dateNow / 1000 - 60)
+    start = end - 60;
+    gran = 10;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             generate_gauge);
+
+    //getch bar graph
+    end = Math.floor((dateNow / 1000)/DAY_SECONDS)*DAY_SECONDS;
+    start = end - DAY_SECONDS*8;
+    gran = DAY_SECONDS;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             generate_bar_graph);
+
 
     generate_appliance_chart();
 
