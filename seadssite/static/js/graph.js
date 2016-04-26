@@ -73,7 +73,7 @@ function generate_bar_graph(data) {
             },
             y: {
                 tick: {
-                    format: function (d) { return d + " kW"; }
+                    format: function (d) { return d + " kWh"; }
                 }
             }
         },
