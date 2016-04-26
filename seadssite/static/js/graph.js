@@ -5,6 +5,11 @@ var c3 = require('c3');
 var HOUR_SECONDS = 60 * 60;
 var DAY_SECONDS = HOUR_SECONDS * 24;
 
+var GREEN = '#60B044';
+var YELLOW = '#F6C600';
+var ORANGE = '#F97600';
+var RED = '#FF0000';
+
 
 function generate_pie_graph(responses) {
     var data = [];
@@ -283,7 +288,7 @@ function generate_gauge(data) {
            width: 50 // for adjusting arc thickness
         },
         color: {
-            pattern: ['60B044', '#F6C600', '#F97600', '#FF0000'], // the three color levels for the percentage values.
+            pattern: [GREEN, YELLOW, ORANGE, RED], // the three color levels for the percentage values.
             threshold: {
                 //unit: 'value', // percentage is default
                 //max: 200, // 100 is default
