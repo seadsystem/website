@@ -51,7 +51,7 @@ function generate_bar_graph(data) {
             top: 0,
             right: 0,
             bottom: 0,
-            left: 50,
+            left: 60,
         },
         bindto: '#bar',
         data: {
@@ -61,7 +61,7 @@ function generate_bar_graph(data) {
                 ['x'].concat(data.data.map( function(x) { return x.time; })), 
                 ['energy'].concat(data.data.map( function(x) { return Math.round(x.energy * 100) / 100}))
             ],
-            type: 'bar'
+            type: 'bar',
         },
         axis: {
             x: {
@@ -69,6 +69,11 @@ function generate_bar_graph(data) {
                 tick: {
                     // displays day of week
                     format: '%a'
+                }
+            },
+            y: {
+                tick: {
+                    format: function (d) { return d + " kW"; }
                 }
             }
         },
@@ -314,9 +319,9 @@ function generate_gauge(data) {
         color: {
             pattern: ['60B044', '#F6C600', '#F97600', '#FF0000'], // the three color levels for the percentage values.
             threshold: {
-    //            unit: 'value', // percentage is default
-    //            max: 200, // 100 is default
-                values: [1, 2, 5, 10]
+                //unit: 'value', // percentage is default
+                //max: 200, // 100 is default
+                values: [10, 20, 50, 100]
             }
         },
         size: {
@@ -346,7 +351,7 @@ function generate_chart(data, gran) {
                 xFormat: '%Y-%m-%d %H:%M:%S',
                 columns:[ ['x'].concat(data.data.map(function(x){ return x.time; } )), 
                         ['energy'].concat(data.data.map(function(x){
-                            var power = (x.energy * (3600 / gran));
+                            var power = ((x.energy * 1000) * (3600 / gran));
                             return Math.round(power * 1000) / 1000; 
                         })) ],
                         types: { energy: 'area', }
@@ -356,6 +361,11 @@ function generate_chart(data, gran) {
                     type: 'timeseries',
                     tick: {
                         format: '%H:%M'
+                    }
+                },
+                y: {
+                    tick: {
+                        format: function(d) {return d + " W";}
                     }
                 }
             },
@@ -369,7 +379,7 @@ function generate_chart(data, gran) {
             ['x'].concat(data.data.map(function(x){ return x.time; })), 
             ['energy'].concat(data.data.map( function(x){
                 //convert energy to power by multiplying energy by 3600/granularity  
-                var power = (x.energy * (3600/gran));
+                var power = ((x.energy * 1000) * (3600/gran));
                 return Math.round(power * 1000) / 1000; 
             })) ]
         });
