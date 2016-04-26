@@ -5,29 +5,36 @@ var c3 = require('c3');
 var HOUR_SECONDS = 60 * 60;
 var DAY_SECONDS = HOUR_SECONDS * 24;
 
+var GREEN = '#60B044';
+var YELLOW = '#F6C600';
+var ORANGE = '#F97600';
+var RED = '#FF0000';
 
-function fetch_pie() {
-    var end = Math.floor(Date.now() / 1000);
-    var start = end - DAY_SECONDS*2;
-    var gran = DAY_SECONDS;
-    
-    fetch_aggregate([create_url(start, end, gran, "Panel1"),
-             create_url(start, end, gran, "Panel2"),
-             create_url(start, end, gran, "Panel3")],
-             pie, true);
-}
 
-function pie(responses) {
+function generate_pie_graph(responses) {
     var data = [];
     for (var i = 0; i < responses.length; i++) {
         data[i] = ['Panel ' + (i+1), JSON.parse(responses[i]).data[0].energy];
     }
     c3.generate({
+        padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+            },
         bindto: '#pie',
         data: {
             // iris data from R
             columns: data,
             type: 'pie',
+        },
+        pie: {
+            label: {
+                format: function(value, ratio, id) {
+                    return Math.round(value * 100) / 100 + " kW";
+                }
+            }
         }
     });
 }
@@ -36,9 +43,9 @@ function generate_bar_graph(data) {
     c3.generate({
         padding: {
             top: 0,
-            right: 100,
+            right: 0,
             bottom: 0,
-            left: 100,
+            left: 70,
         },
         bindto: '#bar',
         data: {
@@ -46,9 +53,9 @@ function generate_bar_graph(data) {
             xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
                 ['x'].concat(data.data.map( function(x) { return x.time; })), 
-                ['energy'].concat(data.data.map( function(x) { return x.energy; }))
+                ['energy'].concat(data.data.map( function(x) { return Math.round(x.energy * 100) / 100}))
             ],
-            type: 'bar'
+            type: 'bar',
         },
         axis: {
             x: {
@@ -56,6 +63,11 @@ function generate_bar_graph(data) {
                 tick: {
                     // displays day of week
                     format: '%a'
+                }
+            },
+            y: {
+                tick: {
+                    format: function (d) { return d + " kWh"; }
                 }
             }
         },
@@ -111,6 +123,7 @@ function create_url(start, end, gran, panel) {
     var pathArray = window.location.pathname.split('/'); 
     var deviceId = pathArray[2];
     if (!panel) panel = $('input[type=radio][name=panels]:checked').val();
+
     return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
             + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
@@ -159,17 +172,6 @@ function pick_live() {
     fetch_graph(create_url(start, end));
 }
 
-function bar() {
-    var end = Math.floor(Math.floor((Date.now() / 1000)/DAY_SECONDS)*DAY_SECONDS);
-    var start = end - DAY_SECONDS*8;
-    var gran = DAY_SECONDS;
-    
-    fetch_aggregate([create_url(start, end, gran, "Panel1"),
-             create_url(start, end, gran, "Panel2"),
-             create_url(start, end, gran, "Panel3")],
-             generate_bar_graph);
-    
-}
 
 function fetch_aggregate(urls, callback, seperate) {
     if (!seperate) seperate = false;
@@ -257,15 +259,57 @@ function fetch_bar_graph(url) {
     request.send();
 }
 
+function generate_gauge(data) {
+    var length = data.data.length;
+    var gauge = c3.generate({
+        padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+            },
+        bindto: '#gauge',
+        data: {
+            columns: [
+                ['data'].concat(Math.round((data.data[length-1].energy*360) * 1000) / 1000)
+            ],
+            type: 'gauge',
+        },
+        gauge: {
+           label: {
+               format: function(value, ratio) {
+                   return value;
+               },
+               show: true // to turn off the min/max labels.
+           },
+           min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+           max: 10, // 100 is default
+           units: ' kW',
+           width: 50 // for adjusting arc thickness
+        },
+        color: {
+            pattern: [GREEN, YELLOW, ORANGE, RED], // the three color levels for the percentage values.
+            threshold: {
+                //unit: 'value', // percentage is default
+                //max: 200, // 100 is default
+                values: [10, 20, 50, 100]
+            }
+        },
+        size: {
+            height: 200
+        }
+    });
+}
+
 var chart = null;
 function generate_chart(data, gran) {
     if (chart == null) {
         chart = c3.generate({
             padding: {
                 top: 0,
-                right: 100,
+                right: 0,
                 bottom: 0,
-                left: 100,
+                left: 50,
             },
             bindto: '#chart',
             data: {
@@ -278,8 +322,8 @@ function generate_chart(data, gran) {
                 xFormat: '%Y-%m-%d %H:%M:%S',
                 columns:[ ['x'].concat(data.data.map(function(x){ return x.time; } )), 
                         ['energy'].concat(data.data.map(function(x){
-                            var power = (x.energy * (3600 / gran));
-                            return power; 
+                            var power = ((x.energy * 1000) * (3600 / gran));
+                            return Math.round(power * 1000) / 1000; 
                         })) ],
                         types: { energy: 'area', }
             },
@@ -288,6 +332,11 @@ function generate_chart(data, gran) {
                     type: 'timeseries',
                     tick: {
                         format: '%H:%M'
+                    }
+                },
+                y: {
+                    tick: {
+                        format: function(d) {return d + " W";}
                     }
                 }
             },
@@ -301,8 +350,8 @@ function generate_chart(data, gran) {
             ['x'].concat(data.data.map(function(x){ return x.time; })), 
             ['energy'].concat(data.data.map( function(x){
                 //convert energy to power by multiplying energy by 3600/granularity  
-                var power = (x.energy * (3600/gran));
-                return power; 
+                var power = ((x.energy * 1000) * (3600/gran));
+                return Math.round(power * 1000) / 1000; 
             })) ]
         });
     }
@@ -334,9 +383,33 @@ function generate_chart(data, gran) {
     });
 }
 
+function generate_appliance_chart() {
+    var chart = c3.generate({
+    bindto: '#chart2',
+    data: {
+        columns: [
+            ['data1', 300, 350, 300, 0, 0, 0],
+            ['data2', 130, 100, 140, 200, 150, 50]
+        ],
+        types: {
+            data1: 'area',
+            data2: 'area-spline'
+        }
+    }
+});
+}
+
 
 $(document).ready(function() {
     //onload
+
+    $(".list-group button").click(function(e) {
+        if( $(this).hasClass( "active" ) ) {
+            $(this).removeClass("active");
+        } else {
+            $(this).addClass("active");
+        }
+    });
 
     //Live labelling click event
     $("#label-button").click(function(event){
@@ -352,13 +425,10 @@ $(document).ready(function() {
     $('input[type=radio][name=panels]').change(function() {
         if (this.value == 'Panel1') {
             pick_live();
-            bar();
         } else if (this.value == 'Panel2') {
             pick_live();
-            bar();
         } else if (this.value == 'Panel3') {
             pick_live();
-            bar();
         }
     });
 
@@ -371,23 +441,20 @@ $(document).ready(function() {
         $("#label-name").val('');
     });
 
-
-    $("#daily-button").on("click", make_picker(pick_daily));
-    var dateNow = new Date();
     $("#daily-date").datetimepicker({
-        format: 'MM/DD/YYYY HH:mm',
-        defaultDate: moment(dateNow).hours(0).minutes(0).seconds(0).milliseconds(0)
+        format: 'MM/DD/YYYY'
     });
 
+    $("#daily-date").on("dp.change", make_picker(pick_daily));
 
-    $("#range-button").on("click", make_picker(pick_range));
+    $("#range-start").on("dp.change", make_picker(pick_range));
+    $("#range-end").on("dp.change", make_picker(pick_range));
+
     $("#range-start").datetimepicker({
         format: 'MM/DD/YYYY HH:mm',
-        defaultDate: dateNow
     });
     $("#range-end").datetimepicker({
         format: 'MM/DD/YYYY HH:mm',
-        defaultDate: dateNow
     });
 
 
@@ -417,7 +484,43 @@ $(document).ready(function() {
 
     pick(pick_live, 10 * 1000);
 
-    fetch_pie();
+    var dateNow = Date.now();
+    var end;
+    var start;
+    var gran;
 
-    bar();
+    //fetch pie graph
+    end = Math.floor(dateNow / 1000);
+    start = end - DAY_SECONDS*2;
+    gran = DAY_SECONDS;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             generate_pie_graph, true);
+
+
+    //fetch gauge graph
+    end = Math.floor(dateNow / 1000 - 60)
+    start = end - 60;
+    gran = 10;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             generate_gauge);
+
+    //getch bar graph
+    end = Math.floor((dateNow / 1000)/DAY_SECONDS)*DAY_SECONDS;
+    start = end - DAY_SECONDS*8;
+    gran = DAY_SECONDS;
+    
+    fetch_aggregate([create_url(start, end, gran, "Panel1"),
+             create_url(start, end, gran, "Panel2"),
+             create_url(start, end, gran, "Panel3")],
+             generate_bar_graph);
+
+
+    generate_appliance_chart();
+
 });

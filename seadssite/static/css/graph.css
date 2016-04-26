@@ -1,13 +1,7 @@
 /*-- Chart formatting --*/
-#pie {
-        width: 50%; 
-        float: left; 
-    }
-
-#bar {
-        width: 50%; 
-        float: left; 
-    }
+.panel {
+  height: 370px;
+  }
 
 /*-- Radio button formatting --*/
 input[type="radio"] {
@@ -24,28 +18,22 @@ input[type="radio"] {
   width: 80%;
 }
 
-
-/*-- Buttons and date picker section --*/
-section#chart-tools {
-    width: 80%;
-    margin: auto;
-}
-div#one {
-    width: 30%;
-    float: left;
-}
-div#two {
-    width: 50%;
-    float: left;
-}
-div#three {
-    width: 20%;
-    float: right;
+.nopadding {
+   padding: 0 !important;
+   margin: 0 !important;
 }
 
-section#labelling-tools {
-    padding-top: 40px;
+.list-group-item {
+  outline: 0;
+  box-shadow: none;
+  width:100%;
 }
+
+.list-group{
+    height: 330px;
+    overflow-y:auto; 
+}
+
 
 .datepicker {
   z-index: 10000 !important;
