@@ -1,9 +1,10 @@
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
 from django.views.generic import View
+
 
 from seadssite.forms import UserForm
 from seadssite.models import Device
@@ -16,13 +17,6 @@ class IndexView(TemplateView):
     template_name = 'index.html'
 
 
-def help(request, template_name='registration/login.html'):
-    # for SMS http://stackoverflow.com/questions/430582/sending-an-sms-to-a-cellphone-using-django
-    email = request.POST['email']
-    send_mail('Login Information', 'This is a test', 'seadssystems@gmail.com', [email])
-    return HttpResponseRedirect('/login')
-
-
 class RegisterView(View):
     """
     registration page controller
@@ -32,8 +26,9 @@ class RegisterView(View):
     template_name = 'registration/register.html'
 
     def get(self, request):
+        if request.user.is_authenticated():
+            return redirect('/dashboard')
         user_form = self.form_class()
-        print(user_form);
         return render(request, 'registration/register.html', {'form': user_form})
 
     def post(self, request):
@@ -46,7 +41,7 @@ class RegisterView(View):
             # log the user in and send them to the homepage
             user = authenticate(username=request.POST['username'], password=request.POST['password'])
             login(request, user)
-            return HttpResponseRedirect('/dashboard/')
+            return HttpResponseRedirect('/dashboard')
             # TODO: sending a welcome email to the new user needs to be implemented here
         else:
             return render(request, self.template_name, {'form': user_form})
@@ -61,15 +56,15 @@ def DashboardView(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
     current_user = request.user
-
+    print(request)
     # if the user clicked register (and dashboard -- that is register a device)
     # we set the new id and new name as what was submitted in the form
     # if there are any alerts (invalid id etc), they will get appened to alert
     if request.POST.get('register'):
-        print(request)
+        print('Here')
         new_device_id = request.POST.get('device_id')
         new_device_name = request.POST.get('device_name')
-        Device.objects.register_device(new_device_id, new_device_name, request.user)
+        Device.objects.register_device(new_device_id, new_device_name, current_user)
     # if the user clicked delete
     # we delete the specified device
     elif request.POST.get('delete'):
@@ -78,7 +73,8 @@ def DashboardView(request):
         device.deactivate_device()
 
     connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
-
+    print(connected_user_devices)
+    print(current_user)
     return render(request, 'dashboard.html', {'devices': connected_user_devices})
 
 def TimerView(request):
@@ -112,7 +108,6 @@ def DevicesView(request):
         Device.objects.register_device(new_device_id, new_device_name, current_user)
     # if the user clicked delete
     elif request.POST.get('delete'):
-        print("HEREOMG")
         device_id = request.POST.get('delete')
         device = Device.objects.get(device_id=device_id)
         device.deactivate_device()

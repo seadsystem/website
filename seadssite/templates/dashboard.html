@@ -29,7 +29,7 @@
 						<div style="float:right;padding:10px;">
 							<form method="post">
 								<!-- button for deletion -->
-											{% csrf_token %}
+                                {% csrf_token %}
                                 <button type="submit" class="btn btn-danger delete" value={{device.device_id}} name="delete">
                                     <i class="fa fa-trash-o fa-lg"></i>
                                 </button>

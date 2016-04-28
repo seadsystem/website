@@ -43,6 +43,7 @@ TEMPLATES = [
         },
     },
 ]
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -94,9 +95,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-STATIC_URL = '/seadssite/static/'
+
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'seadssite', 'static'),)
 
@@ -106,4 +107,4 @@ STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'seadssite', 'static'),)
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard'
