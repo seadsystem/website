@@ -135,7 +135,6 @@ function create_url(start, end, gran, panel) {
     // device ID is 3rd entry in url seperatered by a '/'
     var pathArray = window.location.pathname.split('/'); 
     var deviceId = pathArray[2];
-    if (!panel) panel = $('input[type=radio][name=panels]:checked').val();
 
     return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
             + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
@@ -173,14 +172,18 @@ function pick_daily(panels) {
     fetch_aggregate(urls, generate_chart, true, panels);
 }
 
-function pick_range() {
+function pick_range(panels) {
     var startDate = $("#range-start").data("DateTimePicker").getDate();
     var endDate = $("#range-end").data("DateTimePicker").getDate();
 
     var start = Math.floor(startDate / 1000);
     var end = Math.floor(endDate / 1000);
-
-    fetch_graph(create_url(start, end));
+    var gran = 0;
+    var urls = [];
+    for(var i = 0; i < panels.length; i++) {
+        urls[i] = create_url(start, end, gran, panels[i]);
+    }
+    fetch_aggregate(urls, generate_chart, true, panels);
 }
 
 function pick_live(panels) {
@@ -351,16 +354,16 @@ function generate_gauge(data) {
 
 var chart = null;
 function generate_chart(responses, gran, panels) {
+    var res = [];
     var data = [];
-    var test = [];
     for (var i = 0; i < responses.length; i++) {
-        data[i] = JSON.parse(responses[i]);
-        test[i+1] = [panels[i]].concat(data[i].data.map(function(x){
+        res[i] = JSON.parse(responses[i]);
+        data[i+1] = [panels[i]].concat(res[i].data.map(function(x){
                             var power = ((x.energy * 1000) * (3600 / gran));
                             return Math.round(power * 1000) / 1000; 
                         }));
         if(i==0) {
-            test[0] = ['x'].concat(data[0].data.map(function(x){ return x.time; } ));
+            data[0] = ['x'].concat(res[0].data.map(function(x){ return x.time; } ));
         }
     }
     if (chart == null) {
@@ -380,16 +383,18 @@ function generate_chart(responses, gran, panels) {
                 // },
                 x: 'x',
                 xFormat: '%Y-%m-%d %H:%M:%S',
-                columns:test,
+                columns:data,
                 types: { 
                     Panel1: 'area',
                     Panel2: 'area',
                     Panel3: 'area',
+                    PowerS: 'area',
                 }, 
                 colors: {
                     Panel1: '#1f77b4',
                     Panel2: '#FFC51E',
-                    Panel3: '#FF5B1E'
+                    Panel3: '#FF5B1E',
+                    PowerS: '#2ca02c'
                 },
                 empty: { label: { text: "No Data Available" }   },
             },
@@ -400,7 +405,7 @@ function generate_chart(responses, gran, panels) {
                 x: {
                     type: 'timeseries',
                     tick: {
-                        format: '%m-%d \n%H:%M'
+                        format: '%m-%d %H:%M'
                     }
                 },
                 y: {
@@ -415,7 +420,7 @@ function generate_chart(responses, gran, panels) {
         });
     } else {
         chart.load({
-            columns:test,
+            columns:data,
             unload: chart.columns
         });
     }
@@ -480,7 +485,7 @@ $(document).ready(function() {
 
     $("#panels button").click(function(e) {
         var count = 0;
-        $('.btn-group .active').each(function() {
+        $('#panels .active').each(function() {
             count++;
         });
 
@@ -546,11 +551,28 @@ $(document).ready(function() {
             panels[i]= $(this).attr('id'); 
             i++;
         }); 
-        pick_daily(panels)
+        pick_daily(panels);
     });
 
-    $("#range-start").on("dp.change", make_picker(pick_range));
-    $("#range-end").on("dp.change", make_picker(pick_range));
+    $("#range-start").on("dp.change", function(){
+        var panels = [];
+        var i = 0;
+        $('#panels .active').each(function(){
+            panels[i]= $(this).attr('id'); 
+            i++;
+        }); 
+        pick_range(panels);
+    });
+
+    $("#range-end").on("dp.change", function(){
+        var panels = [];
+        var i = 0;
+        $('#panels .active').each(function(){
+            panels[i]= $(this).attr('id'); 
+            i++;
+        }); 
+        pick_range(panels);
+    });
 
     $("#range-start").datetimepicker({
         format: 'MM/DD/YYYY HH:mm',
