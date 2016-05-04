@@ -56,11 +56,13 @@ def DashboardView(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
     current_user = request.user
+
+    print(request.POST)
+
     # if the user clicked register (and dashboard -- that is register a device)
     # we set the new id and new name as what was submitted in the form
     # if there are any alerts (invalid id etc), they will get appened to alert
-    if request.POST.get('register'):
-        print('Here')
+    if request.POST.get('device_id'):
         new_device_id = request.POST.get('device_id')
         new_device_name = request.POST.get('device_name')
         Device.objects.register_device(new_device_id, new_device_name, current_user)
@@ -72,8 +74,6 @@ def DashboardView(request):
         device.deactivate_device()
 
     connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
-    print(connected_user_devices)
-    print(current_user)
     return render(request, 'dashboard.html', {'devices': connected_user_devices})
 
 def TimerView(request):
@@ -105,6 +105,7 @@ def DevicesView(request):
         new_device_id = request.POST.get('device_id')
         new_device_name = request.POST.get('device_name')
         Device.objects.register_device(new_device_id, new_device_name, current_user)
+
     # if the user clicked delete
     elif request.POST.get('delete'):
         device_id = request.POST.get('delete')
@@ -112,7 +113,6 @@ def DevicesView(request):
         device.deactivate_device()
 
     user_devices = Device.objects.filter(user=current_user, is_active=True)
-
     return render(request, 'devices.html', {'devices': user_devices})
 
 def graph(request):

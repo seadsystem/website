@@ -16,7 +16,6 @@ for registering (creating) devices
 '''
 class DeviceManager(models.Manager):
     def register_device(self, device_id, device_name, current_user):
-        print(device_id, device_name, current_user)
 
         if Device.objects.all().filter(user=current_user, device_id=device_id):
             raise FieldError('This device has already been registered to this user.', device_id, current_user)
