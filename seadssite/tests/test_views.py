@@ -101,8 +101,3 @@ class DashboardViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         print(response.context['devices'])
         self.assertGreater(len(response.context['devices']), 0)
-
-
-
-
-

@@ -56,7 +56,6 @@ def DashboardView(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
     current_user = request.user
-    print(request)
     # if the user clicked register (and dashboard -- that is register a device)
     # we set the new id and new name as what was submitted in the form
     # if there are any alerts (invalid id etc), they will get appened to alert
