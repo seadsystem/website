@@ -163,7 +163,7 @@ function make_picker(func, repeat) {
 
 function pick_daily(panels) {
     var date = $("#daily-date").data("DateTimePicker").getDate();
-    var start = Math.floor(date / 1000 - 5184000);
+    var start = Math.floor(date / 1000);
     var end = start + DAY_SECONDS;
     var gran = 0;
     var urls = [];
@@ -496,7 +496,6 @@ $(document).ready(function() {
     $('#Panel1').addClass("active");
     $('#Panel2').addClass("active");
     $('#Panel3').addClass("active");
-    var panels = ['Panel1', 'Panel2', 'Panel3'];
 
     $("#panels button").click(function(e) {
         var count = 0;
@@ -559,7 +558,15 @@ $(document).ready(function() {
         format: 'MM/DD/YYYY'
     });
 
-    $("#daily-date").on("dp.change", function(){pick_daily(panels);});
+    $("#daily-date").on("dp.change", function(){
+        var panels = [];
+        var i = 0;
+        $('#panels .active').each(function(){
+            panels[i]= $(this).attr('id'); 
+            i++;
+        }); 
+        pick_daily(panels)
+    });
 
     $("#range-start").on("dp.change", make_picker(pick_range));
     $("#range-end").on("dp.change", make_picker(pick_range));
@@ -596,7 +603,7 @@ $(document).ready(function() {
 
     });
 
-    pick_daily(panels);
+    pick_daily(['Panel1', 'Panel2', 'Panel3']);
 
     var dateNow = Date.now();
     var end;
@@ -604,7 +611,7 @@ $(document).ready(function() {
     var gran;
 
     //fetch pie graph
-    end = Math.floor(dateNow / 1000 - 5184000);
+    end = Math.floor(dateNow / 1000);
     start = end - DAY_SECONDS*2;
     gran = DAY_SECONDS;
     
@@ -615,7 +622,7 @@ $(document).ready(function() {
 
 
     //fetch gauge graph
-    end = Math.floor(dateNow / 1000 - 5184000)
+    end = Math.floor(dateNow / 1000)
     start = end - DAY_SECONDS/4;
     gran = 1;
     
@@ -625,7 +632,7 @@ $(document).ready(function() {
              generate_gauge);
 
     //getch bar graph
-    end = Math.floor((dateNow / 1000)/DAY_SECONDS)*DAY_SECONDS - 5184000;
+    end = Math.floor((dateNow / 1000)/DAY_SECONDS)*DAY_SECONDS;
     start = end - DAY_SECONDS*8;
     gran = DAY_SECONDS;
     
