@@ -252,25 +252,6 @@ function fetch_aggregate(urls, callback, seperate, panels) {
     }
 }
 
-// function fetch_graph(url) {
-//     //Split url by '=' symbol to isolate granularity value, which always becomes 7th element 
-//     var splitUrl = url.split("=");
-//     var gran = splitUrl[6];
-//     var request = new XMLHttpRequest();
-//     request.onreadystatechange = function() {
-//         if (request.readyState == XMLHttpRequest.DONE) {
-//             if (request.status == 200) { //200 OK
-//                 generate_chart(JSON.parse(request.responseText), gran);
-//             } else {
-//                 console.log("it broke");
-//             }
-//         }
-//     };
-
-//     request.open("GET", url, true);
-//     request.send();
-// }
-
 function fetch_bar_graph(url) {
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
