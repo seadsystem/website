@@ -11,6 +11,163 @@ var ORANGE = '#F97600';
 var RED = '#FF0000';
 
 
+function post_data_to_server(label) {
+    console.log("Sending " + JSON.stringify(label));
+
+    var post = new XMLHttpRequest();
+
+    // device ID is 3rd entry in url seperatered by a '/'
+    var pathArray = window.location.pathname.split('/'); 
+    var deviceId = pathArray[2];
+    var url = "http://db.sead.systems:8080/" + deviceId + "/label";
+    var params = JSON.stringify({data: label});
+    post.open("POST", url, true);
+
+    post.setRequestHeader("Content-type", "text/plain");
+    post.setRequestHeader("Content-length", params.length);
+    post.setRequestHeader("Connection", "close");
+
+    post.onreadystatechange = function() {
+        if (post.readyState == XMLHttpRequest.DONE) {
+            if (post.status == 200) { //200 OK
+                console.log("Response:");
+                console.log(post.responseText);
+            } else {
+                console.log("it broke");
+            }
+        }
+    }
+    post.send(params);
+}
+
+
+function create_url(start, end, gran, panel) {
+    if (gran) {
+        var granularity = gran;
+    } else {
+        var num_nodes = 150;
+        var granularity = Math.ceil((end - start) / num_nodes);
+    }
+
+    // device ID is 3rd entry in url seperatered by a '/'
+    var pathArray = window.location.pathname.split('/'); 
+    var deviceId = pathArray[2];
+
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
+            + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
+}
+
+
+var repeater = null;
+//repeat in ms
+function pick(func, repeat) {
+    if (repeater) {
+        clearInterval(repeater);
+        repeater = null;
+    }
+    if (repeat) {
+        repeater = setInterval(func, repeat);
+    }
+    var end = Math.floor(Date.now() / 1000);
+    var start = end - HOUR_SECONDS;
+    var panels = [];
+    var i = 0;
+    $('#panels .active').each(function(){
+        panels[i]= $(this).attr('id'); 
+        i++;
+    });
+    func(panels, start, end);
+}
+
+function make_picker(func, repeat) {
+    return function(event) {
+        return pick(func, repeat);
+    };
+}
+
+function pick_date(panels, start, end) {
+    var gran = 0;
+    var urls = [];
+    for(var i = 0; i < panels.length; i++) {
+        urls[i] = create_url(start, end, gran, panels[i]);
+    }
+    fetch_aggregate(urls, generate_chart, true, panels);
+
+}
+
+function fetch_aggregate(urls, callback, seperate, panels) {
+    if (!seperate) seperate = false;
+    var responses = [];
+    var reqs = [];
+    var splitUrl = urls[0].split("=");
+    var gran = splitUrl[6];
+    
+    var onCompleted = function() {
+        for (var i = 0; i < urls.length; i++) {
+            if (responses[i] == null) return;
+        }
+        if (seperate) {
+            if(callback == generate_chart) {
+                callback(responses, gran, panels);
+            } else {
+                callback(responses);
+            }
+        } else {
+            var dat = JSON.parse(responses[0]).data;
+            for (var i = 1; i < responses.length; i++) {
+                var new_dat = JSON.parse(responses[i]).data;
+                for (var j = 0; j < dat.length; j++) {
+                    dat[j].energy = +dat[j].energy + +new_dat[j].energy;
+                }
+            }
+            callback({data: dat});
+        }
+    };
+    
+    var onFailed = function() {
+        console.log("it broke");
+    };
+    
+    for (var i = 0; i < urls.length; i++) {
+        responses[i] = null;
+    }
+    for (var i = 0; i < urls.length; i++) {
+        var request = new XMLHttpRequest();
+        request.seads_index = i;
+        request.onreadystatechange = function() {
+                if (this.readyState == XMLHttpRequest.DONE) {
+                    if (this.status == 200) { //200 OK
+                        if (responses[this.seads_index] == null) {
+                            responses[this.seads_index] = this.responseText;
+                            onCompleted();
+                        }
+                    } else {
+                        onFailed();
+                    }
+                }
+        };
+
+        request.open("GET", urls[i], true);
+        request.send();
+    }
+}
+
+function fetch_bar_graph(url) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+        if (request.readyState == XMLHttpRequest.DONE) {
+            if (request.status == 200) { //200 OK
+                generate_bar_graph(JSON.parse(request.responseText));
+            } else {
+                console.log("it broke");
+            }
+        }
+    };
+
+    request.open("GET", url, true);
+    request.send();
+}
+
 function generate_pie_graph(responses) {
     var data = [];
     var res = [];
@@ -92,183 +249,6 @@ function generate_bar_graph(data) {
             //width: 100 // this makes bar width 100px
         }
     });
-}
-
-function post_data_to_server(label) {
-    console.log("Sending " + JSON.stringify(label));
-
-    var post = new XMLHttpRequest();
-
-    // device ID is 3rd entry in url seperatered by a '/'
-    var pathArray = window.location.pathname.split('/'); 
-    var deviceId = pathArray[2];
-    var url = "http://db.sead.systems:8080/" + deviceId + "/label";
-    var params = JSON.stringify({data: label});
-    post.open("POST", url, true);
-
-    post.setRequestHeader("Content-type", "text/plain");
-    post.setRequestHeader("Content-length", params.length);
-    post.setRequestHeader("Connection", "close");
-
-    post.onreadystatechange = function() {
-        if (post.readyState == XMLHttpRequest.DONE) {
-            if (post.status == 200) { //200 OK
-                console.log("Response:");
-                console.log(post.responseText);
-            } else {
-                console.log("it broke");
-            }
-        }
-    }
-    post.send(params);
-}
-
-
-function create_url(start, end, gran, panel) {
-    if (gran) {
-        var granularity = gran;
-    } else {
-        var num_nodes = 150;
-        var granularity = Math.ceil((end - start) / num_nodes);
-    }
-
-    // device ID is 3rd entry in url seperatered by a '/'
-    var pathArray = window.location.pathname.split('/'); 
-    var deviceId = pathArray[2];
-
-    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
-            + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
-}
-
-
-var repeater = null;
-//repeat in ms
-function pick(func, repeat) {
-    if (repeater) {
-        clearInterval(repeater);
-        repeater = null;
-    }
-    if (repeat) {
-        repeater = setInterval(func, repeat);
-    }
-    func();
-}
-
-function make_picker(func, repeat) {
-    return function(event) {
-        return pick(func, repeat);
-    };
-}
-
-function pick_daily(panels) {
-    var date = $("#daily-date").data("DateTimePicker").getDate();
-    var start = Math.floor(date / 1000);
-    var end = start + DAY_SECONDS;
-    var gran = 0;
-    var urls = [];
-    for(var i = 0; i < panels.length; i++) {
-        urls[i] = create_url(start, end, gran, panels[i]);
-    }
-    fetch_aggregate(urls, generate_chart, true, panels);
-}
-
-function pick_range(panels) {
-    var startDate = $("#range-start").data("DateTimePicker").getDate();
-    var endDate = $("#range-end").data("DateTimePicker").getDate();
-
-    var start = Math.floor(startDate / 1000);
-    var end = Math.floor(endDate / 1000);
-    var gran = 0;
-    var urls = [];
-    for(var i = 0; i < panels.length; i++) {
-        urls[i] = create_url(start, end, gran, panels[i]);
-    }
-    fetch_aggregate(urls, generate_chart, true, panels);
-}
-
-function pick_live(panels) {
-    var end = Math.floor(Date.now() / 1000);
-    var start = end - HOUR_SECONDS;
-    var gran = 0;
-    var urls = [];
-    for(var i = 0; i < panels.length; i++) {
-        urls[i] = create_url(start, end, gran, panels[i]);
-    }
-    fetch_aggregate(urls, generate_chart, true, panels);
-}
-
-
-function fetch_aggregate(urls, callback, seperate, panels) {
-    if (!seperate) seperate = false;
-    var responses = [];
-    var reqs = [];
-    var splitUrl = urls[0].split("=");
-    var gran = splitUrl[6];
-    
-    var onCompleted = function() {
-        for (var i = 0; i < urls.length; i++) {
-            if (responses[i] == null) return;
-        }
-        if (seperate) {
-            if(callback == generate_chart) {
-                callback(responses, gran, panels);
-            } else {
-                callback(responses);
-            }
-        } else {
-            var dat = JSON.parse(responses[0]).data;
-            for (var i = 1; i < responses.length; i++) {
-                var new_dat = JSON.parse(responses[i]).data;
-                for (var j = 0; j < dat.length; j++) {
-                    dat[j].energy = +dat[j].energy + +new_dat[j].energy;
-                }
-            }
-            callback({data: dat});
-        }
-    };
-    
-    var onFailed = function() {
-        console.log("it broke");
-    };
-    
-    for (var i = 0; i < urls.length; i++) {
-        responses[i] = null;
-    }
-    for (var i = 0; i < urls.length; i++) {
-        var request = new XMLHttpRequest();
-        request.seads_index = i;
-        request.onreadystatechange = function() {
-                if (this.readyState == XMLHttpRequest.DONE) {
-                    if (this.status == 200) { //200 OK
-                        if (responses[this.seads_index] == null) {
-                            responses[this.seads_index] = this.responseText;
-                            onCompleted();
-                        }
-                    } else {
-                        onFailed();
-                    }
-                }
-        };
-
-        request.open("GET", urls[i], true);
-        request.send();
-    }
-}
-
-function fetch_bar_graph(url) {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (request.readyState == XMLHttpRequest.DONE) {
-            if (request.status == 200) { //200 OK
-                generate_bar_graph(JSON.parse(request.responseText));
-            } else {
-                console.log("it broke");
-            }
-        }
-    };
-
-    request.open("GET", url, true);
-    request.send();
 }
 
 function generate_gauge(data) {
@@ -449,18 +429,18 @@ function generate_chart(responses, gran, panels) {
 
 function generate_appliance_chart() {
     var chart = c3.generate({
-    bindto: '#chart2',
-    data: {
-        columns: [
-            ['data1', 300, 350, 300, 0, 0, 0],
-            ['data2', 130, 100, 140, 200, 150, 50]
-        ],
-        types: {
-            data1: 'area',
-            data2: 'area-spline'
+        bindto: '#chart2',
+        data: {
+            columns: [
+                ['data1', 300, 350, 300, 0, 0, 0],
+                ['data2', 130, 100, 140, 200, 150, 50]
+            ],
+            types: {
+                data1: 'area',
+                data2: 'area-spline'
+            }
         }
-    }
-});
+    });
 }
 
 
@@ -493,15 +473,21 @@ $(document).ready(function() {
                 $('#panels .active').each(function(){
                     panels[i]= $(this).attr('id'); 
                     i++;
-                }); 
-                pick_daily(panels);
+                });
+                var date = $("#daily-date").data("DateTimePicker").getDate();
+                var start = Math.floor(date / 1000);
+                var end = start + DAY_SECONDS;
+                pick_date(panels, start, end);
             } else {
                 $(this).addClass("active");
                 $('#panels .active').each(function(){
                     panels[i]= $(this).attr('id'); 
                     i++;
-                }); 
-                pick_daily(panels);
+                });
+                var date = $("#daily-date").data("DateTimePicker").getDate();
+                var start = Math.floor(date / 1000);
+                var end = start + DAY_SECONDS;
+                pick_date(panels, start, end);
             }
         } else {
             if(!$(this).hasClass("active")) {
@@ -509,8 +495,11 @@ $(document).ready(function() {
                 $('#panels .active').each(function(){
                     panels[i]= $(this).attr('id'); 
                     i++;
-                }); 
-                pick_daily(panels);
+                });
+                var date = $("#daily-date").data("DateTimePicker").getDate();
+                var start = Math.floor(date / 1000);
+                var end = start + DAY_SECONDS;
+                pick_date(panels, start, end);
             }
         }
     });
@@ -527,7 +516,7 @@ $(document).ready(function() {
     $("#bad").hide();
 
     /*-- Initialize datepickers and buttons --*/
-    $("#live-button").on("click", make_picker(pick_live, 60 * 1000));
+    $("#live-button").on("click", make_picker(pick_date, 60 * 1000));
 
     $("#modal-close").on("click", function() {
         $('#myModal').modal('toggle');
@@ -545,8 +534,11 @@ $(document).ready(function() {
         $('#panels .active').each(function(){
             panels[i]= $(this).attr('id'); 
             i++;
-        }); 
-        pick_daily(panels);
+        });
+        var date = $("#daily-date").data("DateTimePicker").getDate();
+        var start = Math.floor(date / 1000);
+        var end = start + DAY_SECONDS;
+        pick_date(panels, start, end);
     });
 
     $("#range-start").on("dp.change", function(){
@@ -555,8 +547,12 @@ $(document).ready(function() {
         $('#panels .active').each(function(){
             panels[i]= $(this).attr('id'); 
             i++;
-        }); 
-        pick_range(panels);
+        });
+        var startDate = $("#range-start").data("DateTimePicker").getDate();
+        var endDate = $("#range-end").data("DateTimePicker").getDate();
+        var start = Math.floor(startDate / 1000);
+        var end = Math.floor(endDate / 1000);
+        pick_date(panels, start, end);
     });
 
     $("#range-end").on("dp.change", function(){
@@ -565,8 +561,12 @@ $(document).ready(function() {
         $('#panels .active').each(function(){
             panels[i]= $(this).attr('id'); 
             i++;
-        }); 
-        pick_range(panels);
+        });
+        var startDate = $("#range-start").data("DateTimePicker").getDate();
+        var endDate = $("#range-end").data("DateTimePicker").getDate();
+        var start = Math.floor(startDate / 1000);
+        var end = Math.floor(endDate / 1000);
+        pick_date(panels, start, end);
     });
 
     $("#range-start").datetimepicker({
@@ -601,7 +601,10 @@ $(document).ready(function() {
 
     });
 
-    pick_daily(['Panel1', 'Panel2', 'Panel3']);
+    var date = $("#daily-date").data("DateTimePicker").getDate();
+    var start = Math.floor(date / 1000);
+    var end = start + DAY_SECONDS;
+    pick_date(['Panel1', 'Panel2', 'Panel3'], start, end);
 
     var dateNow = Date.now();
     var end;
