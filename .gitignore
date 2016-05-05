@@ -5,8 +5,6 @@ __pycache__/*sgitgit
 __pycache__/*.*
 *.pyc
 *~
-SeadsFront/settings.py
-venv
 staticfiles
 .env
 .DS_Store
