@@ -90,7 +90,7 @@ class DashboardViewTests(TestCase):
     def test_get_dashboard_while_not_logged_in(self):
         response = self.client.get('/dashboard/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/login/?next=/dashboard/')
+        self.assertContains(response.url, '/login/?next=/dashboard/')
 
     def test_post_new_device(self):
         self.client.login(username=self.user1.username, password='password')
