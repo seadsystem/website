@@ -376,11 +376,6 @@ function generate_chart(responses, gran, panels) {
             },
             bindto: '#chart',
             data: {
-                // selection: {
-                //     enabled: true,
-                //     draggable: true,
-                //     grouped: true
-                // },
                 x: 'x',
                 xFormat: '%Y-%m-%d %H:%M:%S',
                 columns:data,
