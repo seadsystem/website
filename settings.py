@@ -26,18 +26,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-TEMPLATE_DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
-# Application definition
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',
+            ],
+        },
+    },
+]
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -46,10 +51,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_swagger',
     'seadssite',
-    'api',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -62,10 +64,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'SeadsFront.urls'
+ROOT_URLCONF = 'seadssite.urls'
 
-WSGI_APPLICATION = 'SeadsFront.wsgi.application'
-
+WSGI_APPLICATION = 'seadssite.wsgi.application'
 
 # Update database configuration with $DATABASE_URL.
 DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
@@ -84,26 +85,11 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-STATIC_URL = '/staticfiles/'
 
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'seadssite', 'static'),
-    os.path.join(PROJECT_ROOT, 'SeadsFront', 'static'),
+STATIC_URL = '/static/'
 
-)
-
-TEMPLATE_DIRS = (
-    os.path.join(
-        os.path.dirname(__file__),
-        'seadssite/templates/',
-    ),
-    os.path.join(
-        os.path.dirname(__file__),
-        'SeadsFront/templates/',
-    ),
-)
+STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'seadssite', 'static'),)
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
@@ -111,4 +97,4 @@ TEMPLATE_DIRS = (
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard'

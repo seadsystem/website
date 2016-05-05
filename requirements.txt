@@ -1,6 +1,6 @@
 click==3.3
 dj-database-url==0.4.0
-Django==1.8.6
+Django==1.9.5
 django-bootstrap3==4.11.0
 django-rest-swagger==0.3.5
 djangorestframework==3.3.2

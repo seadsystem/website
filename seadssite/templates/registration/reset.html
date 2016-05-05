@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- http://runnable.com/UqMu5Wsrl3YsAAfX/using-django-s-built-in-views-for-password-reset-for-python -->
+    <!--http://runnable.com/UqMu5Wsrl3YsAAfX/using-django-s-built-in-views-for-password-reset-for-python -->
     <!-- Link to the Bootstrap CSS from a CDN -->
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"
           rel="stylesheet">
@@ -9,11 +9,10 @@
   <body>
     <div class="container">
       <div class="header">
-        <h3 class="text-muted">Confirmation of Password Reset</h3>
+        <h3 class="text-muted">Reset Password Form</h3>
       </div>
        <div class="row" style="padding:20px;">
-          {% if validlink %} <!-- If the link is valid, display a confirmation page, else display an error message -->
-          <form role="form" action="." method="post">
+          <form role="form" action="" method="post">
            {% csrf_token %} <!-- CSRF token is rendered by Django in forms to avoid CSRF attacks -->
            
            <!-- If there are non-field errors in the form,
@@ -21,7 +20,7 @@
             -->
            {% if form.non_field_errors %}
             <p class="error">
-              {% for error in form.non_field_errors %}
+  	          {% for error in form.non_field_errors %}
 		            {{ error }}
 		          {% endfor %}
             </p>
@@ -52,9 +51,7 @@
           {% endfor %}
     		<input type="submit" class="btn btn-default" value="Submit" />
    	  </form>
-       {% else %} <!-- Since the confirmatino link is invalid, display an error message -->
-       Invalid password reset link
-       {% endif %}
+       <p>If there are any errors, please contact us at seadssystems@gmail.com.</p>
       </div>
     </div>
   </body>

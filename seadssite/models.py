@@ -73,22 +73,6 @@ class Device(models.Model):
         self.save()
 
 '''
-Model for an extended user profile
-# Required Fields
-# 	- user (OneToOneField) corresponds to a django user, used for authentication
-#						   documentation at
-#						   https://docs.djangoproject.com/en/1.8/ref/contrib/auth/
-# 	- phone (string)       corresponds to the users phone number
-# 	- cell_provider 	   corresponds to the cell service provider of the users
-#						   cell phone number
-'''
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, primary_key=True)
-    phone = models.CharField(max_length=10)
-    cell_provider = models.CharField(max_length=20)
-
-
-'''
 model for Images displayed on the site
 '''
 

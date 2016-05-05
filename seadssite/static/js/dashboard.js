@@ -40,7 +40,6 @@ $(document).ready(function(){
 	});
 	$(".deviceBox").click(function(event){
 		event.stopPropagation();
-		console.log("GETTING HERE");
 		var device_id = $(this).find(".device_id").val();
 	  window.location.href = "/dashboard/" + device_id + "/";
 	});
