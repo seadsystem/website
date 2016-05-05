@@ -91,7 +91,7 @@ class DashboardViewTests(TestCase):
         response = self.client.get('/dashboard/')
         print(response)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/login/?next=/dashboard/')
+        self. assertRegex(response.url, r'^\/login\/\?next=\/dashboard\/$')
 
     def test_post_new_device(self):
         self.client.login(username=self.user1.username, password='password')
