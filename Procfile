@@ -1,1 +1,1 @@
-web: gunicorn SeadsFront.wsgi:application --preload --log-file -
+web: gunicorn seadssite.wsgi:application --preload --log-file -
