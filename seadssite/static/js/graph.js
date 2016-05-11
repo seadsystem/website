@@ -416,10 +416,10 @@ function generate_chart(responses, gran, panels) {
         $('#myModal').modal('show');
 
         $("#start-date").datetimepicker({
-            format: 'MM/DD/YYYY HH:mm'
+            format: 'dddd, MM/DD/YYYY HH:mm'
         });
         $("#end-date").datetimepicker({
-            format: 'MM/DD/YYYY HH:mm'
+            format: 'dddd, MM/DD/YYYY HH:mm'
         });
 
         $('#start-date').data('DateTimePicker').setDate(start);
@@ -446,6 +446,8 @@ function generate_appliance_chart() {
 
 $(document).ready(function() {
     //onload
+    var dailyDate = $("#daily-date input");
+
     $(".list-group button").click(function(e) {
         if( $(this).hasClass( "active" ) ) {
             $(this).removeClass("active");
@@ -474,7 +476,7 @@ $(document).ready(function() {
                     panels[i]= $(this).attr('id'); 
                     i++;
                 });
-                var date = $("#daily-date").data("DateTimePicker").getDate();
+                var date = dailyDate.data("DateTimePicker").getDate();
                 var start = Math.floor(date / 1000);
                 var end = start + DAY_SECONDS;
                 pick_date(panels, start, end);
@@ -484,7 +486,7 @@ $(document).ready(function() {
                     panels[i]= $(this).attr('id'); 
                     i++;
                 });
-                var date = $("#daily-date").data("DateTimePicker").getDate();
+                var date = dailyDate.data("DateTimePicker").getDate();
                 var start = Math.floor(date / 1000);
                 var end = start + DAY_SECONDS;
                 pick_date(panels, start, end);
@@ -496,7 +498,7 @@ $(document).ready(function() {
                     panels[i]= $(this).attr('id'); 
                     i++;
                 });
-                var date = $("#daily-date").data("DateTimePicker").getDate();
+                var date = dailyDate.data("DateTimePicker").getDate();
                 var start = Math.floor(date / 1000);
                 var end = start + DAY_SECONDS;
                 pick_date(panels, start, end);
@@ -524,18 +526,32 @@ $(document).ready(function() {
         $("#label-name").val('');
     });
 
-    $("#daily-date").datetimepicker({
-        format: 'MM/DD/YYYY'
+    $('#next_day').click(function() {
+        var date = dailyDate.data("DateTimePicker").getDate();
+        date.setDate(date.getDate() + 1);
+        dailyDate.trigger("dp.change");
     });
 
-    $("#daily-date").on("dp.change", function(){
+    $('#prev_day').click(function() {
+        var date = dailyDate.data("DateTimePicker").getDate();
+        console.log(dailyDate.data("DateTimePicker"));
+        date.setDate(date.get() - 1);
+        dailyDate.trigger("dp.change");
+    });
+
+
+    dailyDate.datetimepicker({
+        format: 'dddd, MM/DD/YYYY'
+    });
+
+    dailyDate.on("dp.change", function(){
         var panels = [];
         var i = 0;
         $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
+            panels[i]= $(this).attr('id');
             i++;
         });
-        var date = $("#daily-date").data("DateTimePicker").getDate();
+        var date = dailyDate.data("DateTimePicker").getDate();
         var start = Math.floor(date / 1000);
         var end = start + DAY_SECONDS;
         pick_date(panels, start, end);
@@ -601,7 +617,7 @@ $(document).ready(function() {
 
     });
 
-    var date = $("#daily-date").data("DateTimePicker").getDate();
+    var date = dailyDate.data("DateTimePicker").getDate();
     var start = Math.floor(date / 1000);
     var end = start + DAY_SECONDS;
     pick_date(['Panel1', 'Panel2', 'Panel3'], start, end);
@@ -642,7 +658,5 @@ $(document).ready(function() {
              create_url(start, end, gran, "Panel3")],
              generate_bar_graph);
 
-
     generate_appliance_chart();
-
 });
