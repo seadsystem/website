@@ -526,7 +526,6 @@ $(document).ready(function() {
     });
 
     $("#daily-date").on("dp.change", function(){
-        //var panels = ['Panel1', 'Panel2', 'Panel3', 'PowerS'];
         var date = $("#daily-date").data("DateTimePicker").getDate();
         var start = Math.floor(date / 1000);
         var end = start + DAY_SECONDS;
