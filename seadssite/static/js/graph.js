@@ -85,9 +85,10 @@ function make_picker(func, repeat) {
     };
 }
 
-function pick_date(panels, start, end) {
+function pick_date(start, end) {
     var gran = 0;
     var urls = [];
+    var panels = ['Panel1', 'Panel2', 'Panel3', 'PowerS'];
     for(var i = 0; i < panels.length; i++) {
         urls[i] = create_url(start, end, gran, panels[i]);
     }
@@ -167,6 +168,7 @@ function fetch_bar_graph(url) {
     request.open("GET", url, true);
     request.send();
 }
+
 
 function generate_pie_graph(responses) {
     var data = [];
@@ -374,7 +376,7 @@ function generate_chart(responses, gran, panels) {
                 empty: { label: { text: "No Data Available" }   },
             },
             zoom: {
-                enabled: true
+                enabled: true,
             },
             axis: {
                 x: {
@@ -396,8 +398,9 @@ function generate_chart(responses, gran, panels) {
     } else {
         chart.load({
             columns:data,
-            unload: chart.columns
+            unload:chart.columns
         });
+
     }
     
     /*-- Deselect points when dragging on graph --*/
@@ -446,7 +449,7 @@ function generate_appliance_chart() {
 
 $(document).ready(function() {
     //onload
-    var dailyDate = $("#daily-date input");
+    var dailyDate = $("#daily-date");
 
     $(".list-group button").click(function(e) {
         if( $(this).hasClass( "active" ) ) {
@@ -459,6 +462,8 @@ $(document).ready(function() {
     $('#Panel1').addClass("active");
     $('#Panel2').addClass("active");
     $('#Panel3').addClass("active");
+    $('#PowerS').addClass("active");
+
 
     $("#panels button").click(function(e) {
         var count = 0;
@@ -476,20 +481,14 @@ $(document).ready(function() {
                     panels[i]= $(this).attr('id'); 
                     i++;
                 });
-                var date = dailyDate.data("DateTimePicker").getDate();
-                var start = Math.floor(date / 1000);
-                var end = start + DAY_SECONDS;
-                pick_date(panels, start, end);
+                chart.toggle($(this).attr('id'));
             } else {
                 $(this).addClass("active");
                 $('#panels .active').each(function(){
                     panels[i]= $(this).attr('id'); 
                     i++;
                 });
-                var date = dailyDate.data("DateTimePicker").getDate();
-                var start = Math.floor(date / 1000);
-                var end = start + DAY_SECONDS;
-                pick_date(panels, start, end);
+                chart.toggle($(this).attr('id'));
             }
         } else {
             if(!$(this).hasClass("active")) {
@@ -498,10 +497,7 @@ $(document).ready(function() {
                     panels[i]= $(this).attr('id'); 
                     i++;
                 });
-                var date = dailyDate.data("DateTimePicker").getDate();
-                var start = Math.floor(date / 1000);
-                var end = start + DAY_SECONDS;
-                pick_date(panels, start, end);
+                chart.toggle($(this).attr('id'));
             }
         }
     });
@@ -520,41 +516,56 @@ $(document).ready(function() {
     /*-- Initialize datepickers and buttons --*/
     $("#live-button").on("click", make_picker(pick_date, 60 * 1000));
 
+
     $("#modal-close").on("click", function() {
         $('#myModal').modal('toggle');
         $("#bad").hide();
         $("#label-name").val('');
     });
 
-    $('#next_day').click(function() {
-        var date = dailyDate.data("DateTimePicker").getDate();
-        date.setDate(date.getDate() + 1);
-        dailyDate.trigger("dp.change");
+    /*$("#graphpicker").click(function(event) {
+       switch(event.target.id) {
+           case "Month":
+               console.log(event.target.id)
+               break;
+           case "Week":
+               console.log(event.target.id)
+               break;
+           case "Day":
+               console.log(event.target.id)
+               break;
+       }
+    });*/
+
+    $('#next_day').on('click', function(event) {
+        event.stopPropagation();
+        var date = dailyDate.data("DateTimePicker").date.add(1,'days');
+        dailyDate.data("DateTimePicker").setDate(date);
+        dailyDate.trigger('dp.change');
     });
 
-    $('#prev_day').click(function() {
-        var date = dailyDate.data("DateTimePicker").getDate();
-        console.log(dailyDate.data("DateTimePicker"));
-        date.setDate(date.get() - 1);
-        dailyDate.trigger("dp.change");
+    $('#prev_day').on('click', function(event) {
+        event.stopPropagation();
+        var date = dailyDate.data("DateTimePicker").date.add(-1,'days');
+        dailyDate.data("DateTimePicker").setDate(date);
+        dailyDate.trigger('dp.change');
     });
-
 
     dailyDate.datetimepicker({
-        format: 'dddd, MM/DD/YYYY'
+        format: 'MM/DD/YYYY'
     });
 
+    var firstDate = new Date();
+    //console.log(firstDate);
+    //dailyDate.val(firstDate.toLocaleDateString());
+
+    //dailyDate.data("DateTimePicker").setDate(Date.now());
+
     dailyDate.on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id');
-            i++;
-        });
         var date = dailyDate.data("DateTimePicker").getDate();
         var start = Math.floor(date / 1000);
         var end = start + DAY_SECONDS;
-        pick_date(panels, start, end);
+        pick_date(start, end);
     });
 
     $("#range-start").on("dp.change", function(){
@@ -568,7 +579,7 @@ $(document).ready(function() {
         var endDate = $("#range-end").data("DateTimePicker").getDate();
         var start = Math.floor(startDate / 1000);
         var end = Math.floor(endDate / 1000);
-        pick_date(panels, start, end);
+        pick_date(start, end);
     });
 
     $("#range-end").on("dp.change", function(){
@@ -582,7 +593,7 @@ $(document).ready(function() {
         var endDate = $("#range-end").data("DateTimePicker").getDate();
         var start = Math.floor(startDate / 1000);
         var end = Math.floor(endDate / 1000);
-        pick_date(panels, start, end);
+        pick_date(start, end);
     });
 
     $("#range-start").datetimepicker({
@@ -620,7 +631,7 @@ $(document).ready(function() {
     var date = dailyDate.data("DateTimePicker").getDate();
     var start = Math.floor(date / 1000);
     var end = start + DAY_SECONDS;
-    pick_date(['Panel1', 'Panel2', 'Panel3'], start, end);
+    pick_date(start, end);
 
     var dateNow = Date.now();
     var end;

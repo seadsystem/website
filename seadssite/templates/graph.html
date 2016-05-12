@@ -21,14 +21,17 @@
                     <button type="button" class="btn btn-success" id="PowerS">Solar</button>
                 </div>
             </div>
-            <div class="col-lg-3 col-lg-offset-3">
-                <div class="input-group" id="daily-date">
+            <div class="col-lg-5 col-lg-offset-2">
+                <div class="input-group" id="graphpicker">
                     <span class="input-group-btn">
-                        <button class="btn glyphicon glyphicon-chevron-left" id="prev_day" type="button"></button>
+                        <label class="btn btn-default" id="Month">Month</label>
+                        <label class="btn btn-default" id="Week">Week</label>
+                        <label class="btn btn-default" id="Day">Day</label>
                     </span>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" id="daily-date">
                     <span class="input-group-btn" id="next_day">
-                        <button class="btn glyphicon glyphicon-chevron-right"  type="button"></button>
+                        <button class="btn btn-default glyphicon glyphicon-chevron-left" id="prev_day" type="button"></button>
+                        <button class="btn btn-default glyphicon glyphicon-chevron-right"  id="next_day" type="button"></button>
                     </span>
                 </div>
             </div>
