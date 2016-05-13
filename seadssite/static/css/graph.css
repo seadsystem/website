@@ -3,10 +3,6 @@
   height: 370px;
   }
 
-/*-- Radio button formatting --*/
-input[type="radio"] {
-  margin: 0 15px 0 7px;
-}
 
 /*-- Error text --*/
 #bad {
@@ -42,6 +38,30 @@ input[type="radio"] {
 h5 {
   margin-top: 5px;
 }
+
+#daily-date{
+height: 30px !important;
+width: 150px !important;
+
+}
+
+#prev_day, #next_day{
+  height: 30px !important;
+}
+
+.input-group-btn {
+    width: 0%;
+}
+
+.right {
+   float: right;
+}
+
+#panels{
+  float:left;
+  padding-left: 50px;
+}
+
 
 
 /*-- Chart --*/

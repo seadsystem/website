@@ -599,6 +599,7 @@ $(document).ready(function() {
     });
 
     dailyDate.datetimepicker({
+        defaultDate: new Date(),
         format: 'MM/DD/YYYY'
     });
 
