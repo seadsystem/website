@@ -17,7 +17,7 @@ function post_data_to_server(label) {
     var post = new XMLHttpRequest();
 
     // device ID is 3rd entry in url seperatered by a '/'
-    var pathArray = window.location.pathname.split('/'); 
+    var pathArray = window.location.pathname.split('/');
     var deviceId = pathArray[2];
     var url = "http://db.sead.systems:8080/" + deviceId + "/label";
     var params = JSON.stringify({data: label});
@@ -50,10 +50,10 @@ function create_url(start, end, gran, panel) {
     }
 
     // device ID is 3rd entry in url seperatered by a '/'
-    var pathArray = window.location.pathname.split('/'); 
+    var pathArray = window.location.pathname.split('/');
     var deviceId = pathArray[2];
 
-    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time="
             + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
 
@@ -73,7 +73,7 @@ function pick(func, repeat) {
     var panels = [];
     var i = 0;
     $('#panels .active').each(function(){
-        panels[i]= $(this).attr('id'); 
+        panels[i]= $(this).attr('id');
         i++;
     });
     func(panels, start, end);
@@ -102,7 +102,7 @@ function fetch_aggregate(urls, callback, seperate, panels) {
     var reqs = [];
     var splitUrl = urls[0].split("=");
     var gran = splitUrl[6];
-    
+
     var onCompleted = function() {
         for (var i = 0; i < urls.length; i++) {
             if (responses[i] == null) return;
@@ -124,11 +124,11 @@ function fetch_aggregate(urls, callback, seperate, panels) {
             callback({data: dat});
         }
     };
-    
+
     var onFailed = function() {
         console.log("it broke");
     };
-    
+
     for (var i = 0; i < urls.length; i++) {
         responses[i] = null;
     }
@@ -223,7 +223,7 @@ function generate_bar_graph(data) {
             x: 'x',
             xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
-                ['x'].concat(data.data.map( function(x) { return x.time; })), 
+                ['x'].concat(data.data.map( function(x) { return x.time; })),
                 ['energy'].concat(data.data.map( function(x) { return Math.round(x.energy * 100) / 100}))
             ],
             type: 'bar',
@@ -342,7 +342,7 @@ function generate_chart(responses, gran, panels) {
         res[i] = JSON.parse(responses[i]);
         data[i+1] = [panels[i]].concat(res[i].data.map(function(x){
                             var power = ((x.energy * 1000) * (3600 / gran));
-                            return Math.round(power * 1000) / 1000; 
+                            return Math.round(power * 1000) / 1000;
                         }));
         if(i==0) {
             data[0] = ['x'].concat(res[0].data.map(function(x){ return x.time; } ));
@@ -361,12 +361,12 @@ function generate_chart(responses, gran, panels) {
                 x: 'x',
                 xFormat: '%Y-%m-%d %H:%M:%S',
                 columns:data,
-                types: { 
+                types: {
                     Panel1: 'area',
                     Panel2: 'area',
                     Panel3: 'area',
                     PowerS: 'area',
-                }, 
+                },
                 colors: {
                     Panel1: '#1f77b4',
                     Panel2: '#FFC51E',
@@ -402,7 +402,7 @@ function generate_chart(responses, gran, panels) {
         });
 
     }
-    
+
     /*-- Deselect points when dragging on graph --*/
     $("#chart").mousedown(function() {
         chart.unselect(['energy']);
@@ -413,8 +413,8 @@ function generate_chart(responses, gran, panels) {
         var elements = chart.selected('energy');
         if (elements.length === 0) return;
 
-        var start = new Date(elements[0].x); 
-        var end = new Date(elements[elements.length - 1].x); 
+        var start = new Date(elements[0].x);
+        var end = new Date(elements[elements.length - 1].x);
 
         $('#myModal').modal('show');
 
@@ -446,7 +446,64 @@ function generate_appliance_chart() {
     });
 }
 
+function IntervalStore(day, week, month) {
+  this.day = day;
+  this.week = week;
+  this.month = month;
+  $('#Day').addClass('active');
+}
 
+IntervalStore.prototype.setInterval = function(interval, element) {
+  switch(interval) {
+      case "Month":
+          $('#Month').addClass('active');
+          $('#Week').removeClass('active');
+          $('#Day').removeClass('active');
+          this.month = true;
+          this.week = false;
+          this.day = false;
+          break;
+      case "Week":
+          $('#Week').addClass('active');
+          $('#Month').removeClass('active');
+          $('#Day').removeClass('active');
+          this.month = false;
+          this.week = true;
+          this.day = false;
+          break;
+      case "Day":
+          $('#Day').addClass('active');
+          $('#Month').removeClass('active');
+          $('#Week').removeClass('active');
+          this.month = false;
+          this.week = false;
+          this.day = true;
+          break;
+  }
+}
+
+// returns new date
+IntervalStore.prototype.getNewDate = function(datetime, forwardOrBack) {
+  var time = new Date(datetime);
+  var year = datetime.year();
+  var month = datetime.month();
+  var date = datetime.date();
+  var hour = datetime.hours();
+  var min = datetime.minutes();
+  var second = datetime.seconds();
+
+  var date;
+
+  if (this.day) {
+    date = new Date(year, month, date + forwardOrBack, hour, min, second);
+  } else if (this.week) {
+    date = new Date(year, month, date + (7 * forwardOrBack), hour, min, second);
+  } else if (this.month) {
+    date = new Date(year, month + forwardOrBack, date, hour, min, second);
+  }
+  console.log(date);
+  return date;
+}
 $(document).ready(function() {
     //onload
     var dailyDate = $("#daily-date");
@@ -478,14 +535,14 @@ $(document).ready(function() {
                 $(this).removeClass("active");
                 $(this).blur();
                 $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                    panels[i]= $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
             } else {
                 $(this).addClass("active");
                 $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                    panels[i]= $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
@@ -494,7 +551,7 @@ $(document).ready(function() {
             if(!$(this).hasClass("active")) {
                 $(this).addClass("active");
                 $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                    panels[i]= $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
@@ -523,44 +580,31 @@ $(document).ready(function() {
         $("#label-name").val('');
     });
 
-    /*$("#graphpicker").click(function(event) {
-       switch(event.target.id) {
-           case "Month":
-               console.log(event.target.id)
-               break;
-           case "Week":
-               console.log(event.target.id)
-               break;
-           case "Day":
-               console.log(event.target.id)
-               break;
-       }
-    });*/
+    var interval = new IntervalStore(true, false, false);
+
+    $('#graphpicker').click(function(event) {
+        interval.setInterval(event.target.id, $(event.target));
+    });
 
     $('#next_day').on('click', function(event) {
         event.stopPropagation();
-        var date = dailyDate.data("DateTimePicker").date.add(1,'days');
+        var date = interval.getNewDate(dailyDate.data("DateTimePicker").getDate(), 1)
         dailyDate.data("DateTimePicker").setDate(date);
-        dailyDate.trigger('dp.change');
     });
 
     $('#prev_day').on('click', function(event) {
         event.stopPropagation();
-        var date = dailyDate.data("DateTimePicker").date.add(-1,'days');
+        var date = interval.getNewDate(dailyDate.data("DateTimePicker").getDate(), -1)
         dailyDate.data("DateTimePicker").setDate(date);
-        dailyDate.trigger('dp.change');
     });
 
     dailyDate.datetimepicker({
         format: 'MM/DD/YYYY'
     });
 
-    var firstDate = new Date();
-    //console.log(firstDate);
-    //dailyDate.val(firstDate.toLocaleDateString());
 
     //dailyDate.data("DateTimePicker").setDate(Date.now());
-
+    //dailyDate.trigger("dp.change");
     dailyDate.on("dp.change", function(){
         var date = dailyDate.data("DateTimePicker").getDate();
         var start = Math.floor(date / 1000);
@@ -572,7 +616,7 @@ $(document).ready(function() {
         var panels = [];
         var i = 0;
         $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
+            panels[i]= $(this).attr('id');
             i++;
         });
         var startDate = $("#range-start").data("DateTimePicker").getDate();
@@ -586,7 +630,7 @@ $(document).ready(function() {
         var panels = [];
         var i = 0;
         $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
+            panels[i]= $(this).attr('id');
             i++;
         });
         var startDate = $("#range-start").data("DateTimePicker").getDate();
@@ -605,9 +649,9 @@ $(document).ready(function() {
 
 
     $("#event-submit").on("click", function() {
-        if ($("#label-name").val() !== '' && $("#start-date").data("DateTimePicker").getDate().unix() !== null && 
+        if ($("#label-name").val() !== '' && $("#start-date").data("DateTimePicker").getDate().unix() !== null &&
                                             $("#end-date").data("DateTimePicker").getDate().unix() !== null) {
-            
+
             var label = {
                 start_time: $("#start-date").data("DateTimePicker").getDate().unix(),
                 end_time: $("#end-date").data("DateTimePicker").getDate().unix(),
@@ -642,7 +686,7 @@ $(document).ready(function() {
     end = Math.floor(dateNow / 1000);
     start = end - DAY_SECONDS*2;
     gran = DAY_SECONDS;
-    
+
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
@@ -653,7 +697,7 @@ $(document).ready(function() {
     end = Math.floor(dateNow / 1000)
     start = end - DAY_SECONDS/4;
     gran = 1;
-    
+
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
@@ -663,7 +707,7 @@ $(document).ready(function() {
     end = Math.floor((dateNow / 1000)/DAY_SECONDS)*DAY_SECONDS;
     start = end - DAY_SECONDS*8;
     gran = DAY_SECONDS;
-    
+
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
