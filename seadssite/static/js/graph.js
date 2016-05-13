@@ -627,44 +627,6 @@ $(document).ready(function() {
         interval.setNewDate(-1)
     });
 
-/*
-    //dailyDate.data("DateTimePicker").setDate(Date.now());
-    //dailyDate.trigger("dp.change");
-    dailyDate.on("dp.change", function(){
-        var date = dailyDate.data("DateTimePicker").getDate();
-        var start = Math.floor(date / 1000);
-        var end = start + DAY_SECONDS;
-        pick_date(start, end);
-    });
-
-    $("#range-start").on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id');
-            i++;
-        });
-        var startDate = $("#range-start").data("DateTimePicker").getDate();
-        var endDate = $("#range-end").data("DateTimePicker").getDate();
-        var start = Math.floor(startDate / 1000);
-        var end = Math.floor(endDate / 1000);
-        pick_date(start, end);
-    });
-
-    $("#range-end").on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id');
-            i++;
-        });
-        var startDate = $("#range-start").data("DateTimePicker").getDate();
-        var endDate = $("#range-end").data("DateTimePicker").getDate();
-        var start = Math.floor(startDate / 1000);
-        var end = Math.floor(endDate / 1000);
-        pick_date(start, end);
-    });*/
-
     $("#range-start").datetimepicker({
         format: 'MM/DD/YYYY HH:mm',
     });
