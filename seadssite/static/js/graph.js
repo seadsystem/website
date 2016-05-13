@@ -446,14 +446,36 @@ function generate_appliance_chart() {
     });
 }
 
-function IntervalStore(day, week, month) {
+function DatepickerStore(day, week, month, datepicker) {
   this.day = day;
   this.week = week;
   this.month = month;
+  this.datepicker = datepicker;
   $('#Day').addClass('active');
 }
 
-IntervalStore.prototype.setInterval = function(interval, element) {
+DatepickerStore.prototype._setGraphData = function(startDate, endDate){
+  var panels = [];
+  var i = 0;
+  $('#panels .active').each(function(){
+      panels[i]= $(this).attr('id');
+      i++;
+  });
+  var start = Math.floor(startDate / 1000);
+  var end = Math.floor(endDate / 1000);
+  pick_date(start, end);
+}
+
+DatepickerStore.prototype.setInterval = function(interval) {
+  var dt = this.datepicker.getDate();
+  var time = new Date(dt);
+  var year = dt.year();
+  var month = dt.month();
+  var date = dt.date();
+  var hour = dt.hours();
+  var min = dt.minutes();
+  var second = dt.seconds();
+
   switch(interval) {
       case "Month":
           $('#Month').addClass('active');
@@ -462,6 +484,7 @@ IntervalStore.prototype.setInterval = function(interval, element) {
           this.month = true;
           this.week = false;
           this.day = false;
+          --month;
           break;
       case "Week":
           $('#Week').addClass('active');
@@ -470,6 +493,7 @@ IntervalStore.prototype.setInterval = function(interval, element) {
           this.month = false;
           this.week = true;
           this.day = false;
+          date = date - 7;
           break;
       case "Day":
           $('#Day').addClass('active');
@@ -478,31 +502,34 @@ IntervalStore.prototype.setInterval = function(interval, element) {
           this.month = false;
           this.week = false;
           this.day = true;
+          --date;
           break;
   }
+  this._setGraphData(new Date(year, month, date, hour, min, second), time);
 }
 
 // returns new date
-IntervalStore.prototype.getNewDate = function(datetime, forwardOrBack) {
-  var time = new Date(datetime);
-  var year = datetime.year();
-  var month = datetime.month();
-  var date = datetime.date();
-  var hour = datetime.hours();
-  var min = datetime.minutes();
-  var second = datetime.seconds();
-
-  var date;
+DatepickerStore.prototype.setNewDate = function(forwardOrBack) {
+  var dt = this.datepicker.getDate();
+  var time = new Date(dt);
+  var year = dt.year();
+  var month = dt.month();
+  var date = dt.date();
+  var hour = dt.hours();
+  var min = dt.minutes();
+  var second = dt.seconds();
+  console.log(this.day, this.week, this.month);
 
   if (this.day) {
-    date = new Date(year, month, date + forwardOrBack, hour, min, second);
+    date = date + forwardOrBack;
   } else if (this.week) {
-    date = new Date(year, month, date + (7 * forwardOrBack), hour, min, second);
+    date = date + (forwardOrBack * 7);
   } else if (this.month) {
-    date = new Date(year, month + forwardOrBack, date, hour, min, second);
+    month = month + forwardOrBack;
   }
-  console.log(date);
-  return date;
+  var datet = new Date(year, month, date, hour, min, second);
+  this.datepicker.setDate(datet);
+  forwardOrBack < 0 ? this._setGraphData(datet, dt) : this._setGraphData(dt, datet);
 }
 $(document).ready(function() {
     //onload
@@ -580,7 +607,11 @@ $(document).ready(function() {
         $("#label-name").val('');
     });
 
-    var interval = new IntervalStore(true, false, false);
+    dailyDate.datetimepicker({
+        format: 'MM/DD/YYYY'
+    });
+
+    var interval = new DatepickerStore(true, false, false, dailyDate.data("DateTimePicker"));
 
     $('#graphpicker').click(function(event) {
         interval.setInterval(event.target.id, $(event.target));
@@ -588,21 +619,15 @@ $(document).ready(function() {
 
     $('#next_day').on('click', function(event) {
         event.stopPropagation();
-        var date = interval.getNewDate(dailyDate.data("DateTimePicker").getDate(), 1)
-        dailyDate.data("DateTimePicker").setDate(date);
+        interval.setNewDate( 1)
     });
 
     $('#prev_day').on('click', function(event) {
         event.stopPropagation();
-        var date = interval.getNewDate(dailyDate.data("DateTimePicker").getDate(), -1)
-        dailyDate.data("DateTimePicker").setDate(date);
+        interval.setNewDate(-1)
     });
 
-    dailyDate.datetimepicker({
-        format: 'MM/DD/YYYY'
-    });
-
-
+/*
     //dailyDate.data("DateTimePicker").setDate(Date.now());
     //dailyDate.trigger("dp.change");
     dailyDate.on("dp.change", function(){
@@ -638,7 +663,7 @@ $(document).ready(function() {
         var start = Math.floor(startDate / 1000);
         var end = Math.floor(endDate / 1000);
         pick_date(start, end);
-    });
+    });*/
 
     $("#range-start").datetimepicker({
         format: 'MM/DD/YYYY HH:mm',
