@@ -72,11 +72,12 @@ class Device(models.Model):
         self.is_active = True
         self.save()
 
+
+
+
 '''
 model for Images displayed on the site
 '''
-
-
 # Required Fields
 #	- docfile (file)       corrensponds to a file upload path
 class Document(models.Model):

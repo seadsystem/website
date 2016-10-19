@@ -17,7 +17,7 @@ function post_data_to_server(label) {
     var post = new XMLHttpRequest();
 
     // device ID is 3rd entry in url seperatered by a '/'
-    var pathArray = window.location.pathname.split('/'); 
+    var pathArray = window.location.pathname.split('/');
     var deviceId = pathArray[2];
     var url = "http://db.sead.systems:8080/" + deviceId + "/label";
     var params = JSON.stringify({data: label});
@@ -50,10 +50,10 @@ function create_url(start, end, gran, panel) {
     }
 
     // device ID is 3rd entry in url seperatered by a '/'
-    var pathArray = window.location.pathname.split('/'); 
+    var pathArray = window.location.pathname.split('/');
     var deviceId = pathArray[2];
 
-    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time="
             + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
 
@@ -73,7 +73,7 @@ function pick(func, repeat) {
     var panels = [];
     var i = 0;
     $('#panels .active').each(function(){
-        panels[i]= $(this).attr('id'); 
+        panels[i]= $(this).attr('id');
         i++;
     });
     func(panels, start, end);
@@ -102,7 +102,7 @@ function fetch_aggregate(urls, callback, seperate, panels) {
     var reqs = [];
     var splitUrl = urls[0].split("=");
     var gran = splitUrl[6];
-    
+
     var onCompleted = function() {
         for (var i = 0; i < urls.length; i++) {
             if (responses[i] == null) return;
@@ -124,11 +124,11 @@ function fetch_aggregate(urls, callback, seperate, panels) {
             callback({data: dat});
         }
     };
-    
+
     var onFailed = function() {
         console.log("it broke");
     };
-    
+
     for (var i = 0; i < urls.length; i++) {
         responses[i] = null;
     }
@@ -223,7 +223,7 @@ function generate_bar_graph(data) {
             x: 'x',
             xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
-                ['x'].concat(data.data.map( function(x) { return x.time; })), 
+                ['x'].concat(data.data.map( function(x) { return x.time; })),
                 ['energy'].concat(data.data.map( function(x) { return Math.round(x.energy * 100) / 100}))
             ],
             type: 'bar',
@@ -342,7 +342,7 @@ function generate_chart(responses, gran, panels) {
         res[i] = JSON.parse(responses[i]);
         data[i+1] = [panels[i]].concat(res[i].data.map(function(x){
                             var power = ((x.energy * 1000) * (3600 / gran));
-                            return Math.round(power * 1000) / 1000; 
+                            return Math.round(power * 1000) / 1000;
                         }));
         if(i==0) {
             data[0] = ['x'].concat(res[0].data.map(function(x){ return x.time; } ));
@@ -361,12 +361,12 @@ function generate_chart(responses, gran, panels) {
                 x: 'x',
                 xFormat: '%Y-%m-%d %H:%M:%S',
                 columns:data,
-                types: { 
+                types: {
                     Panel1: 'area',
                     Panel2: 'area',
                     Panel3: 'area',
                     PowerS: 'area',
-                }, 
+                },
                 colors: {
                     Panel1: '#1f77b4',
                     Panel2: '#FFC51E',
@@ -402,7 +402,7 @@ function generate_chart(responses, gran, panels) {
         });
 
     }
-    
+
     /*-- Deselect points when dragging on graph --*/
     $("#chart").mousedown(function() {
         chart.unselect(['energy']);
@@ -413,16 +413,16 @@ function generate_chart(responses, gran, panels) {
         var elements = chart.selected('energy');
         if (elements.length === 0) return;
 
-        var start = new Date(elements[0].x); 
-        var end = new Date(elements[elements.length - 1].x); 
+        var start = new Date(elements[0].x);
+        var end = new Date(elements[elements.length - 1].x);
 
         $('#myModal').modal('show');
 
         $("#start-date").datetimepicker({
-            format: 'MM/DD/YYYY HH:mm'
+            format: 'dddd, MM/DD/YYYY HH:mm'
         });
         $("#end-date").datetimepicker({
-            format: 'MM/DD/YYYY HH:mm'
+            format: 'dddd, MM/DD/YYYY HH:mm'
         });
 
         $('#start-date').data('DateTimePicker').setDate(start);
@@ -446,9 +446,95 @@ function generate_appliance_chart() {
     });
 }
 
+function DatepickerStore(day, week, month, datepicker) {
+  this.day = day;
+  this.week = week;
+  this.month = month;
+  this.datepicker = datepicker;
+  $('#Day').addClass('active');
+}
 
+DatepickerStore.prototype._setGraphData = function(startDate, endDate){
+  var panels = [];
+  var i = 0;
+  $('#panels .active').each(function(){
+      panels[i]= $(this).attr('id');
+      i++;
+  });
+  var start = Math.floor(startDate / 1000);
+  var end = Math.floor(endDate / 1000);
+  pick_date(start, end);
+}
+
+DatepickerStore.prototype.setInterval = function(interval) {
+  var dt = this.datepicker.getDate();
+  var time = new Date(dt);
+  var year = dt.year();
+  var month = dt.month();
+  var date = dt.date();
+  var hour = dt.hours();
+  var min = dt.minutes();
+  var second = dt.seconds();
+
+  switch(interval) {
+      case "Month":
+          $('#Month').addClass('active');
+          $('#Week').removeClass('active');
+          $('#Day').removeClass('active');
+          this.month = true;
+          this.week = false;
+          this.day = false;
+          --month;
+          break;
+      case "Week":
+          $('#Week').addClass('active');
+          $('#Month').removeClass('active');
+          $('#Day').removeClass('active');
+          this.month = false;
+          this.week = true;
+          this.day = false;
+          date = date - 7;
+          break;
+      case "Day":
+          $('#Day').addClass('active');
+          $('#Month').removeClass('active');
+          $('#Week').removeClass('active');
+          this.month = false;
+          this.week = false;
+          this.day = true;
+          --date;
+          break;
+  }
+  this._setGraphData(new Date(year, month, date, hour, min, second), time);
+}
+
+// returns new date
+DatepickerStore.prototype.setNewDate = function(forwardOrBack) {
+  var dt = this.datepicker.getDate();
+  var time = new Date(dt);
+  var year = dt.year();
+  var month = dt.month();
+  var date = dt.date();
+  var hour = dt.hours();
+  var min = dt.minutes();
+  var second = dt.seconds();
+  console.log(this.day, this.week, this.month);
+
+  if (this.day) {
+    date = date + forwardOrBack;
+  } else if (this.week) {
+    date = date + (forwardOrBack * 7);
+  } else if (this.month) {
+    month = month + forwardOrBack;
+  }
+  var datet = new Date(year, month, date, hour, min, second);
+  this.datepicker.setDate(datet);
+  forwardOrBack < 0 ? this._setGraphData(datet, dt) : this._setGraphData(dt, datet);
+}
 $(document).ready(function() {
     //onload
+    var dailyDate = $("#daily-date");
+
     $(".list-group button").click(function(e) {
         if( $(this).hasClass( "active" ) ) {
             $(this).removeClass("active");
@@ -476,14 +562,14 @@ $(document).ready(function() {
                 $(this).removeClass("active");
                 $(this).blur();
                 $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                    panels[i]= $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
             } else {
                 $(this).addClass("active");
                 $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                    panels[i]= $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
@@ -492,7 +578,7 @@ $(document).ready(function() {
             if(!$(this).hasClass("active")) {
                 $(this).addClass("active");
                 $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                    panels[i]= $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
@@ -514,50 +600,31 @@ $(document).ready(function() {
     /*-- Initialize datepickers and buttons --*/
     $("#live-button").on("click", make_picker(pick_date, 60 * 1000));
 
+
     $("#modal-close").on("click", function() {
         $('#myModal').modal('toggle');
         $("#bad").hide();
         $("#label-name").val('');
     });
 
-    $("#daily-date").datetimepicker({
+    dailyDate.datetimepicker({
         format: 'MM/DD/YYYY'
-
     });
 
-    $("#daily-date").on("dp.change", function(){
-        var date = $("#daily-date").data("DateTimePicker").getDate();
-        var start = Math.floor(date / 1000);
-        var end = start + DAY_SECONDS;
-        pick_date(start, end);
+    var interval = new DatepickerStore(true, false, false, dailyDate.data("DateTimePicker"));
+
+    $('#graphpicker').click(function(event) {
+        interval.setInterval(event.target.id, $(event.target));
     });
 
-    $("#range-start").on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
-            i++;
-        });
-        var startDate = $("#range-start").data("DateTimePicker").getDate();
-        var endDate = $("#range-end").data("DateTimePicker").getDate();
-        var start = Math.floor(startDate / 1000);
-        var end = Math.floor(endDate / 1000);
-        pick_date(start, end);
+    $('#next_day').on('click', function(event) {
+        event.stopPropagation();
+        interval.setNewDate( 1)
     });
 
-    $("#range-end").on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
-            i++;
-        });
-        var startDate = $("#range-start").data("DateTimePicker").getDate();
-        var endDate = $("#range-end").data("DateTimePicker").getDate();
-        var start = Math.floor(startDate / 1000);
-        var end = Math.floor(endDate / 1000);
-        pick_date(start, end);
+    $('#prev_day').on('click', function(event) {
+        event.stopPropagation();
+        interval.setNewDate(-1)
     });
 
     $("#range-start").datetimepicker({
@@ -569,9 +636,9 @@ $(document).ready(function() {
 
 
     $("#event-submit").on("click", function() {
-        if ($("#label-name").val() !== '' && $("#start-date").data("DateTimePicker").getDate().unix() !== null && 
+        if ($("#label-name").val() !== '' && $("#start-date").data("DateTimePicker").getDate().unix() !== null &&
                                             $("#end-date").data("DateTimePicker").getDate().unix() !== null) {
-            
+
             var label = {
                 start_time: $("#start-date").data("DateTimePicker").getDate().unix(),
                 end_time: $("#end-date").data("DateTimePicker").getDate().unix(),
@@ -592,7 +659,7 @@ $(document).ready(function() {
 
     });
 
-    var date = $("#daily-date").data("DateTimePicker").getDate();
+    var date = dailyDate.data("DateTimePicker").getDate();
     var start = Math.floor(date / 1000);
     var end = start + DAY_SECONDS;
     pick_date(start, end);
@@ -606,7 +673,7 @@ $(document).ready(function() {
     end = Math.floor(dateNow / 1000);
     start = end - DAY_SECONDS*2;
     gran = DAY_SECONDS;
-    
+
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
@@ -617,7 +684,7 @@ $(document).ready(function() {
     end = Math.floor(dateNow / 1000)
     start = end - DAY_SECONDS/4;
     gran = 1;
-    
+
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
@@ -627,13 +694,11 @@ $(document).ready(function() {
     end = Math.floor((dateNow / 1000)/DAY_SECONDS)*DAY_SECONDS;
     start = end - DAY_SECONDS*8;
     gran = DAY_SECONDS;
-    
+
     fetch_aggregate([create_url(start, end, gran, "Panel1"),
              create_url(start, end, gran, "Panel2"),
              create_url(start, end, gran, "Panel3")],
              generate_bar_graph);
 
-
     generate_appliance_chart();
-
 });
