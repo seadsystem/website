@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="images/logo2.png">
+    <link rel="stylesheet" type="text/css" href="css/stylesheets/reset.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/stylesheets/dashboard.css" />
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <div id="vue-div">
+        <div id="manage-bar" class="manage-bar navbar navbar-fixed-left">
+            <div id="sead-logo" class="">
+                <img src="images/logo.gif" class="logo">
+            </div>
+            <div id="room-icon" class="">
+                <!-- change according to #manage-list -->
+                <div class="room-icon">
+                    <img src="images/bedroom2.png" class="room-img">
+                    <div>
+                        <div class="room-label"> Master Bedroom </div>
+                    </div>
+                </div>
+            </div>
+            <div id="manage-list" class="list-group manage-list">
+                <!-- use v-for here -->
+                <a href="" class="list-group-item manage-item">
+                    Home
+                </a>
+                <a href="" class="list-group-item manage-item_active">
+                    Master Bedroom 
+                    <span class="badge">5</span>
+                </a>
+                <a href="" class="list-group-item manage-item">
+                    Living Room
+                </a>
+                <a href="" class="list-group-item manage-item">
+                    Office
+                </a>
+                <a href="" class="list-group-item manage-item">
+                    Kitchen
+                </a>
+                <a href="" class="list-group-item manage-item">
+                    Bathroom
+                </a>
+            </div>
+        </div>
+        <div id="page-wrap" class="page-wrap">
+            <div id="search-bar" class="search-bar">
+                <!-- keep at top -->
+                <i class="fa fa-search"></i>
+                <input type="text" name="search-bar-input" id="search-bar-input" class="search-bar-input" placeholder="Search For Device" v-model="search_bar_input_val">
+                <div id="icon-wrap" class="icon-wrap">
+                    <a href=""><i class="fa fa-cog icon" aria-hidden="true"></i></a>
+                    <a href=""><i class="fa fa-bell icon" aria-hidden="true"></i></a>
+                    <a href=""><i class="fa fa-user icon" aria-hidden="true"></i></a>
+                </div>
+            </div>
+            <div id="module-wrap" class="module-wrap">
+                <div class="mo module1">
+                    <div class="mo-el">m1</div>
+                </div>
+                <div class="mo module3">
+                    <div class="mo-el">m3</div>
+                </div>
+                <div class="mo module2">
+                    <div class="mo-el">m2</div>
+                </div>
+                <div class="mo module3">
+                    <div class="mo-el">m3</div>
+                </div>
+                <div class="mo module3">
+                    <div class="mo-el">m3</div>
+                </div>
+                <div class="mo module3">
+                    <div class="mo-el">m3</div>
+                </div>
+                <div class="mo module2">
+                    <div class="mo-el">m2</div>
+                </div>
+                <div class="mo module3">
+                    <div class="mo-el">m3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    <!-- Vue.js -->
+    <script type="text/javascript" src="js/vue.min.js"></script>
+    <script type="text/javascript" src="js/dashboard.js"></script>
+</body>
+
+</html>

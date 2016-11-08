@@ -1,0 +1,16 @@
+.col1{
+	background-color: #eee;
+}
+.col2{
+	background-color: green;
+}
+.col1-1{
+	background-color: red;
+}
+.col1-2{
+	background-color: yellow;
+}
+.col2-1{
+	background-color: orange;
+	margin: auto;
+}
