@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/blog.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://github.com/kswedberg/jquery-smooth-scroll/blob/master/jquery.smooth-scroll.min.js"></script>
+
+    <!-- Smooth page scroll code for clicking navigation buttons Current not used, may be used later-->
+    <script>
+    $('.smooth').on('click', function() {
+        $.smoothScroll({
+            scrollElement: $('body'),
+            scrollTarget: '#' + this.id
+        });
+
+        return false;
+    });
+    </script>
+    <!----------------------------------------------------------------------------------------------->
+    <meta charset="UTF-8">
+
+    <!--navigation bar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-left image-logo" href="#"><img src="/static/images/SEADS-logo-small.png"></a>
+            </div>
+            <div class="navbar-right">
+                <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">Login <span class="glyphicon glyphicon-log-in"></span></a></li>
+                        <li><a href="#">Register <span class="glyphicon glyphicon-user"></span></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <title>SEADS</title>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div id="home">
+
+            <div class="row page_one">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-8">
+                    <!--
+                    <video class="promo-video" width="720" height="480" controls>
+                        <source src="/static/video/house-tour.mp4" type="video/mp4">
+                    </video>
+                    -->
+
+                    <iframe width="720" height="480" src="https://www.youtube.com/embed/srpIxqNF2o4" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="col-sm-1"></div>
+            </div>
+    </div>
+    <div id="page_two">
+        <div class="row text-row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2 left-text-block">
+                <h3>Lorem ipsum</h3>
+                <p>Cras eu tincidunt erat, eget interdum dui. Mauris tempus metus purus.</p>
+            </div>
+            <div class="col-sm-1"></div>
+            <div class="center-text-block col-sm-2">
+                <h3>Ipsum Lorem</h3>
+                <p>vel laoreet turpis molestie sit amet. Proin hendrerit tellus eros,</p>
+            </div>
+            <div class="col-sm-1"></div>
+            <div class="right-text-block col-sm-2">
+                <h3>malesuada fames</h3>
+                <p>Fusce lorem ante, pulvinar eget facilisis vitae, molestie ac diam. Sed quis lacus augue.</p>
+            </div>
+        </div>
+    </div>
+    <div id="page_three">
+        <div class="row product-description">
+            <h1 class="PD-header">sapien convallis sodales</h1>
+        </div>
+        <div class="product-features">
+            <div class="row PF-one">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-3">
+                    <h3>Etiam tristique</h3>
+                    <p>mi sodales eros condimentum, sit amet malesuada augue vulputate. Pellentesque felis sapien. <br><br>
+                    Elementum vitae mollis quis, gravida ut lectus. Nam lorem est, elementum.
+                    Vivamus viverra quis sem ut ullamcorper. Vestibulum ante ipsum primis in faucibus orci luctus et
+                        ultrices posuere cubilia Curae; Sed accumsan congue blandit. Nam vel elementum justo. Sed nunc velit,
+                        accumsan tincidunt ex eget, tincidunt efficitur tortor. </p>
+                    <button class="btn btn-primary">Learn More</button>
+                </div>
+                <div class="col-sm-1"></div>
+                <div class="PF-one-image col-sm-3">
+                    <img src="/static/images/PR-DEMO-TR.png" height="400px" width="400px">
+                </div>
+            </div>
+            <div class="row PF-two">
+                <div class="col-sm-1"></div>
+                <div class="PF-two-image col-sm-3">
+                    <img src="/static/images/bar-graph.png" height="300px" width="550px">
+                </div>
+                <div class="col-sm-3"></div>
+                <div class="col-sm-3">
+                    <h3>magna efficitur</h3>
+                    <p>Fusce lorem ante, pulvinar eget facilisis vitae, molestie ac diam. Sed quis lacus augue. Vestibulum et laoreet diam.
+                    Aenean malesuada elit vitae lectus blandit, quis condimentum justo imperdiet.
+                    Donec egestas velit sit amet orci blandit malesuada vel a magna. Vestibulum ante ipsum primis in
+                        faucibus orci luctus et ultrices posuere cubilia Curae; Donec maximus nulla id sem tristique eleifend.
+                        Cras volutpat metus quis purus scelerisque egestas. Sed est nunc, ultrices at pulvinar ac, interdum gravida risus.</p>
+                    <button class="btn btn-primary">Learn More</button>
+                </div>
+            </div>
+            <div class="row PF-three">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-3">
+                    <h3>Morbi cursus efficitur</h3>
+                    <p>pellentesque. Pellentesque id consectetur metus, suscipit efficitur est. Duis tincidunt sapien
+                        orci, eu interdum orci suscipit vitae. Morbi eget viverra massa, ut porttitor augue. Fusce dui
+                        massa, accumsan vel dolor et, auctor dictum lorem. Proin sit amet urna neque. Sed molestie mi
+                        eget risus tincidunt, id ultricies risus ultrices. Donec orci tellus, tempus non nisl nec,
+                        semper vulputate felis. Pellentesque augue quam, tristique ut nibh id, egestas viverra purus.
+                        Nam turpis ex, viverra vitae efficitur at, cursus ut lorem. Cras ultricies viverra dui, quis viverra nibh vulputate eu.</p>
+                    <button class="btn btn-primary">Learn More</button>
+                </div>
+                <div class="col-sm-1"></div>
+                <div class="PF-one-image col-sm-3">
+                    <img src="/static/images/consumption.png" height="300px" width="600px">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="page_four">
+        <div class="row how-it-works">
+            <div class="col-sm-4"></div>
+                <div class="col-sm-4" style="text-align: center">
+                    <h2 style="text-align: center">How SEADS Works</h2>
+                    <p>Proin luctus tellus nec nisi dapibus, id pharetra tortor commodo. Phasellus non est quis est accumsan
+                        malesuada. Morbi facilisis lorem id tellus auctor tempus. Mauris ac luctus urna. Cras et quam urna.</p>
+                    <button class="btn btn-primary">Learn More</button>
+                </div>
+            <div class="col-sm-4""></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

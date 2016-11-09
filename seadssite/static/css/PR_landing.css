@@ -1,0 +1,79 @@
+
+.navbar {
+    position:fixed;
+}
+/*
+.jumbotron {
+    background: rgba(200, 54, 54, 0.5);
+}*/
+
+#home {
+    height:500px;
+    background: url("../images/pretty-house.jpg");
+    position: absolute;
+    background-size: cover;
+    background-repeat: no-repeat;
+    left:0px;
+    right:0px;
+    top:55px;
+}
+.login-header {
+    text-align: center;
+    padding-bottom: 10px;
+    font-size: 36px;
+}
+.page_one {
+    padding-top:15px;
+    /*padding-left: 300px;
+    padding-right: 0px;*/
+}
+
+.promo-video {
+    margin: 0 auto;
+    width: 720px;
+    /*position: absolute;
+    text-align: center;
+    top: 150px;
+    left:300px;
+    padding-top:150px;*/
+}
+
+
+.log-in-window {
+
+   /* position:absolute;*/
+
+    /*margin-top: 150px;
+    margin-left: 400px;*/
+}
+
+.text-row {
+    padding-top:560px;
+}
+
+.product-description {
+    padding-top:30px;
+    padding-bottom: 40px;
+}
+.PD-header {
+    text-align:center;
+}
+
+.PF-two {
+    padding-top:50px;
+}
+
+.PF-three {
+    padding-top:50px;
+    padding-bottom: 20px;
+}
+
+.how-it-works {
+    padding-top:40px;
+    padding-bottom: 10px;
+    background-color: #E6EAEF;
+
+    /*text-align: center;
+    width: 350px;
+    padding-left: 200px;*/
+}
