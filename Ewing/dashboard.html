@@ -22,7 +22,8 @@
             <div id="room-icon" class="">
                 <!-- change according to #manage-list -->
                 <div class="room-icon">
-                    <img src="images/bedroom2.png" class="room-img">
+                    <img :src="icon_path" class="room-img">
+
                     <div>
                         <div class="room-label"> Master Bedroom </div>
                     </div>
@@ -54,7 +55,7 @@
                 <top-manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test" :top_manage_bar_toggle="top_manage_bar_toggle"></top-manage-item>
             </div>
             <div id="module-wrap" class="module-wrap" v-for="room in rooms" :class="{hidden: !room.isActive}">
-                <module v-for="module in room.modules" :mod="module"></module>
+                <module v-for="module in room.modules" :mod="module" :room="room" :del_module="del_module"></module>
             </div>
         </div>
     </div>

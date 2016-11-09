@@ -1,6 +1,7 @@
 $orange: #EA5019;
 $orange1: #FF472E;
 $gray: #F2F6FC;
+$gray1: #9abcf4;
 $border-test: 1px black dashed;
 $module-border: 0.5px #c2cad6 solid;
 body {
@@ -121,7 +122,7 @@ body {
                     margin: 0;
                     background-color: $gray;
                     .panel-heading {
-                        background-color: $gray;
+                        background-color: $gray1;
                     }
                 }
             }
@@ -142,6 +143,12 @@ body {
         }
     }
 }
+
+.slide {
+  transition: .5s cubic-bezier(0, 1, 0.5, 1);
+  transform: translateY(0);
+}
+
 
 @media only screen and (max-width: 1025px) {
     /* For flip ipad */

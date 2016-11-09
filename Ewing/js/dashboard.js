@@ -76,7 +76,48 @@ var app = function() {
         console.log('works');
     }
 
+    var array_remove = function(index) {
+        arr = jQuery.grep(arr, function(index) {
+            return value != removeItem;
+        });
+        return arr
+    }
+
+    var enumerate = function(v) {
+        var k = 0;
+        return v.map(function(e) {
+            e._idx = k++;
+        });
+    };
+
+    var cleanArray = function(actual) {
+        var newArray = new Array();
+        for (var i = 0; i < actual.length; i++) {
+            if (actual[i]) {
+                console.log('here');
+                newArray.push(actual[i]);
+            }
+        }
+        return newArray;
+    }
+
+
     //--------------------------------------
+
+    self.del_module = function(r_idx, mod) {
+        var tmp = $("#" + mod.el_id + "svg"); //arbitrary
+        var wrap = $("#" + mod.id);
+        $.when(wrap.fadeOut(300)).done(function() {
+            $.when(wrap.css('display', '')).done(
+                function() {
+                    console.log('here');
+                    tmp.remove();
+                    var room = self.vue.rooms[r_idx];
+                    room.modules.splice(mod._idx, 1);
+                    enumerate(self.vue.rooms[r_idx].modules);
+                });
+        });
+    };
 
     // Extends an array
     self.extend = function(a, b) {
@@ -90,6 +131,7 @@ var app = function() {
             if (_idx == self.vue.rooms[i]._idx) {
                 console.log('Click on ' + self.vue.rooms[i].name);
                 self.vue.rooms[i].isActive = true;
+                self.vue.icon_path = self.vue.rooms[i].icon_path;
             } else {
                 self.vue.rooms[i].isActive = false;
             }
@@ -131,14 +173,18 @@ var app = function() {
 
     // page-wrap => module-wrap
     Vue.component('module', {
-        props: ['mod'],
-        template: ' <div class="mo" :class="mod.modType">\
+        props: ['mod', 'room', 'del_module'],
+        template: ' <div class="mo" :class="mod.modType" :id="mod.id">\
                         <div class="mo-el">\
                             <div class="panel panel-default">\
-                                <div class="panel-heading">{{mod.device}}</div>\
-                                <div class="panel-body" :id="mod.id">\
-                                    <div class="tooltip" class="hidden">\
-                                        <p id="value"> </p>\
+                                <div class="panel-heading text-center">\
+                                    {{mod.device}}\
+                                    <a href="" v-on:click.prevent="del_module(room._idx, mod);" class="pull-right">\
+                                        <i class="fa fa-times" aria-hidden="true"></i>\
+                                    </a>\
+                                </div>\
+                                <div class="panel-body" :id="mod.el_id">\
+                                    <div class="tooltip hidden">\
                                     </div>\
                                 </div>\
                             </div>\
@@ -168,109 +214,95 @@ var app = function() {
                         // integrate with D3.js
                         '_idx': 0,
                         'modType': 'module1', // type of module (1-3, css differ)
-                        'id': 'Home1'
+                        'el_id': 'Home0', //for plot use( the inner el box )
+                        'id': '00001' // this should be computed and assigned at the insertion
                     }, {
                         'device': 'Home Dummy1',
-                        'data': [], // according data query file from android team, data should be a 
-                        // list of value with heading ["time", "W"]
-                        // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-                        // integrate with D3.js
+                        'data': [],
                         '_idx': 1,
-                        'modType': 'module2', // type of module (1-3, css differ)
-                        'id': 'Home1'
+                        'modType': 'module2',
+                        'el_id': 'Home1',
+                        'id': '00002'
                     }, {
                         'device': 'Home Dummy2',
-                        'data': [], // according data query file from android team, data should be a 
-                        // list of value with heading ["time", "W"]
-                        // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-                        // integrate with D3.js
+                        'data': [],
                         '_idx': 2,
-                        'modType': 'module3', // type of module (1-3, css differ)
-                        'id': 'Home2'
+                        'modType': 'module3',
+                        'el_id': 'Home2',
+                        'id': '000055'
                     }], // a list of module 
                     'isActive': true, // is active or not
-                    'icon_path': ''
+                    'icon_path': 'images/logo2.png'
                 }, {
-                    'name': 'Master Bedroom', // or possibly separated from room
-                    '_idx': 1, // index of local manage-list
+                    'name': 'Master Bedroom',
+                    '_idx': 1,
                     'notice': 0,
                     'modules': [{
                         'device': 'Bedroom Dummy0',
-                        'data': [], // according data query file from android team, data should be a 
-                        // list of value with heading ["time", "W"]
-                        // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-                        // integrate with D3.js
+                        'data': [],
                         '_idx': 0,
-                        'modType': 'module1', // type of module (1-3, css differ)
-                        'id': 'M0'
+                        'modType': 'module1',
+                        'el_id': 'M0',
+                        'id': '00004'
                     }, {
                         'device': 'Bedroom Dummy1',
-                        'data': [], // according data query file from android team, data should be a 
-                        // list of value with heading ["time", "W"]
-                        // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-                        // integrate with D3.js
+                        'data': [],
                         '_idx': 1,
-                        'modType': 'module1', // type of module (1-3, css differ)
-                        'id': 'M1'
+                        'modType': 'module1',
+                        'el_id': 'M1',
+                        'id': '00005'
                     }, {
                         'device': 'Bedroom Dummy2',
-                        'data': [], // according data query file from android team, data should be a 
-                        // list of value with heading ["time", "W"]
-                        // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-                        // integrate with D3.js
+                        'data': [],
                         '_idx': 2,
-                        'modType': 'module1', // type of module (1-3, css differ)
-                        'id': 'M3'
-                    }], // a list of module 
-                    'isActive': false, // is active or not
-                    'icon_path': ''
+                        'modType': 'module1',
+                        'el_id': 'M3',
+                        'id': '00006'
+                    }],
+                    'isActive': false,
+                    'icon_path': 'images/bedroom2.png'
                 }, {
-                    'name': 'Living Room', // or possibly separated from room
-                    '_idx': 2, // index of local manage-list
+                    'name': 'Living Room',
+                    '_idx': 2,
                     'notice': 0,
                     'modules': [{
                         'device': 'Living Dummy0',
-                        'data': [], // according data query file from android team, data should be a 
-                        // list of value with heading ["time", "W"]
-                        // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-                        // integrate with D3.js
+                        'data': [],
                         '_idx': 0,
-                        'modType': 'module3', // type of module (1-3, css differ)
-                        'id': 'L0'
+                        'modType': 'module3',
+                        'el_id': 'L0',
+                        'id': '00007'
                     }, {
                         'device': 'Living Dummy1',
-                        'data': [], // according data query file from android team, data should be a 
-                        // list of value with heading ["time", "W"]
-                        // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-                        // integrate with D3.js
+                        'data': [],
                         '_idx': 1,
-                        'modType': 'module2', // type of module (1-3, css differ)
-                        'id': 'L1'
+                        'modType': 'module2',
+                        'el_id': 'L1',
+                        'id': '00008'
                     }, {
                         'device': 'Living Dummy2',
-                        'data': [], // according data query file from android team, data should be a 
-                        // list of value with heading ["time", "W"]
-                        // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-                        // integrate with D3.js
+                        'data': [],
                         '_idx': 2,
-                        'modType': 'module1', // type of module (1-3, css differ)
-                        'id': 'L2'
-                    }], // a list of module 
-                    'isActive': false, // is active or not
-                    'icon_path': ''
+                        'modType': 'module1',
+                        'el_id': 'L2',
+                        'id': '00009'
+                    }],
+                    'isActive': false,
+                    'icon_path': 'images/livingroom.png'
                 }
 
             ],
             search_bar_input_val: '',
-            top_manage_bar_display: false
+            top_manage_bar_display: false,
+            icon_path: 'images/logo2.png'
         },
         methods: {
             manage_btn_toggle: self.manage_btn_toggle,
             test: self.test,
-            top_manage_bar_toggle: self.top_manage_bar_toggle
+            top_manage_bar_toggle: self.top_manage_bar_toggle,
+            del_module: self.del_module
         },
     });
-
 
 
     $("#vue-div").show();

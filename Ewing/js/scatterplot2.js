@@ -10,8 +10,9 @@ var scatter = function(module) {
     var colors = d3.scale.category20();
 
     //Define SVG
-    var svg = d3.select("#"+module.id)
+    var svg = d3.select("#"+module.el_id)
         .append("svg")
+        .attr("id", module.el_id + "svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
