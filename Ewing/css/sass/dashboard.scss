@@ -1,6 +1,6 @@
-$orange: #FF8547;
+$orange: #EA5019;
 $orange1: #FF472E;
-$gray: #f2f6fc;
+$gray: #F2F6FC;
 $border-test: 1px black dashed;
 $module-border: 0.5px #c2cad6 solid;
 body {
@@ -13,8 +13,12 @@ body {
     font-size: 15px;
 }
 
+#space-for-search-bar {
+    margin-top: 50px; //for search-bar
+}
+
 .manage-bar {
-    // border: $border-test;
+    border: $border-test;
     position: fixed;
     z-index: 1000px;
     top: 0px;
@@ -24,28 +28,31 @@ body {
     text-align: center;
     padding: 10px;
     .logo {
-        // border: $border-test;
+        border: $border-test;
         margin-top: 40px;
         width: 200px;
     }
     .room-icon {
-        // border: $border-test;
+        border: $border-test;
         margin-bottom: 50px;
         .room-img {
-            // border: $border-test;
-            width: 100px;
+            border: $border-test;
+            width: 80px;
         }
         .room-label {
-            // border: $border-test;
+            border: $border-test;
             font-size: 18px;
         }
     }
     .manage-list {
         text-align: left;
+        border: 0px;
         .manage-item {
             padding-left: 60px;
+            border: 0px;
+            border-radius: 5px;
         }
-        .manage-item_active {
+        .active {
             background-color: $orange;
             padding-left: 60px;
         }
@@ -68,6 +75,9 @@ body {
         padding: 10px;
         padding-left: 5%;
         border: $module-border;
+        .bar-display {
+            display: none;
+        }
         .fa {
             //overwrite fontawesome
             color: #797B82;
@@ -75,10 +85,8 @@ body {
         }
         .icon-wrap {
             width: 100px;
-            border: $border-test;
             display: inline-block;
             .icon {
-                border: $border-test;
                 margin-right: 3%;
                 font-size: 20px;
             }
@@ -91,8 +99,11 @@ body {
             border: $border-test;
         }
     }
+    .top-manage-bar {
+        display: none;
+    }
     .module-wrap {
-        margin-top: 50px; //for search-bar
+        // margin-top: 50px; //for search-bar, now in #space-for-search-bar
         border: $border-test;
         width: 100%;
         height: 1200px;
@@ -105,6 +116,14 @@ body {
             .mo-el {
                 border: $border-test;
                 width: 100%;
+                .panel {
+                    //overwrite bootstrap panel
+                    margin: 0;
+                    background-color: $gray;
+                    .panel-heading {
+                        background-color: $gray;
+                    }
+                }
             }
         }
         .module1 {
@@ -147,6 +166,9 @@ body {
 
 @media only screen and (max-width: 768px) {
     /* For tablets:ipad */
+    #space-for-search-bar {
+        margin-top: 50px; //for search-bar
+    }
     #manage-bar {
         display: none;
     }
@@ -158,6 +180,14 @@ body {
     }
     #search-bar-input {
         width: 200px;
+    }
+    #bar-display {
+        color: #000;
+        font-size: 25px;
+        display: inline-block;
+    }
+    #search-display {
+        display: none;
     }
     #module-wrap {
         .mo {
@@ -202,7 +232,6 @@ body {
         }
     }
 }
-
 
 @media only screen and (max-width: 700px) {
     /* For flip i6: */
