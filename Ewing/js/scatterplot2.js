@@ -1,4 +1,4 @@
-var scatter = function(module) {
+var scatter = function(room, mod_i, data_i) {
     console.log('d3');
 
     //Define Margin
@@ -10,9 +10,9 @@ var scatter = function(module) {
     var colors = d3.scale.category20();
 
     //Define SVG
-    var svg = d3.select("#"+module.el_id)
+    var svg = d3.select("#"+room.modules[mod_i].el_id)
         .append("svg")
-        .attr("id", module.el_id + "svg")
+        .attr("id", room.modules[mod_i].el_id + "svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -51,7 +51,7 @@ var scatter = function(module) {
 
     //Draw Scatterplot
     svg.selectAll(".dot")
-        .data(module.data)
+        .data(room.data[data_i])
         .enter().append("circle")
         .attr("class", "dot")
         .attr("r", function(d) {
@@ -109,3 +109,71 @@ var scatter = function(module) {
         .text("Time");
 
 };
+
+
+// $(function () {
+//     var seriesOptions = [],
+//         seriesCounter = 0,
+//         names = ['MSFT', 'AAPL', 'GOOG'];
+
+//     /**
+//      * Create the chart when all data is loaded
+//      * @returns {undefined}
+//      */
+//     function createChart() {
+
+//         Highcharts.stockChart('Home1', {
+
+//             rangeSelector: {
+//                 selected: 4
+//             },
+
+//             yAxis: {
+//                 labels: {
+//                     formatter: function () {
+//                         return (this.value > 0 ? ' + ' : '') + this.value + '%';
+//                     }
+//                 },
+//                 plotLines: [{
+//                     value: 0,
+//                     width: 2,
+//                     color: 'silver'
+//                 }]
+//             },
+
+//             plotOptions: {
+//                 series: {
+//                     compare: 'percent',
+//                     showInNavigator: true
+//                 }
+//             },
+
+//             tooltip: {
+//                 pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+//                 valueDecimals: 2,
+//                 split: true
+//             },
+
+//             series: seriesOptions
+//         });
+//     }
+
+//     $.each(names, function (i, name) {
+
+//         $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=' + name.toLowerCase() + '-c.json&callback=?',    function (data) {
+
+//             seriesOptions[i] = {
+//                 name: name,
+//                 data: data
+//             };
+
+//             // As we're loading the data asynchronously, we don't know what order it will arrive. So
+//             // we keep a counter and create the chart when all the data is loaded.
+//             seriesCounter += 1;
+
+//             if (seriesCounter === names.length) {
+//                 createChart();
+//             }
+//         });
+//     });
+// });

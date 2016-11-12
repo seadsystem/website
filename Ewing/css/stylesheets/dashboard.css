@@ -3,76 +3,103 @@ body {
   over-flow-x: hidden;
   margin: 0px;
   padding: 0px;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: 300;
   font-size: 15px;
+  font-family: 'Josefin Sans', sans-serif;
 }
 
-/* line 17, ../sass/dashboard.scss */
+/* line 18, ../sass/dashboard.scss */
 #space-for-search-bar {
   margin-top: 50px;
 }
 
-/* line 21, ../sass/dashboard.scss */
+/* line 22, ../sass/dashboard.scss */
 .manage-bar {
-  border: 1px black dashed;
   position: fixed;
   z-index: 1000px;
   top: 0px;
   bottom: 0px;
   left: 0px;
-  width: 250px;
+  width: 230px;
   text-align: center;
   padding: 10px;
 }
-/* line 31, ../sass/dashboard.scss */
+/* line 32, ../sass/dashboard.scss */
 .manage-bar .logo {
-  border: 1px black dashed;
   margin-top: 40px;
-  width: 200px;
+  width: 165px;
 }
-/* line 36, ../sass/dashboard.scss */
+/* line 37, ../sass/dashboard.scss */
 .manage-bar .room-icon {
-  border: 1px black dashed;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
-/* line 39, ../sass/dashboard.scss */
+/* line 40, ../sass/dashboard.scss */
 .manage-bar .room-icon .room-img {
-  border: 1px black dashed;
-  width: 80px;
+  width: 70px;
+  -webkit-transition: width 0.5s;
+  /* Safari */
+  transition: width 0.5s;
 }
-/* line 43, ../sass/dashboard.scss */
+/* line 47, ../sass/dashboard.scss */
 .manage-bar .room-icon .room-label {
-  border: 1px black dashed;
   font-size: 18px;
+  width: 150px;
+  margin: auto;
+  -webkit-transition: font-size 0.5s;
+  /* Safari */
+  transition: font-size 0.5s;
 }
-/* line 48, ../sass/dashboard.scss */
+/* line 58, ../sass/dashboard.scss */
+.manage-bar .room-icon:hover .room-img {
+  cursor: pointer;
+  width: 80px;
+  -webkit-transition: width 0.5s;
+  /* Safari */
+  transition: width 0.5s;
+}
+/* line 66, ../sass/dashboard.scss */
+.manage-bar .room-icon:hover .room-label {
+  font-size: 22px;
+  width: 150px;
+  margin: auto;
+  text-decoration: underline;
+  background-color: #F2F6FC;
+  -webkit-transition: font-size 0.5s;
+  /* Safari */
+  transition: font-size 0.5s;
+}
+/* line 78, ../sass/dashboard.scss */
 .manage-bar .manage-list {
   text-align: left;
   border: 0px;
 }
-/* line 51, ../sass/dashboard.scss */
+/* line 82, ../sass/dashboard.scss */
 .manage-bar .manage-list .manage-item {
-  padding-left: 60px;
+  padding-left: 40px;
   border: 0px;
   border-radius: 5px;
 }
-/* line 56, ../sass/dashboard.scss */
+/* line 88, ../sass/dashboard.scss */
 .manage-bar .manage-list .active {
+  box-shadow: 0 0 8px #FF472E;
   background-color: #EA5019;
-  padding-left: 60px;
+  padding-left: 50px;
 }
-/* line 60, ../sass/dashboard.scss */
+/* line 94, ../sass/dashboard.scss */
+.manage-bar .manage-list .add-room {
+  margin-top: 5px;
+}
+/* line 97, ../sass/dashboard.scss */
 .manage-bar .manage-list .badge {
   background-color: #FF472E;
 }
 
-/* line 66, ../sass/dashboard.scss */
+/* line 103, ../sass/dashboard.scss */
 .page-wrap {
   margin-right: 0px;
   margin-left: 250px;
 }
-/* line 70, ../sass/dashboard.scss */
+/* line 107, ../sass/dashboard.scss */
 .page-wrap .search-bar {
   position: fixed;
   top: 0px;
@@ -81,314 +108,368 @@ body {
   height: 50px;
   padding: 10px;
   padding-left: 5%;
-  border: 0.5px #c2cad6 solid;
+  border: 0.5px #A1A8B2 solid;
 }
-/* line 79, ../sass/dashboard.scss */
+/* line 116, ../sass/dashboard.scss */
 .page-wrap .search-bar .bar-display {
   display: none;
 }
-/* line 82, ../sass/dashboard.scss */
+/* line 119, ../sass/dashboard.scss */
 .page-wrap .search-bar .fa {
   color: #797B82;
   margin-right: 10px;
 }
-/* line 87, ../sass/dashboard.scss */
+/* line 124, ../sass/dashboard.scss */
 .page-wrap .search-bar .icon-wrap {
-  width: 100px;
-  display: inline-block;
+  width: 150px;
+  position: fixed;
+  top: 14px;
+  right: 0px;
+  text-align: center;
 }
-/* line 90, ../sass/dashboard.scss */
+/* line 131, ../sass/dashboard.scss */
 .page-wrap .search-bar .icon-wrap .icon {
-  margin-right: 3%;
+  margin-left: 5%;
+  margin-right: 5%;
   font-size: 20px;
 }
-/* line 95, ../sass/dashboard.scss */
+/* line 137, ../sass/dashboard.scss */
 .page-wrap .search-bar .search-bar-input {
   width: 400px;
   background-color: #F2F6FC;
   border-width: 0px;
   border: none;
-  border: 1px black dashed;
 }
-/* line 103, ../sass/dashboard.scss */
+/* line 145, ../sass/dashboard.scss */
 .page-wrap .top-manage-bar {
   display: none;
 }
-/* line 106, ../sass/dashboard.scss */
+/* line 147, ../sass/dashboard.scss */
+.page-wrap .top-manage-bar .add-room {
+  margin-right: 5px;
+}
+/* line 149, ../sass/dashboard.scss */
+.page-wrap .top-manage-bar .add-room .add-room-icon {
+  margin-right: 3px;
+  margin-left: 3px;
+  font-size: 40px;
+}
+/* line 154, ../sass/dashboard.scss */
+.page-wrap .top-manage-bar .add-room .add-room-word {
+  font-size: 20px;
+  position: relative;
+  top: -10px;
+}
+/* line 161, ../sass/dashboard.scss */
 .page-wrap .module-wrap {
-  border: 1px black dashed;
   width: 100%;
   height: 1200px;
   padding-right: 20px;
 }
-/* line 112, ../sass/dashboard.scss */
+/* line 167, ../sass/dashboard.scss */
 .page-wrap .module-wrap .mo {
-  border: 1px black dashed;
   display: inline-block;
   margin-top: 20px;
   margin-right: 20px;
 }
-/* line 117, ../sass/dashboard.scss */
+/* line 172, ../sass/dashboard.scss */
 .page-wrap .module-wrap .mo .mo-el {
-  border: 1px black dashed;
   width: 100%;
 }
-/* line 120, ../sass/dashboard.scss */
+/* line 175, ../sass/dashboard.scss */
 .page-wrap .module-wrap .mo .mo-el .panel {
   margin: 0;
   background-color: #F2F6FC;
+  border-radius: 5px;
+  border: 0.5px #A1A8B2 solid;
+  border-top: none;
 }
-/* line 124, ../sass/dashboard.scss */
+/* line 182, ../sass/dashboard.scss */
 .page-wrap .module-wrap .mo .mo-el .panel .panel-heading {
-  background-color: #9abcf4;
+  background-color: #F2F6FC;
+  border-radius: 5px;
 }
-/* line 130, ../sass/dashboard.scss */
+/* line 189, ../sass/dashboard.scss */
 .page-wrap .module-wrap .module1 {
   margin-right: 20px;
   width: 100%;
   height: 380px;
   padding-right: 40px;
 }
-/* line 136, ../sass/dashboard.scss */
+/* line 195, ../sass/dashboard.scss */
 .page-wrap .module-wrap .module2 {
   width: 64%;
   height: 300px;
 }
-/* line 140, ../sass/dashboard.scss */
+/* line 199, ../sass/dashboard.scss */
 .page-wrap .module-wrap .module3 {
   width: 31%;
   height: 300px;
 }
 
-/* line 147, ../sass/dashboard.scss */
-.slide {
-  transition: 0.5s cubic-bezier(0, 1, 0.5, 1);
-  transform: translateY(0);
+/* line 214, ../sass/dashboard.scss */
+.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .chosen-icon .panel-chosen-icon {
+  margin-top: 10px;
+  width: 200px;
+  -webkit-transition: width 0.5s;
+  /* Safari */
+  transition: width 0.5s;
+}
+/* line 221, ../sass/dashboard.scss */
+.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .chosen-icon .panel-chosen-icon:hover {
+  width: 220px;
+  -webkit-transition: width 0.5s;
+  /* Safari */
+  transition: width 0.5s;
+}
+/* line 227, ../sass/dashboard.scss */
+.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .chosen-icon .chosen-description {
+  padding: 20px;
+  margin-left: 200px;
+}
+/* line 232, ../sass/dashboard.scss */
+.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .input-group {
+  margin-top: 10px;
+}
+/* line 242, ../sass/dashboard.scss */
+.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .panel .panel-collapse .panel-body .panel-icon {
+  margin: 8px;
+  width: 60px;
+  -webkit-transition: width 0.5s;
+  /* Safari */
+  transition: width 0.5s;
+}
+/* line 249, ../sass/dashboard.scss */
+.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .panel .panel-collapse .panel-body .panel-icon:hover {
+  width: 70px;
+  -webkit-transition: width 0.5s;
+  /* Safari */
+  transition: width 0.5s;
 }
 
 @media only screen and (max-width: 1025px) {
   /* For flip ipad */
-  /* line 156, ../sass/dashboard.scss */
+  /* line 267, ../sass/dashboard.scss */
   #module-wrap .mo {
     margin: auto;
     margin-right: 10px;
     margin-top: 20px;
   }
-  /* line 161, ../sass/dashboard.scss */
+  /* line 272, ../sass/dashboard.scss */
   #module-wrap .module1 {
     padding-right: 15px;
   }
-  /* line 164, ../sass/dashboard.scss */
+  /* line 275, ../sass/dashboard.scss */
   #module-wrap .module2 {
     padding-right: 15px;
     width: 100%;
   }
-  /* line 168, ../sass/dashboard.scss */
+  /* line 279, ../sass/dashboard.scss */
   #module-wrap .module3 {
     width: 360px;
   }
 }
 @media only screen and (max-width: 768px) {
   /* For tablets:ipad */
-  /* line 176, ../sass/dashboard.scss */
+  /* line 287, ../sass/dashboard.scss */
   #space-for-search-bar {
     margin-top: 50px;
   }
 
-  /* line 179, ../sass/dashboard.scss */
+  /* line 290, ../sass/dashboard.scss */
   #manage-bar {
     display: none;
   }
 
-  /* line 182, ../sass/dashboard.scss */
+  /* line 293, ../sass/dashboard.scss */
   #page-wrap {
     margin-left: 0px;
   }
 
-  /* line 185, ../sass/dashboard.scss */
+  /* line 296, ../sass/dashboard.scss */
   #icon-wrap {
     margin-left: 0px;
   }
 
-  /* line 188, ../sass/dashboard.scss */
+  /* line 299, ../sass/dashboard.scss */
   #search-bar-input {
     width: 200px;
   }
 
-  /* line 191, ../sass/dashboard.scss */
+  /* line 302, ../sass/dashboard.scss */
   #bar-display {
     color: #000;
     font-size: 25px;
     display: inline-block;
   }
 
-  /* line 196, ../sass/dashboard.scss */
+  /* line 307, ../sass/dashboard.scss */
   #search-display {
     display: none;
   }
 
-  /* line 200, ../sass/dashboard.scss */
+  /* line 311, ../sass/dashboard.scss */
   #module-wrap .mo {
     margin-right: 0px;
     margin-left: 10px;
   }
-  /* line 205, ../sass/dashboard.scss */
+  /* line 316, ../sass/dashboard.scss */
   #module-wrap .module2 {
     width: 100%;
   }
-  /* line 208, ../sass/dashboard.scss */
+  /* line 319, ../sass/dashboard.scss */
   #module-wrap .module3 {
     width: 360px;
   }
 }
 @media only screen and (max-width: 750px) {
   /* For flip i6p: */
-  /* line 216, ../sass/dashboard.scss */
+  /* line 327, ../sass/dashboard.scss */
   #manage-bar {
     display: none;
   }
 
-  /* line 219, ../sass/dashboard.scss */
+  /* line 330, ../sass/dashboard.scss */
   #page-wrap {
     margin-left: 0px;
   }
 
-  /* line 222, ../sass/dashboard.scss */
+  /* line 333, ../sass/dashboard.scss */
   #icon-wrap {
     margin-left: 0px;
   }
 
-  /* line 225, ../sass/dashboard.scss */
+  /* line 336, ../sass/dashboard.scss */
   #search-bar-input {
     width: 200px;
   }
 
-  /* line 229, ../sass/dashboard.scss */
+  /* line 340, ../sass/dashboard.scss */
   #module-wrap .mo {
     margin-right: 0px;
     margin-left: 14px;
   }
-  /* line 234, ../sass/dashboard.scss */
+  /* line 345, ../sass/dashboard.scss */
   #module-wrap .module2 {
     width: 100%;
   }
-  /* line 237, ../sass/dashboard.scss */
+  /* line 348, ../sass/dashboard.scss */
   #module-wrap .module3 {
     width: 340px;
   }
 }
 @media only screen and (max-width: 700px) {
   /* For flip i6: */
-  /* line 245, ../sass/dashboard.scss */
+  /* line 356, ../sass/dashboard.scss */
   #manage-bar {
     display: none;
   }
 
-  /* line 248, ../sass/dashboard.scss */
+  /* line 359, ../sass/dashboard.scss */
   #page-wrap {
     margin-left: 0px;
   }
 
-  /* line 251, ../sass/dashboard.scss */
+  /* line 362, ../sass/dashboard.scss */
   #icon-wrap {
     margin-left: 0px;
   }
 
-  /* line 254, ../sass/dashboard.scss */
+  /* line 365, ../sass/dashboard.scss */
   #search-bar-input {
     width: 200px;
   }
 
-  /* line 258, ../sass/dashboard.scss */
+  /* line 369, ../sass/dashboard.scss */
   #module-wrap .mo {
     margin-right: 0px;
     margin-left: 10px;
   }
-  /* line 263, ../sass/dashboard.scss */
+  /* line 374, ../sass/dashboard.scss */
   #module-wrap .module2 {
     width: 100%;
   }
-  /* line 266, ../sass/dashboard.scss */
+  /* line 377, ../sass/dashboard.scss */
   #module-wrap .module3 {
     width: 300px;
   }
 }
-@media only screen and (max-width: 414px) {
+@media only screen and (max-width: 420px) {
   /* For phone6 */
-  /* line 274, ../sass/dashboard.scss */
+  /* line 385, ../sass/dashboard.scss */
   #manage-bar {
     display: none;
   }
 
-  /* line 277, ../sass/dashboard.scss */
+  /* line 388, ../sass/dashboard.scss */
   #page-wrap {
     margin-left: 0px;
   }
 
-  /* line 280, ../sass/dashboard.scss */
+  /* line 391, ../sass/dashboard.scss */
   #icon-wrap {
     margin-left: 0px;
   }
 
-  /* line 283, ../sass/dashboard.scss */
+  /* line 394, ../sass/dashboard.scss */
   #search-bar-input {
     width: 150px;
   }
 
-  /* line 287, ../sass/dashboard.scss */
+  /* line 398, ../sass/dashboard.scss */
   #module-wrap .mo {
     margin-left: 5px;
   }
-  /* line 290, ../sass/dashboard.scss */
+  /* line 401, ../sass/dashboard.scss */
   #module-wrap .module1 {
     width: 400px;
     padding-right: 0px;
   }
-  /* line 294, ../sass/dashboard.scss */
+  /* line 405, ../sass/dashboard.scss */
   #module-wrap .module2 {
     width: 400px;
     padding-right: 0px;
   }
-  /* line 298, ../sass/dashboard.scss */
+  /* line 409, ../sass/dashboard.scss */
   #module-wrap .module3 {
     width: 400px;
   }
 }
 @media only screen and (max-width: 375px) {
   /* For phone5 and low */
-  /* line 306, ../sass/dashboard.scss */
+  /* line 417, ../sass/dashboard.scss */
   #manage-bar {
     display: none;
   }
 
-  /* line 309, ../sass/dashboard.scss */
+  /* line 420, ../sass/dashboard.scss */
   #page-wrap {
     margin-left: 0px;
   }
 
-  /* line 312, ../sass/dashboard.scss */
+  /* line 423, ../sass/dashboard.scss */
   #icon-wrap {
     margin-left: 0px;
   }
 
-  /* line 315, ../sass/dashboard.scss */
+  /* line 426, ../sass/dashboard.scss */
   #search-bar-input {
     width: 150px;
   }
 
-  /* line 319, ../sass/dashboard.scss */
+  /* line 430, ../sass/dashboard.scss */
   #module-wrap .mo {
     margin-left: 3%;
   }
-  /* line 322, ../sass/dashboard.scss */
+  /* line 433, ../sass/dashboard.scss */
   #module-wrap .module1 {
     width: 100%;
   }
-  /* line 325, ../sass/dashboard.scss */
+  /* line 436, ../sass/dashboard.scss */
   #module-wrap .module2 {
     width: 100%;
   }
-  /* line 328, ../sass/dashboard.scss */
+  /* line 439, ../sass/dashboard.scss */
   #module-wrap .module3 {
     width: 100%;
   }

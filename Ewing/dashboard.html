@@ -5,33 +5,41 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <link rel="shortcut icon" type="image/x-icon" href="images/logo2.png">
+    <link rel="shortcut icon" type="image/x-icon" href="images/home.png">
     <link rel="stylesheet" type="text/css" href="css/stylesheets/reset.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="bootstrap-3.3.5-dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/stylesheets/dashboard.css" />
+    <link rel="stylesheet" type="text/css" href="css/stylesheets/d3tree.css" />
     <title>Dashboard</title>
 </head>
 
 <body>
-    <div id="vue-div">
+    <div id="vue-div" style="display: hidden;">
         <div id="manage-bar" class="manage-bar navbar navbar-fixed-left">
             <div id="sead-logo" class="">
                 <img src="images/logo.jpg" class="logo">
             </div>
-            <div id="room-icon" class="">
-                <!-- change according to #manage-list -->
-                <div class="room-icon">
-                    <img :src="icon_path" class="room-img">
-
-                    <div>
-                        <div class="room-label"> Master Bedroom </div>
-                    </div>
+            <!-- change according to #manage-list -->
+            <div v-on:click.prevent="adding_editing_room('edit');" data-toggle="modal" data-target="#add-room-modal" id="room-icon" class="room-icon">
+                <img :src="icon_path" class="room-img" id="room-img">
+                <div>
+                    <div id="room-label" class="room-label"> ${rooms[action_room].name} </div>
                 </div>
             </div>
             <div id="manage-list" class="list-group manage-list">
                 <!-- use v-for here -->
                 <manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test"></manage-item>
+                <div class="add-room text-right">
+                    <!-- Trigger the modal with a button -->
+                    <a v-on:click.prevent="adding_editing_room('add');" href="" type="button" data-toggle="modal" data-target="#add-room-modal">
+                        <i class="fa fa-plus-square-o" aria-hidden="true" style="font-size: 20px;"></i>
+                    </a>
+                    <a v-on:click.prevent href="" type="button" data-toggle="modal" data-target="#add-room-modal">
+                        <i class="fa fa-minus-square-o" aria-hidden="true" style="font-size: 20px;"></i>
+                    </a>
+                </div>
             </div>
         </div>
         <div id="page-wrap" class="page-wrap">
@@ -53,9 +61,64 @@
             </div>
             <div id="top-manage-bar" class="top-manage-bar">
                 <top-manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test" :top_manage_bar_toggle="top_manage_bar_toggle"></top-manage-item>
+                <div class="add-room text-right" id="">
+                    <a class="add-room-icon" v-on:click.prevent="adding_editing_room('add');" href="" type="button" data-toggle="modal" data-target="#add-room-modal">
+                        <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                    </a>
+                    <span class="add-room-word">Room</span>
+                    <a class="add-room-icon" v-on:click.prevent href="" type="button" data-toggle="modal" data-target="#add-room-modal">
+                        <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+                    </a>
+                </div>
             </div>
             <div id="module-wrap" class="module-wrap" v-for="room in rooms" :class="{hidden: !room.isActive}">
                 <module v-for="module in room.modules" :mod="module" :room="room" :del_module="del_module"></module>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div id="add-room-modal" v-on:keyup.enter="add_edit_room_enter();" class="modal fade add-room-modal" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add a Room</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <a data-toggle="collapse" href="#collapse1">Choose icon</a>
+                                    </div>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <a v-on:click.prevent="modal_choose_icon(icon);" v-for="icon in icons" data-toggle="collapse" href="#collapse1">
+                                            <img class="panel-icon" :src="icon">
+                                        </a>
+                                    </div>
+                                    <div class="panel-footer text-right">Default is XXX</div>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Room Name</span>
+                                <input id="modal-input" v-model="modal_room_name" type="text" class="form-control" placeholder="Master Bedroom" aria-describedby="basic-addon1">
+                            </div>
+                            <div class="chosen-icon">
+                                <a v-on:click.prevent data-toggle="collapse" href="#collapse1"><img class="panel-chosen-icon pull-left gap-right" :src="modal_chosen_icon_path"></a>
+                                <div class="chosen-description">
+                                    ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button v-if="adding_room" v-on:click.prevent="add_room();" type="button" class="btn btn-default" data-dismiss="modal">Add</button>
+                        <button v-if="!adding_room" v-on:click.prevent="edit_room();" type="button" class="btn btn-default" data-dismiss="modal">Edit</button>
+                        <button v-on:click.prevent="modal_reinit();" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -69,8 +132,12 @@
     <!-- D3.js Source -->
     <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-    <!-- Your D3.js code for making a Bar Graph -->
+    <!-- Your D3.js code -->
     <script type="text/javascript" src="./js/scatterplot2.js"></script>
+    <script type="text/javascript" src="./js/d3tree.js"></script>
+    <!--Highstock test-->
+    <!-- <script src="https://code.highcharts.com/stock/highstock.js"></script> -->
+    <!-- <script src="https://code.highcharts.com/stock/modules/exporting.js"></script> -->
 </body>
 
 </html>
