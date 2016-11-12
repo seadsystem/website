@@ -2,6 +2,8 @@ $orange: #EA5019;
 $orange1: #FF472E;
 $gray: #F2F6FC;
 $gray1: #9abcf4;
+$blue: #459DFF;
+$blue1: #2D5CB0;
 $border-test: 1px black dashed;
 $module-border: 0.5px #A1A8B2 solid;
 body {
@@ -93,6 +95,13 @@ body {
         }
         .add-room {
             margin-top: 5px;
+            .icon {
+                color: $blue;
+                font-size: 20px;
+            }
+            .icon:hover {
+                color: $blue1;
+            }
         }
         .badge {
             background-color: $orange1; //overwrite bootstrap
@@ -105,6 +114,7 @@ body {
     margin-right: 0px;
     margin-left: 250px; //for manage-bar, change if goes to phone
     .search-bar {
+        z-index: 100;
         position: fixed;
         top: 0px;
         width: 100%;
@@ -128,10 +138,19 @@ body {
             top: 14px;
             right: 0px;
             text-align: center;
-            .icon {
-                margin-left: 5%;
-                margin-right: 5%;
-                font-size: 20px;
+            .dropdown {
+                display: inline;
+                .icon {
+                    margin-left: 5%;
+                    margin-right: 5%;
+                    font-size: 20px;
+                }
+                .icon:hover {
+                    margin-left: 5%;
+                    margin-right: 5%;
+                    font-size: 20px;
+                    color: $gray1;
+                }
             }
         }
         .search-bar-input {
@@ -208,25 +227,29 @@ body {
     .modal-dialog {
         .modal-content {
             .modal-header {}
+            .modal-footer {
+                margin-top: 100px;
+                border: none;
+            }
             .modal-body {
                 .panel-group {
                     .chosen-icon {
                         .panel-chosen-icon {
                             margin-top: 10px;
-                            width: 200px;
+                            width: 220px;
                             -webkit-transition: width 0.5s;
                             /* Safari */
                             transition: width 0.5s;
                         }
                         .panel-chosen-icon:hover {
-                            width: 220px;
+                            width: 240px;
                             -webkit-transition: width 0.5s;
                             /* Safari */
                             transition: width 0.5s;
                         }
                         .chosen-description {
                             padding: 20px;
-                            margin-left: 200px;
+                            margin-left: 180px;
                         }
                     }
                     .input-group {
@@ -241,13 +264,13 @@ body {
                                 // height: 100px;
                                 .panel-icon {
                                     margin: 8px;
-                                    width: 60px;
+                                    width: 50px;
                                     -webkit-transition: width 0.5s;
                                     /* Safari */
                                     transition: width 0.5s;
                                 }
                                 .panel-icon:hover {
-                                    width: 70px;
+                                    width: 60px;
                                     -webkit-transition: width 0.5s;
                                     /* Safari */
                                     transition: width 0.5s;

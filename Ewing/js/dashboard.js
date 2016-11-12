@@ -127,13 +127,23 @@ var app = function() {
     //-----------------init-----------------
     var modal_event_init = function() {
         console.log('modal event inited');
-        $(function() { // let all dom elements are loaded
-            var modal = $('#add-room-modal');
-            modal.on('shown.bs.modal', function(w) {
+        $(function() { // after all dom elements are loaded
+
+            var add_room_modal = $('#add-room-modal');
+
+            add_room_modal.on('shown.bs.modal', function(w) {
                 $('#modal-input').focus();
-            })
-            modal.on('hidden.bs.modal', function(e) {
+            });
+
+            add_room_modal.on('hidden.bs.modal', function(e) {
                 self.modal_reinit();
+            });
+
+            var del_room_modal = $('#del-room-modal');
+            // console.log(del_room_modal);
+            del_room_modal.on('show.bs.modal', function(w) {
+                console.log('modal2');
+                $('.del-room-list').first().addClass('disabled');
             });
         });
     }
@@ -144,17 +154,6 @@ var app = function() {
     self.modal_reinit = function() {
         self.vue.modal_room_name = '';
         self.vue.modal_chosen_icon_path = self.vue.default_icon_path;
-    }
-
-    self.edit_room = function() {
-        // console.log('edit_room');
-        var room = self.vue.rooms[self.vue.action_room]
-        room.name = self.vue.modal_room_name;
-        room.icon_path = self.vue.modal_chosen_icon_path;
-        self.vue.icon_path = room.icon_path;
-
-        // re-initialize
-        self.modal_reinit();
     }
 
     self.adding_editing_room = function(action) {
@@ -178,8 +177,33 @@ var app = function() {
         } else {
             console.log('error adding_editing_room');
         }
-        $('#add-room-modal').modal('hide')
+        $('#add-room-modal').modal('hide');
+    };
+
+    self.edit_room = function() {
+        // console.log('edit_room');
+        var room = self.vue.rooms[self.vue.action_room]
+        room.name = self.vue.modal_room_name;
+        room.icon_path = self.vue.modal_chosen_icon_path;
+        self.vue.icon_path = room.icon_path;
+
+        // re-initialize
+        self.modal_reinit();
     }
+
+    self.del_room = function(_idx) {
+        if (_idx == 0) { //cannot delete room
+        } else if (_idx == self.vue.action_room) { //currently using that room
+            // jump to home   
+            self.manage_btn_toggle(0);
+            self.vue.rooms.splice(_idx, 1);
+            $('#del-room-modal').modal('hide');
+        } else {
+            self.vue.rooms.splice(_idx, 1);
+            $('#del-room-modal').modal('hide');
+        }
+        enumerate(self.vue.rooms);
+    };
 
     self.add_room = function() {
         // console.log('add_room');
@@ -196,20 +220,22 @@ var app = function() {
         };
         self.vue.rooms.push(new_room);
         console.log('add' + self.vue.modal_room_name);
-        var new_room_obj = self.vue.rooms[self.vue.rooms.length - 1];
-        self.add_module(new_room_obj, 1, 'Activity'); // number refers to module type
-        self.add_module(new_room_obj, 3, 'Devices');
-        self.add_module(new_room_obj, 2, 'Device Name');
+        self.vue.action_room = self.vue.rooms.length - 1;
+        self.add_module(1, 'Activity'); // number refers to module type
+        self.add_module(3, 'Devices');
+        self.add_module(2, 'Device Graph');
         self.manage_btn_toggle(self.vue.rooms.length - 1); //set this to active (jump to this page)
 
         enumerate(self.vue.rooms); //just for check
 
         // re-initialize
         self.modal_reinit();
-    }
+    };
 
-    self.add_module = function(room, type, header) {
+
+    self.add_module = function(type, header) {
         // console.log('add_module');
+        var room = self.vue.rooms[self.vue.action_room];
         var id_name = room.name.replace(/ /g, "_") + "_";
         var modType = 'module1'; //default
         if (type == 2) {
@@ -318,7 +344,7 @@ var app = function() {
     // page-wrap => module-wrap
     Vue.component('module', {
         props: ['mod', 'room', 'del_module'],
-        template: ' <div class="mo" :class="mod.modType" :id="mod.id">\
+        template: ' <div class="mo draggable" :class="mod.modType" :id="mod.id">\
                         <div class="mo-el">\
                             <div class="panel panel-default">\
                                 <div class="panel-heading text-left">\
@@ -371,7 +397,7 @@ var app = function() {
                     'id': 'Home_1'
                 }, {
 
-                    'header': 'Device Name',
+                    'header': 'Device Graph',
                     '_idx': 2,
                     'modType': 'module2',
                     'el_id': 'Home_el_2',
@@ -400,8 +426,10 @@ var app = function() {
             test: self.test,
             top_manage_bar_toggle: self.top_manage_bar_toggle,
             del_module: self.del_module,
+            add_module: self.add_module,
             modal_choose_icon: self.modal_choose_icon,
             add_room: self.add_room,
+            del_room: self.del_room,
             adding_editing_room: self.adding_editing_room,
             add_edit_room_enter: self.add_edit_room_enter,
             edit_room: self.edit_room,
@@ -417,10 +445,22 @@ var app = function() {
     console.log('Vue initialized');
 
     d3.select(window).on('resize', rendering);
-    console.log('d3 resive event added');
+    console.log('d3 resize event added');
 
-    rendering();
-    console.log('d3 first rendering');
+    // rendering();
+    // console.log('d3 first rendering');
+
+
+    //test dummy add
+    self.vue.modal_chosen_icon_path = "./images/kitchen.png";
+    self.add_room();
+    self.vue.modal_chosen_icon_path = "./images/bedroom.png";
+    self.add_room();
+    self.vue.modal_chosen_icon_path = "./images/bedroom2.png";
+    self.add_room();
+    self.modal_reinit();
+    self.manage_btn_toggle(0);
+
 
     $("#vue-div").show();
     return self;
@@ -432,6 +472,56 @@ var APP = null;
 // for instance, self.x above would be accessible as APP.x
 jQuery(function() {
     APP = app();
+});
+
+
+
+//draggable Example   module component draggable class
+$(function() {
+    // target elements with the "draggable" class
+    interact('.draggable')
+        .draggable({
+            // enable inertial throwing
+            inertia: true,
+            // keep the element within the area of it's parent
+            restrict: {
+                restriction: "parent",
+                endOnly: true,
+                elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+            },
+            // enable autoScroll
+            autoScroll: true,
+
+            // call this function on every dragmove event
+            onmove: dragMoveListener,
+            // call this function on every dragend event
+            onend: function(event) {
+                var textEl = event.target.querySelector('p');
+
+                textEl && (textEl.textContent =
+                    'moved a distance of ' + (Math.sqrt(event.dx * event.dx +
+                        event.dy * event.dy) | 0) + 'px');
+            }
+        });
+
+    function dragMoveListener(event) {
+        var target = event.target,
+            // keep the dragged position in the data-x/data-y attributes
+            x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+            y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+        // translate the element
+        target.style.webkitTransform =
+            target.style.transform =
+            'translate(' + x + 'px, ' + y + 'px)';
+
+        // update the posiion attributes
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+    }
+
+    // this is used later in the resizing and gesture demos
+    window.dragMoveListener = dragMoveListener;
 });
 //DUMMY ROOM
 // {
