@@ -1,0 +1,493 @@
+$orange: #EA5019;
+$orange1: #FF472E;
+$gray: #F2F6FC;
+$gray1: #9abcf4;
+$blue: #459DFF;
+$blue1: #2D5CB0;
+$border-test: 1px black dashed;
+$module-border: 0.5px #A1A8B2 solid;
+body {
+    over-flow-x: hidden;
+    margin: 0px;
+    padding: 0px;
+    // font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: 300;
+    // font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    font-size: 15px;
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+#space-for-search-bar {
+    margin-top: 50px; //for search-bar
+}
+
+.manage-bar {
+    // border: $border-test;
+    position: fixed;
+    z-index: 1000px;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    width: 230px;
+    text-align: center;
+    padding: 10px;
+    .logo {
+        // border: $border-test;
+        margin-top: 40px;
+        width: 165px;
+    }
+    .room-icon {
+        // border: $border-test;
+        margin-bottom: 30px;
+        .room-img {
+            // border: $border-test;
+            width: 70px;
+            -webkit-transition: width 0.5s;
+            /* Safari */
+            transition: width 0.5s;
+        }
+        .room-label {
+            // border: $border-test;
+            font-size: 18px;
+            width: 150px;
+            margin: auto;
+            -webkit-transition: font-size 0.5s;
+            /* Safari */
+            transition: font-size 0.5s;
+        }
+    }
+    .room-icon:hover {
+        .room-img {
+            cursor: pointer;
+            // border: $border-test;
+            width: 80px;
+            -webkit-transition: width 0.5s;
+            /* Safari */
+            transition: width 0.5s;
+        }
+        .room-label {
+            // border: $border-test;
+            font-size: 22px;
+            width: 150px;
+            margin: auto;
+            text-decoration: underline;
+            background-color: $gray;
+            -webkit-transition: font-size 0.5s;
+            /* Safari */
+            transition: font-size 0.5s;
+        }
+    }
+    .manage-list {
+        // border: $border-test;
+        text-align: left;
+        border: 0px;
+        .manage-item {
+            padding-left: 40px;
+            border: 0px;
+            border-radius: 5px;
+            // border: $border-test;
+        }
+        .active {
+            box-shadow: 0 0 8px $orange1;
+            // border: 1px solid $orange1;
+            background-color: $orange;
+            padding-left: 50px;
+        }
+        .add-room {
+            margin-top: 5px;
+            .icon {
+                color: $blue;
+                font-size: 20px;
+            }
+            .icon:hover {
+                color: $blue1;
+            }
+        }
+        .badge {
+            background-color: $orange1; //overwrite bootstrap
+        }
+    }
+}
+
+.page-wrap {
+    // border: $border-test;
+    margin-right: 0px;
+    margin-left: 250px; //for manage-bar, change if goes to phone
+    .search-bar {
+        z-index: 100;
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        background-color: $gray;
+        height: 50px;
+        padding: 10px;
+        padding-left: 5%;
+        border: $module-border;
+        .bar-display {
+            display: none;
+        }
+        .fa {
+            //overwrite fontawesome
+            color: #797B82;
+            margin-right: 10px;
+        }
+        .icon-wrap {
+            width: 150px;
+            // border: $border-test;
+            position: fixed;
+            top: 14px;
+            right: 0px;
+            text-align: center;
+            .dropdown {
+                display: inline;
+                .icon {
+                    margin-left: 5%;
+                    margin-right: 5%;
+                    font-size: 20px;
+                }
+                .icon:hover {
+                    margin-left: 5%;
+                    margin-right: 5%;
+                    font-size: 20px;
+                    color: $gray1;
+                }
+            }
+        }
+        .search-bar-input {
+            width: 400px;
+            background-color: $gray;
+            border-width: 0px;
+            border: none;
+            // border: $border-test;
+        }
+    }
+    .top-manage-bar {
+        display: none;
+        .add-room {
+            margin-right: 5px;
+            .add-room-icon {
+                margin-right: 3px;
+                margin-left: 3px;
+                font-size: 40px;
+            }
+            .add-room-word {
+                font-size: 20px;
+                position: relative;
+                top: -10px;
+            }
+        }
+    }
+}
+
+//Putting here so that media query will be more specific
+.module-wrap {
+    // margin-top: 50px; //for search-bar, now in #space-for-search-bar
+    // border: $border-test;
+    width: 100%;
+    height: 1200px;
+    padding-right: 20px;
+    .mo {
+        // border: $border-test;
+        display: inline-block;
+        margin-top: 20px;
+        margin-right: 20px;
+        .mo-el {
+            // border: $border-test;
+            width: 100%;
+            .panel {
+                //overwrite bootstrap panel
+                margin: 0;
+                background-color: $gray;
+                border-radius: 5px;
+                border: $module-border;
+                border-top: none;
+                .panel-heading {
+                    background-color: $gray;
+                    border-radius: 5px;
+                }
+            }
+        }
+    }
+    .module1 {
+        margin-right: 20px;
+        width: 100%;
+        height: 380px;
+        padding-right: 40px;
+    }
+    .module2 {
+        width: 64%;
+        height: 300px;
+    }
+    .module3 {
+        width: 31%;
+        height: 300px;
+    }
+}
+
+//overwrite the entire bootstrap modal for add-room-modal
+.add-room-modal {
+    .modal-dialog {
+        .modal-content {
+            .modal-header {}
+            .modal-footer {
+                margin-top: 100px;
+                border: none;
+                .btn {
+                    height: 25px;
+                    border-radius: 5px;
+                    line-height: 12px;
+                }
+            }
+            .modal-body {
+                .panel-group {
+                    .chosen-icon {
+                        .panel-chosen-icon {
+                            margin-top: 10px;
+                            width: 220px;
+                            -webkit-transition: width 0.5s;
+                            /* Safari */
+                            transition: width 0.5s;
+                        }
+                        .panel-chosen-icon:hover {
+                            width: 240px;
+                            -webkit-transition: width 0.5s;
+                            /* Safari */
+                            transition: width 0.5s;
+                        }
+                        .chosen-description {
+                            padding: 20px;
+                            margin-left: 180px;
+                        }
+                    }
+                    .input-group {
+                        margin-top: 10px;
+                    }
+                    .panel {
+                        .panel-heading {
+                            .panel-title {}
+                        }
+                        .panel-collapse {
+                            .panel-body {
+                                // height: 100px;
+                                .panel-icon {
+                                    margin: 8px;
+                                    width: 50px;
+                                    -webkit-transition: width 0.5s;
+                                    /* Safari */
+                                    transition: width 0.5s;
+                                }
+                                .panel-icon:hover {
+                                    width: 60px;
+                                    -webkit-transition: width 0.5s;
+                                    /* Safari */
+                                    transition: width 0.5s;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 1025px) {
+    /* For flip ipad */
+    #page-wrap {
+        .module-wrap {
+            .mo {
+                margin-right: 0px;
+                margin-left: 10px;
+            }
+            .module1 {}
+            .module2 {
+                width: 100%;
+            }
+            .module3 {
+                width: 360px;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    /* For tablets:ipad */
+    #space-for-search-bar {
+        margin-top: 50px; //for search-bar
+    }
+    #manage-bar {
+        display: none;
+    }
+    #page-wrap {
+        margin-left: 0px;
+        .module-wrap {
+            .mo {
+                margin-right: 0px;
+                margin-left: 10px;
+            }
+            .module1 {}
+            .module2 {
+                width: 100%;
+            }
+            .module3 {
+                width: 360px;
+            }
+        }
+    }
+    #icon-wrap {
+        margin-left: 0px;
+    }
+    #search-bar-input {
+        width: 200px;
+    }
+    #bar-display {
+        color: #000;
+        font-size: 25px;
+        display: inline-block;
+    }
+    #search-display {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 750px) {
+    /* For flip i6p: */
+    #manage-bar {
+        display: none;
+    }
+    #page-wrap {
+        margin-left: 0px;
+        .module-wrap {
+            .mo {
+                margin-right: 0px;
+                margin-left: 10px;
+            }
+            .module1 {}
+            .module2 {
+                width: 100%;
+            }
+            .module3 {
+                width: 360px;
+            }
+        }
+    }
+    #icon-wrap {
+        margin-left: 0px;
+    }
+    #search-bar-input {
+        width: 200px;
+    }
+    // #page-wrap {
+    //     background-color: red;
+    //     .module-wrap {
+    //         .mo {
+    //             margin-right: 0px;
+    //             margin-left: 10px;
+    //         }
+    //         .module1 {}
+    //         .module2 {
+    //             width: 100%;
+    //         }
+    //         .module3 {
+    //             width: 360px;
+    //         }
+    //     }
+    // }
+}
+
+@media only screen and (max-width: 700px) {
+    /* For flip i6: */
+    #manage-bar {
+        display: none;
+    }
+    #page-wrap {
+        margin-left: 0px;
+    }
+    #icon-wrap {
+        margin-left: 0px;
+    }
+    #search-bar-input {
+        width: 200px;
+    }
+    #page-wrap {
+        .module-wrap {
+            .mo {
+                margin-right: 0px;
+                margin-left: 10px;
+            }
+            .module1 {}
+            .module2 {
+                width: 100%;
+            }
+            .module3 {
+                width: 300px;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 420px) {
+    /* For phone6 */
+    #manage-bar {
+        display: none;
+    }
+    #page-wrap {
+        margin-left: 0px;
+    }
+    #icon-wrap {
+        margin-left: 0px;
+    }
+    #search-bar-input {
+        width: 150px;
+    }
+    #page-wrap {
+        .module-wrap {
+            .mo {
+                margin-left: 5px;
+            }
+            .module1 {
+                width: 400px;
+                padding-right: 0px;
+            }
+            .module2 {
+                width: 400px;
+                padding-right: 0px;
+            }
+            .module3 {
+                width: 400px;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 375px) {
+    /* For phone5 and low */
+    #manage-bar {
+        display: none;
+    }
+    #page-wrap {
+        margin-left: 0px;
+    }
+    #icon-wrap {
+        margin-left: 0px;
+    }
+    #search-bar-input {
+        width: 150px;
+    }
+    #page-wrap {
+        .module-wrap {
+            .mo {
+                margin-left: 3%;
+            }
+            .module1 {
+                width: 100%;
+            }
+            .module2 {
+                width: 100%;
+            }
+            .module3 {
+                width: 100%;
+            }
+        }
+    }
+}

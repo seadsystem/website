@@ -1,0 +1,177 @@
+{{block head}}
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','css/reset.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','css/dashboard.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','css/d3tree.css')}}" />
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+    <script>
+        var img_path = "{{=URL('static','images')}}";
+    </script>
+{{end}}
+{{extend 'layout.html'}}
+    <div id="vue-div" style="display: hidden;">
+        <div id="manage-bar" class="manage-bar navbar navbar-fixed-left">
+            <div id="sead-logo" class="">
+                <button v-on:click.prevent="test(2);">test</button>
+                <img src="/web2py_start_2016/static/images/logo.jpg" class="logo">
+            </div>
+            <!-- change according to #manage-list -->
+            <div v-on:click.prevent="adding_editing_room('edit');" data-toggle="modal" data-target="#add-room-modal" id="room-icon" class="room-icon">
+                <img :src="icon_path" class="room-img" id="room-img">
+                <div>
+                    <div id="room-label" class="room-label"> ${rooms[action_room].name} </div>
+                </div>
+            </div>
+            <div id="manage-list" class="list-group manage-list">
+                <!-- use v-for here -->
+                <manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test"></manage-item>
+                <div class="add-room text-right">
+                    <!-- Trigger the modal with a button -->
+                    <i class="fa fa-plus-square-o icon" v-on:click.prevent="adding_editing_room('add');" href="" type="button" data-toggle="modal" data-target="#add-room-modal" aria-hidden="true"></i>
+                    <i class="fa fa-minus-square-o icon" aria-hidden="true" data-toggle="modal" data-target="#del-room-modal"></i>
+                </div>
+            </div>
+        </div>
+        <div id="page-wrap" class="page-wrap">
+            <div id="search-bar" class="search-bar">
+                <!-- keep at top -->
+                <a href="" v-on:click.prevent="top_manage_bar_toggle();">
+                    <i id="bar-display" class="fa fa-bars bar-display"></i>
+                </a>
+                <i id="search-display" class="fa fa-search"></i>
+                <input type="text" name="search-bar-input" id="search-bar-input" class="search-bar-input" placeholder="Search For Device" v-model="search_bar_input_val">
+                <div id="icon-wrap" class="icon-wrap">
+                    <div class="dropdown">
+                        <i class="fa fa-cog icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle" data-toggle="dropdown"></i>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li class="dropdown-header">ADD BOXES</li>
+                            <li><a href="#" v-on:click.prevent="add_module(1,'Activity');">Activity</a></li>
+                            <li><a href="#" v-on:click.prevent="add_module(3,'Devices');">Devices</a></li>
+                            <li><a href="#" v-on:click.prevent="add_module(2,'Device Graph');">Device Graph</a></li>
+                            <li><a href="#" v-on:click.prevent="add_module(2,'Consumption');">Consumption</a></li>
+                            <li><a href="#" v-on:click.prevent="add_module(3,'Notification');">Notification</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <i class="fa fa-bell icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle" data-toggle="dropdown"></i>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a href="#">HTML</a></li>
+                            <li><a href="#">CSS</a></li>
+                            <li><a href="#">JavaScript</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <i class="fa fa-user icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle" data-toggle="dropdown"></i>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a href="#">HTML</a></li>
+                            <li><a href="#">CSS</a></li>
+                            <li><a href="#">JavaScript</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="space-for-search-bar">
+                <!--a space in the tag is necessary-->
+            </div>
+            <div id="top-manage-bar" class="top-manage-bar">
+                <top-manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test" :top_manage_bar_toggle="top_manage_bar_toggle"></top-manage-item>
+                <div class="add-room text-right" id="">
+                    <a class="add-room-icon" v-on:click.prevent="adding_editing_room('add');" href="" type="button" data-toggle="modal" data-target="#add-room-modal">
+                        <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                    </a>
+                    <span class="add-room-word">Room</span>
+                    <a class="add-room-icon" v-on:click.prevent href="">
+                        <i class="fa fa-minus-square-o" aria-hidden="true" data-toggle="modal" data-target="#del-room-modal"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="module-wrap" v-for="room in rooms" :class="{hidden: !room.isActive}">
+                <module v-for="module in room.modules" :mod="module" :room="room" :del_module="del_module"></module>
+            </div>
+        </div>
+        <!-- Modal del-->
+        <div class="modal fade del-room-modal" id="del-room-modal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Choose a Room to Delete</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="list-group">
+                            <a href="#" class="del-room-list list-group-item" v-for="room in rooms" v-on:click.prevent="del_room(room._idx)">${room.name}</a>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal add edit-->
+        <div id="add-room-modal" v-on:keyup.enter="add_edit_room_enter();" class="modal fade add-room-modal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add a Room</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <a data-toggle="collapse" href="#collapse1">Choose icon</a>
+                                    </div>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <a v-on:click.prevent="modal_choose_icon(icon); " v-for="icon in icons" data-toggle="collapse" href="#collapse1">
+                                            <img class="panel-icon" :src="icon">
+                                        </a>
+                                    </div>
+                                    <div class="panel-footer text-right">Default is XXX</div>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">Room Name</span>
+                                <input id="modal-input" v-model="modal_room_name" type="text" class="form-control" placeholder="Master Bedroom" aria-describedby="basic-addon1">
+                            </div>
+                            <div class="chosen-icon text-center">
+                                <div v-on:click.prevent data-toggle="collapse" href="#collapse1">
+                                    <img class="panel-chosen-icon pull-left gap-right" :src="modal_chosen_icon_path">
+                                </div>
+                                <div class="chosen-description">
+                                    <!-- Nothing To Say -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button v-if="adding_room" v-on:click.prevent="add_room();" type="button" class="btn btn-default" data-dismiss="modal">Add</button>
+                        <button v-if="!adding_room" v-on:click.prevent="edit_room();" type="button" class="btn btn-default" data-dismiss="modal">Edit</button>
+                        <button v-on:click.prevent="modal_reinit();" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{block footer}} <!-- this is default footer -->
+{{end}}
+
+    <!-- D3.js Source -->
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+    <!-- Your D3.js code -->
+    <script type="text/javascript" src="{{=URL('static','js/scatterplot2.js')}}"></script>
+    <script type="text/javascript" src="{{=URL('static','js/d3tree.js')}}"></script>
+    <!--Highstock test-->
+    <!-- <script src="https://code.highcharts.com/stock/highstock.js"></script> -->
+    <!-- <script src="https://code.highcharts.com/stock/modules/exporting.js"></script> -->
+    <!-- Vue.js -->
+    <script type="text/javascript" src="{{=URL('static','js/vue.min.js')}}"></script>
+    <script type="text/javascript" src="{{=URL('static','js/dashboard.js')}}"></script>
+    <!-- interact.js -->
+    <script type="text/javascript" src="{{=URL('static','js/interact.js')}}"></script>
