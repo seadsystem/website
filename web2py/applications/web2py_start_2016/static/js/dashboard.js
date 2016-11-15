@@ -73,14 +73,14 @@ var app = function() {
     //---------------HELPER-----------------
     var is_mod = function() {
         console.log('works');
-    }
+    };
 
     var array_remove = function(index) {
         arr = jQuery.grep(arr, function(index) {
             return value != removeItem;
         });
         return arr
-    }
+    };
 
     var enumerate = function(v) {
         var k = 0;
@@ -93,32 +93,37 @@ var app = function() {
         var newArray = new Array();
         for (var i = 0; i < actual.length; i++) {
             if (actual[i]) {
-                console.log('here');
+                // console.log('here');
                 newArray.push(actual[i]);
             }
         }
         return newArray;
-    }
+    };
 
     var new_id = function() {
         self.vue.id_tracker += 1;
         return String(self.vue.id_tracker);
-    }
+    };
 
     var editing_room = function() {
         self.vue.modal_room_name = self.vue.rooms[self.vue.action_room].name;
         self.vue.modal_chosen_icon_path = self.vue.rooms[self.vue.action_room].icon_path;
-    }
+    };
 
     var default_room_name = function(path) {
         var dirname = path.substring(path.lastIndexOf('/') + 1);
         dirname = dirname.substring(0, dirname.lastIndexOf(".")).capitalize();
         return dirname;
-    }
+    };
 
     String.prototype.capitalize = function() {
         return this.charAt(0).toUpperCase() + this.slice(1);
-    }
+    };
+
+    var remove_svg = function(id) {
+        var svg_el = $(id); //arbitrary
+        svg_el.remove();
+    };
 
     //-----------------init-----------------
     var modal_event_init = function() {
@@ -142,13 +147,15 @@ var app = function() {
                 $('.del-room-list').first().addClass('disabled');
             });
         });
-    }
+    };
 
     //--------------------------------------
 
     self.test = function(i) {
         self.vue.rooms[i].data[0] = scatterdataset; //test
         scatter(self.vue.rooms[i], 0, 0);
+        scatter(self.vue.rooms[i], 1, 0);
+        scatter(self.vue.rooms[i], 2, 0);
     }
 
     self.modal_reinit = function() {
@@ -191,20 +198,6 @@ var app = function() {
         self.modal_reinit();
     }
 
-    self.del_room = function(_idx) {
-        if (_idx == 0) { //cannot delete room
-        } else if (_idx == self.vue.action_room) { //currently using that room
-            // jump to home   
-            self.manage_btn_toggle(0);
-            self.vue.rooms.splice(_idx, 1);
-            $('#del-room-modal').modal('hide');
-        } else {
-            self.vue.rooms.splice(_idx, 1);
-            $('#del-room-modal').modal('hide');
-        }
-        enumerate(self.vue.rooms);
-    };
-
     self.add_room = function() {
         // console.log('add_room');
         var name = (self.vue.modal_room_name ? self.vue.modal_room_name : default_room_name(self.vue.modal_chosen_icon_path));
@@ -228,7 +221,7 @@ var app = function() {
 
         enumerate(self.vue.rooms); //just for check
 
-        // re-initialize
+        // re-initialize ( clear modal )
         self.modal_reinit();
     };
 
@@ -261,20 +254,65 @@ var app = function() {
         $('#modal-input').focus();
     }
 
+    self.del_room = function(_idx) {
+        console.log('in del_room');
+        if (_idx == 0) { //cannot delete room
+            console.log('Cannot delete Home');
+        } else if (_idx == self.vue.action_room) { //currently using that room
+            // console.log('del1 for ' + self.vue.rooms[_idx].name);
+            for (i = 0; i < self.vue.rooms[_idx].modules.length; i++) {
+                console.log("room: " + _idx + ", mod: " + i);
+                $("#" + self.vue.rooms[_idx].modules[i].id).empty();
+            }
+            self.vue.rooms[_idx].modules = [];
+            $('#del-room-modal').modal('hide');
+            // jump to home   
+            self.manage_btn_toggle(0);
+        } else {
+            // console.log('del2 for ' + self.vue.rooms[_idx].name);
+            for (i = 0; i < self.vue.rooms[_idx].modules.length; i++) {
+                console.log("room: " + _idx + ", mod: " + i);
+                $("#" + self.vue.rooms[_idx].modules[i].id).empty();
+            }
+            self.vue.rooms[_idx].modules = [];
+            $('#del-room-modal').modal('hide');
+        }
+        // self.vue.rooms.splice(_idx, 1); //Only work outside of this call
+        setTimeout(function() {
+            self.vue.rooms.splice(_idx, 1);
+        }, 500);
+        enumerate(self.vue.rooms);
+    };
+
     self.del_module = function(r_idx, mod) {
-        // console.log('del_module');
-        var tmp = $("#" + mod.el_id + "svg"); //arbitrary
+        console.log('del_module : ' + self.vue.rooms[r_idx].name + "-" + mod.header);
         var wrap = $("#" + mod.id);
         $.when(wrap.fadeOut(300)).done(function() {
             $.when(wrap.css('display', '')).done(
                 function() {
-                    console.log('here');
-                    tmp.remove();
+                    // console.log('here');
+                    // remove_svg("#" + mod.el_id + "svg");
                     var room = self.vue.rooms[r_idx];
-                    room.modules.splice(mod._idx, 1);
+                    console.log(room.modules.splice(mod._idx, 1));
                     enumerate(self.vue.rooms[r_idx].modules);
                 });
         });
+    };
+
+    self.del_module_quick = function(r_idx, mod) {
+        console.log('del_module : ' + self.vue.rooms[r_idx].name + "-" + mod.header);
+        var wrap = $("#" + mod.id);
+        // $.when(wrap.fadeOut(0)).done(function() {
+        //     $.when(wrap.css('display', '')).done(
+        //         function() {
+        //             // console.log('here');
+        //             // remove_svg("#" + mod.el_id + "svg");
+        var room = self.vue.rooms[r_idx];
+        console.log(room.modules.splice(mod._idx, 1));
+        // enumerate(self.vue.rooms[r_idx].modules);
+        //         });
+        // });
+
     };
 
     // Extends an array
@@ -296,7 +334,8 @@ var app = function() {
                 self.vue.rooms[i].isActive = false;
             }
         }
-
+        // This should refresh the action room's graph (delete and re-add.)
+        // refresh_graph(self.vue.action_room);
     };
 
     self.top_manage_bar_toggle = function() {
@@ -398,7 +437,7 @@ var app = function() {
                     'el_id': 'Home_el_2',
                     'id': 'Home_2'
                 }],
-            },],
+            }, ],
             id_tracker: 2,
             search_bar_input_val: '',
             top_manage_bar_display: false,
@@ -415,6 +454,7 @@ var app = function() {
             modal_room_name: '',
             action_room: 0, //_idx of room, 0 refers to Home
             adding_room: true, // modal is for editng or adding
+            isInitialized: false,
         },
         methods: {
             manage_btn_toggle: self.manage_btn_toggle,
@@ -429,7 +469,6 @@ var app = function() {
             add_edit_room_enter: self.add_edit_room_enter,
             edit_room: self.edit_room,
             modal_reinit: self.modal_reinit,
-            test: self.test,
         },
     });
 
@@ -458,13 +497,18 @@ var app = function() {
 
     self.vue.rooms[0].data[0] = scatterdataset; //test
     scatter(self.vue.rooms[0], 0, 0);
+    scatter(self.vue.rooms[0], 1, 0);
+    scatter(self.vue.rooms[0], 2, 0);
     // self.test();
-    self.vue.rooms[1].data[0] = scatterdataset; //test
-    scatter(self.vue.rooms[1], 0, 0);
+    // self.vue.rooms[1].data[0] = scatterdataset; //test
+    // scatter(self.vue.rooms[1], 0, 0);
     // self.vue.rooms[2].data[0] = scatterdataset; //test
     // scatter(self.vue.rooms[2], 0, 0);
     // d3tree(self.vue.rooms[0].modules[0].el_id);
 
+    //when not isInitialized, don't add graph when add default room above,
+    // (manage_btn_toggle will trigger add graph event).
+    self.vue.isInitialized = true;
     // self.test();
     $("#vue-div").show();
     console.log('Vue initialized');
