@@ -3,6 +3,8 @@ var d3tree;
 function rendering() {
 
     console.log('rendering');
+    
+    
     d3tree = function(id) {
         console.log('here');
         var treeData = [{

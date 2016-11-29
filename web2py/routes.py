@@ -104,7 +104,7 @@ routers = dict(
 
     # base router
     BASE=dict(
-        default_application='web2py_start_2016',
+        default_application='SEAD',
     ),
 )
 

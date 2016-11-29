@@ -2,9 +2,16 @@ var scatter = function(room, mod_i, data_i) {
     console.log('scatterplot added');
 
     //Define Margin
-    var margin = { left: 80, right: 80, top: 50, bottom: 50 },
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+    // var margin = { left: 80, right: 80, top: 50, bottom: 50 },
+    //     width = 960 - margin.left - margin.right,
+    //     height = 500 - margin.top - margin.bottom;
+
+    var margin = { left: 80, right: 80, top: 50, bottom: 50 };
+    var wrap = $("#" + room.modules[mod_i].el_id);
+    console.log(wrap.height() + ' ' + wrap.width());
+    var width = wrap.width() - margin.left - margin.right;
+    var height = 400 - margin.top - margin.bottom;
+
 
     //Define Color
     var colors = d3.scale.category20();

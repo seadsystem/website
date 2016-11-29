@@ -1,0 +1,67 @@
+var scatterdataset = [{
+    "amount": 3.15,
+    "device": "AC",
+    "hour": 18,
+    "epc": 317,
+    "total": 98.9,
+    "was_on": 312,
+    "date": 1
+}, {
+
+    "amount": 0.75,
+    "device": "AC",
+    "hour": 12,
+    "epc": 120,
+    "total": 57,
+    "was_on": 1359,
+    "date": 2
+}, {
+    "amount": 1.71,
+    "device": "AC",
+    "hour": 10,
+    "epc": 171,
+    "total": 21.7,
+    "was_on": 127,
+    "date": 3
+}, {
+    "amount": 1.85,
+    "device": "AC",
+    "hour": 8,
+    "epc": 171,
+    "total": 14.1,
+    "was_on": 83,
+    "date": 4
+}, {
+    "amount": 1.72,
+    "device": "AC",
+    "hour": 6,
+    "epc": 170,
+    "total": 10.7,
+    "was_on": 63,
+    "date": 5
+}, {
+    "amount": 1.43,
+    "device": "AC",
+    "hour": 4,
+    "epc": 143,
+    "total": 8.8,
+    "was_on": 62,
+    "date": 6
+}, {
+    "amount": 0.58,
+    "device": "AC",
+    "hour": 2,
+    "epc": 58,
+    "total": 11.3,
+    "was_on": 195,
+    "date": 7
+}, {
+    "amount": 1.26,
+    "device": "AC",
+    "hour": 0,
+    "epc": 126,
+    "total": 7.6,
+    "was_on": 60,
+    "date": 8
+
+}];
