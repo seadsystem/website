@@ -107,6 +107,7 @@ def DevicesView(request):
         Device.objects.register_device(new_device_id, new_device_name, current_user)
 
     # if the user clicked delete
+    # fetch request, process data package
     elif request.POST.get('delete'):
         device_id = request.POST.get('delete')
         device = Device.objects.get(device_id=device_id)
