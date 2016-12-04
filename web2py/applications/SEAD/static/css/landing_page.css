@@ -12,6 +12,9 @@
     width:100%;
 
 }
+.register {
+    padding-right: 35px;
+}
 /*Home screen behind video player*/
 #home {
     height:800px;
@@ -38,6 +41,21 @@
     padding-top:15px;
     /*padding-left: 300px;
     padding-right: 0px;*/
+}
+#page_two {
+    background-color: #48BD9C;
+    padding:0px 0px 0px 0px;
+
+}
+.container-fluid {
+    width:100%;
+    padding:0px;
+}
+.body {
+    margin:0px;
+}
+.container {
+    padding:0px;
 }
 #video-btn {
     margin: 350px 33%;
@@ -104,7 +122,7 @@
 
 .how-it-works {
     padding-top:40px;
-    padding-bottom: 10px;
+    padding-bottom: 70px;
     background-color: #E6EAEF;
 
     /*text-align: center;
