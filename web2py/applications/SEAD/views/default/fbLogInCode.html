@@ -1,0 +1,65 @@
+<html>
+    <body>
+        
+        <!--
+         This is the App ID & Secret code provided by FB for our hosted application throught their 
+         developer site.
+         
+         App ID: 148921048921715
+         Secret: 89f08708ec3c5fc716d694ccfccb430a
+         -->
+        
+        
+        <!--
+         Instal JavaScriptSDK to embed the FaceBook LogIn Button
+         -->
+        
+        <div id=”fb-root”></div>
+        <script>
+            window.fbAsyncInit = function() {
+                FB.init({
+                        appId      : ‘{148921048921715}’,
+                        status     : true,
+                        cookie     : true,
+                        xfbml      : true
+                        });
+                        
+                        // check response from SDK and process the login request
+                        // If login is successful, call testAPI() method, if not, it will display the
+                        // login prompt
+                        
+                        FB.Event.subscribe(‘auth.authResponseChange’, function(response) {
+                                           if (response.status === ‘connected’) {
+                                           testAPI();
+                                           } else if (response.status === ‘not_authorized’) {
+                                           FB.login();
+                                           } else {
+                                           FB.login();
+                                           }
+                                           });
+            };
+        
+        // process the response form the login SDK, pull back data from the API and update the contents
+        // of the <div> to display a welcome message
+        
+        (function(d){
+         var js, id = ‘facebook-jssdk’, ref = d.getElementsByTagName(‘script’)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(‘script’); js.id = id; js.async = true;
+         js.src = “//connect.facebook.net/en_US/all.js”;
+         ref.parentNode.insertBefore(js, ref);
+         }(document));
+         function testAPI() {
+             FB.api(‘/me’, function(response) {
+                    document.getElementById (‘welcome’).innerHTML=’Good to see you,
+                    ‘ + response.name + ‘.’;
+                    });
+         }
+        </script>
+        
+        <fb:login-button show-faces=”true” width=”200” max-rows=”1”></fb:login-button>
+            <div id=”welcome”></div>  
+            
+            
+    </body>
+</html>
