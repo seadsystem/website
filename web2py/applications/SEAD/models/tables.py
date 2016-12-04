@@ -8,19 +8,93 @@
 # Consult manual for more options, validators, etc.
 
 import datetime
+import json
 import random
 random.seed(1)
 
-start = datetime.datetime(2015,1,1,0,0)
+start = datetime.datetime(2016,1,1,0,0)
 end = datetime.datetime(2016, 12, 31, 0, 0)
 
 num_of_minutes = 2*365*24*60  # datetime.timedelta(minutes=365*24*60*2)
+
+
+# Example Room Structure
+demo_user = {
+    'rooms' : {
+        'bedroom' :
+            {
+                'icon_path' : '/bedroom.png',
+                'device' : 'tv,light,desktop,ac',
+                'mod_header' : 'activity,devices,graph,consumption,notification',
+            },
+        'kitchen' :
+            {
+                'icon_path' : '/kitchen.png',
+                'device' : 'freezer,fridge,toaster,microwave,light',
+                'mod_header' : 'activity,devices,graph,consumption,notification',
+            },
+        'office' :
+            {
+                'icon_path' : '/office.png',
+                'device' : 'desktop,light,ipad,shredder',
+                'mod_header' : 'activity,devices,graph,consumption,notification',
+            }
+    }
+}
+
+
+db.define_table('user_info',
+                Field('rooms', 'text'),
+                Field('user_id', 'integer'),
+                Field('name', 'text'),
+                Field('email', 'text'),
+                )
+db.user_info.truncate()
+
+db.user_info.insert(rooms=json.dumps(demo_user),user_id=0,name='Ewing',email='ylin62@ucsc.edu')
+
+# In future add field and change talbe name to user info
+# db.define_table('demo_rooms',
+#                 Field('room', 'text'),
+#                 Field('icon_path', 'text'),
+#                 Field('device', 'text'),
+#                 Field('mod_header', 'text'),
+#                 )
+# db.demo_rooms.truncate()
+#
+# db.demo_rooms.insert(room='bedroom',
+#                      icon_path='/bedroom.png',
+#                      device='tv,light,desktop,ac',
+#                      mod_header='activity,devices,graph,consumption,notification')
+# db.demo_rooms.insert(room='kitchen',
+#                      icon_path='/kitchen.png',
+#                      device='freezer,fridge,toaster,microwave,light',
+#                      mod_header='activity,devices,graph,consumption,notification')
+# db.demo_rooms.insert(room='office',
+#                      icon_path='/office.png',
+#                      device='desktop,light,ipad,shredder',
+#                      mod_header='activity,devices,graph,consumption,notification')
+# db.demo_rooms.insert(room='bathroom',
+#                      icon_path='/bathroom.png',
+#                      device='light,hairdryer,shaver',
+#                      mod_header='activity,devices,graph,consumption,notification')
+# db.demo_rooms.insert(room='livingroom',
+#                      icon_path='/livingroom.png',
+#                      device='tv,xbox,soundsystem,light',
+#                      mod_header='activity,devices,graph,consumption,notification')
 
 db.define_table('device_usage',
                 Field('use_time', 'datetime'),
                 Field('room', 'text'),
                 Field('device', 'text'),
                 Field('on_off', 'integer')
+                )
+
+db.define_table('daily_usage',
+                Field('use_day', 'datetime'),
+                Field('room', 'text'),
+                Field('device', 'text'),
+                Field('total_usage', 'integer')
                 )
 
 rooms = {
@@ -107,20 +181,68 @@ now = start
 #                                    on_off=1)
 #             now = now + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
 
-# # #SUCCESS (a year, all)
+# #SUCCESS (a year, all)
 # now = start
-# hour = 2*24*365
-# for room in rooms:
-#     for dev in rooms[room]:
-#         now = start
-#         for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
-#             if random.random()*100 < rooms[room][dev][0]: # > is off, < is on
-#                 for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
-#                     db.device_usage.insert(use_time=now + datetime.timedelta(minutes=j),
-#                                    room=room,
-#                                    device=dev,
-#                                    on_off=1)
-#             now = now + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+hour = 365*24
+
+def genData(hour, startTime):
+    for room in rooms:
+        for dev in rooms[room]:
+            startnow = startTime
+            for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+                if random.random()*100 < rooms[room][dev][0]: # > is off, < is on
+                    for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                        db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                       room=room,
+                                       device=dev,
+                                       on_off=1)
+                else :
+                    for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                        db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                       room=room,
+                                       device=dev,
+                                       on_off=0)
+                startnow = startnow + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+
+
+
+def aggregation():
+    startTime = start  #change in future
+
+    for day in range(0, 365):
+        for room in rooms:
+            for dev in rooms[room]:
+                usage = countOnTime(room, dev, startTime, startTime+datetime.timedelta(days=1))
+                print(startTime)
+                print(room + '-' +dev+' : ' + str(usage))
+                db.daily_usage.insert(use_day=startTime,
+                                       room=room,
+                                       device=dev,
+                                       total_usage=usage)
+        startTime += datetime.timedelta(days=1)
+
+def countOnTime(room, dev, start, end):
+    r = (db.device_usage.room == room)
+    d = (db.device_usage.device == dev)
+    s = (db.device_usage.use_time >= start)
+    e = (db.device_usage.use_time < end)
+    u = (db.device_usage.on_off == 1)
+    return int(db(r & d & s & e & u).count())
+
+#
+# db( (db.device_usage.room == "bedroom") &
+#     (db.device_usage.device == "tv") &
+#     (db.device_usage.use_time >= start) &
+#     (db.device_usage.use_time < start + datetime.timedelta(days=1))).select()
+
+
+
+
+
+
+
+
+
 
 
 

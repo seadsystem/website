@@ -981,3 +981,632 @@ db.device_usage2.drop()
 db.tables
 /Users/LinYuAn/Dropbox quit()
 quit()
+db
+db.tables
+db.define_table('device_usage1',
+                Field('use_time', 'datetime'),
+                Field('room', 'text'),
+                Field('device', 'text'),
+                Field('on_off', 'integer')
+                )
+now = start
+hour = 2*24*30
+for room in rooms:
+    for dev in rooms[room]:
+        now = start
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random()*100 < rooms[room][dev][0]: # > is off, < is on
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=1)
+            else :
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=0)
+hour = 24!!!
+now = start
+hour = 2*24*30
+for room in rooms:
+    for dev in rooms[room]:
+        now = start
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random()*100 < rooms[room][dev][0]: # > is off, < is on
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage1.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=1)
+            else :
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage1.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=0)
+            now = now + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+bedtv2m = db(db.device_usage1.room=='bedroom' and db.device_usage1.device == 'tv')
+bedtv2m
+bedtv2m = db(db.device_usage1.room=='bedroom' and db.device_usage1.device == 'tv').select()
+bedtv2m
+print(bedtv2m)
+quit()
+ls
+db.tables
+bd.device_usage1
+db.device_usage1.drop()
+db.tables
+db.define_table('device_usage1',
+                Field('use_time', 'datetime'),
+                Field('room', 'text'),
+                Field('device', 'text'),
+                Field('on_off', 'integer')
+                )
+db.executesql('CREATE INDEX ON device_usage1 room')
+db.executesql('CREATE INDEX IF NOT EXIST myidx ON device_usage1 room')
+db.executesql('CREATE INDEX IF NOT EXISTS myidx ON device_usage1 room')
+db.executesql('CREATE INDEX IF NOT EXISTS ON device_usage1 room;')
+db.executesql('CREATE INDEX ON device_usage1 room;')
+db.executesql('CREATE INDEX IF NOT EXISTS myidx ON device_usage1 room;')
+db.tables
+db.executesql('CREATE INDEX IF NOT EXISTS myidx ON device_usage1 room ;')
+db.executesql('CREATE INDEX IF NOT EXISTS myidx ON device_usage1 room')
+db.executesql('CREATE INDEX IF NOT EXISTS myidx ON device_usage1 (room);')
+db.executesql('CREATE INDEX IF NOT EXISTS myidx ON device_usage1 (device);')
+now = start
+hour = 24*30
+for room in rooms:
+    for dev in rooms[room]:
+        now = start
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random()*100 < rooms[room][dev][0]: # > is off, < is on
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage1.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=1)
+            else :
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage1.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=0)
+            now = now + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+db.commit()
+quit()
+db.tables
+db.define_table('device_usage1',
+                Field('use_time', 'datetime'),
+                Field('room', 'text'),
+                Field('device', 'text'),
+                Field('on_off', 'integer')
+                )
+now = start
+hour = 24
+for room in rooms:
+    for dev in rooms[room]:
+        now = start
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random()*100 < rooms[room][dev][0]: # > is off, < is on
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage1.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=1)
+            else :
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage1.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=0)
+            now = now + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+ls
+db.tables
+db(db.device_usage1).select()
+tmp = db(db.device_usage1).select()
+ls
+quit()
+db.tables
+db(db.device_usage).select()
+db.executesql('CREATE INDEX IF NOT EXISTS myidx ON device_usage (device);')
+db.executesql('CREATE INDEX IF NOT EXISTS myidx ON device_usage (room);')
+db.executesql('SELECT * FROM sys.indexes WHERE name="myidx" AND object_id=OBJECT_ID("device_usage")')
+db.executesql('SELECT * FROM sys.indexes;')
+db.executesql('If IndexProperty(Object_Id("device_usage"), "myidx", "IndexId") Is Null')
+db.tables
+db.device_usage.drop()
+db.define_table('device_usage',
+                Field('use_time', 'datetime'),
+                Field('room', 'text'),
+                Field('device', 'text'),
+                Field('on_off', 'integer')
+                )
+db.executesql('CREATE INDEX IF NOT EXISTS roomidx ON device_usage (room);')
+db.executesql('CREATE INDEX IF NOT EXISTS deviceidx ON device_usage (device);')
+now = start
+hour = 7*24
+for room in rooms:
+    for dev in rooms[room]:
+        now = start
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random()*100 < rooms[room][dev][0]: # > is off, < is on
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=1)
+            else :
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=0)
+            now = now + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+tmp = db(db.device_usage.room == "bedroom" and db.device_usage.device == 'tv').select()
+tmp
+print(tmp)
+start
+start = start + datetime.timedelta(days=7)
+start
+now = start
+hour = 23*24
+for room in rooms:
+    for dev in rooms[room]:
+        now = start
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random()*100 < rooms[room][dev][0]: # > is off, < is on
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=1)
+            else :
+                for j in range(0, rooms[room][dev][1]*60): #timechunk to minutes
+                    db.device_usage.insert(use_time=now + datetime.timedelta(minutes=j),
+                                   room=room,
+                                   device=dev,
+                                   on_off=0)
+            now = now + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+db.commit()
+tmp1 = db(db.device_usage.room == "bedroom" and db.device_usage.device == 'tv').select()
+print(tmp1[:100])
+print(tmp1[:500])
+tmp1
+tmp
+print(tmp1)
+import timeit
+t = timeit.Timer(db((db.device_usage.room=="bedroom")&(db.device_usage.device=="tv")).select())
+tmp1 = db((db.device_usage.room=="bedroom")&(db.device_usage.device=="tv")).select()
+tmp1
+print(tmp1[:200])
+tmp2 = db((db.device_usage.device=="tv")&(db.device_usage.room=="bedroom")).select()
+t = timeit.Timer(db((db.device_usage.room=="bedroom")&(db.device_usage.device=="tv")).select())
+def x():
+    db((db.device_usage.room=="bedroom")&(db.device_usage.device=="tv")).select()
+t = timeit.Timer(lambda: x())
+print(t.timeit())
+ls
+db.device_usage
+tmp3 = db((db.device_usage.use_time>datetime.datetime(2015,1,1,0,0))&(db.device_usage.use_time<datetime.datetime(2015,1,2,0,0))&(db.device_usage.device=="tv")&(db.device_usage.room=="bedroom")).select()
+tmp3
+print(tmp3)
+tmp3 = db((db.device_usage.use_time>datetime.datetime(2015,1,1,0,0))&(db.device_usage.use_time<datetime.datetime(2015,1,2,0,0))&(db.device_usage.device=="tv")&(db.device_usage.room=="bedroom")).select()
+db.commmit()
+db.commit()
+quit()
+tmp3 = db((db.device_usage.use_time>datetime.datetime(2015,1,1,0,0))&(db.device_usage.use_time<datetime.datetime(2015,1,2,0,0))&(db.device_usage.device=="tv")&(db.device_usage.room=="bedroom")).select()
+tmp3
+tmp3 = db((db.device_usage.use_time>datetime.datetime(2015,1,4,0,0))&(db.device_usage.use_time<datetime.datetime(2015,1,5,0,0))&(db.device_usage.device=="tv")&(db.device_usage.room=="bedroom")).select()
+tmp3
+quit()
+db.tables
+start
+genData(365*24, start+datetime.timedelta(years=1))
+genData(365*24, start+datetime.timedelta(days=365))
+start + datetime.timedelta(days=365)
+genData(365*24, start+datetime.timedelta(days=365))
+db.commit()
+x = db(db.device_usage.use_time<start + datetime.timedelta(days=1))
+x = db(db.device_usage)
+x
+db.device_usage.drop()
+quit()
+db
+db.tables
+db(db.device_usage).select()
+genData(24, start)
+db(db.device_usage).select()
+x = db(db.device_usage).select()
+x
+print(x)
+hour = 24
+startTime = datetime.datetime(2016,1,1,0,0)
+for room in rooms:
+    for dev in rooms[room]:
+        startnow = startTime
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random() * 100 < rooms[room][dev][0]:  # > is off, < is on
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=1)
+            else:
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=0)
+            startnow = startnow + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+x = db(db.device_usage).select()
+print(x)
+hour = 24
+startTime = datetime.datetime(2016,1,1,0,0)
+for room in rooms:
+    for dev in rooms[room]:
+        startnow = startTime
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random() * 100 < rooms[room][dev][0]:  # > is off, < is on
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=1)
+            else:
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=0)
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),ASD
+d
+hour = 25
+startTime = datetime.datetime(2016,1,1,0,0)
+for room in rooms:
+    for dev in rooms[room]:
+        startnow = startTime
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random() * 100 < rooms[room][dev][0]:  # > is off, < is on
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=1)
+            else:
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=0)
+            startnow = startnow + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+x = db(db.device_usage).select()
+print(x)
+quit()
+hour = 25
+startTime = datetime.datetime(2016,1,1,0,0)
+for room in rooms:
+    for dev in rooms[room]:
+        startnow = startTime
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random() * 100 < rooms[room][dev][0]:  # > is off, < is on
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=1)
+            else:
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=0)
+            startnow = startnow + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+quit()
+x = db(db.device_usage).select()
+print(x)
+quit()
+x = db(db.device_usage).select()
+print(x)
+quit()
+hour = 24*365
+startTime = datetime.datetime(2016,1,1,0,0)
+for room in rooms:
+    for dev in rooms[room]:
+        startnow = startTime
+        for i in range(0, (hour * 60) / (rooms[room][dev][1] * 60)):  # a day / time chunk
+            if random.random() * 100 < rooms[room][dev][0]:  # > is off, < is on
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=1)
+            else:
+                for j in range(0, rooms[room][dev][1] * 60):  # timechunk to minutes
+                    db.device_usage.insert(use_time=startnow + datetime.timedelta(minutes=j),
+                                           room=room,
+                                           device=dev,
+                                           on_off=0)
+            startnow = startnow + datetime.timedelta(minutes=rooms[room][dev][1] * 60)
+db.commit()
+quit()
+db.tables
+db(db.device_usage.use_time < datetime.datetime(2016,1,2)).select()
+x = db(db.device_usage.use_time < datetime.datetime(2016,1,2)).select()
+x
+print(x)
+x = db(db.device_usage.use_time < datetime.datetime(2016,1,3)).select()
+print(x)
+x = db(db.device_usage.use_time < datetime.datetime(2016,1,3) & db.device_usage.device == 'light').select()
+x = db((db.device_usage.use_time < datetime.datetime(2016,1,3)) & (db.device_usage.device == 'light')).select()
+print(x)
+quit()
+aggregation()
+quit()
+aggregation()
+db.daily_usage.drop()
+quit()
+db.tables
+db(db.daily_usage).select()
+aggregation()
+db.commit()
+db.tables
+x = db(db.daily_usage).select()
+print(x)
+db.commit()
+db.tables
+countOnTime('bedroom', 'tv', datetime.datetime(2016,1,1),datetime.datetime(2016,1,2))
+print(db(db.daily_usage).select())
+db(db.daily_usage).select()
+quit()
+get_oneday("bedroom", "tv", datetime(2016,1,1))
+def get_oneday(room, dev, day):
+    r = (db.device_usage.room == room)
+    d = (db.device_usage.device == dev)
+    s = (db.device_usage.use_time >= day)
+    e = (db.device_usage.use_time < day+timedelta(days=1))
+    rows = db(r & d & s & e).select(orderby=db.daily_usage.use_time)
+    return rows
+get_oneday("bedroom", "tv", datetime(2016,1,1))
+def get_period(room, dev, start, end):
+    r = (db.daily_usage.room == room)
+    d = (db.daily_usage.device == dev)
+    s = (db.daily_usage.use_day >= start)
+    e = (db.daily_usage.use_day <= end)
+    rows = db(r & d & s & e).select(orderby=db.daily_usage.use_day)
+    return rows
+get_oneday("bedroom", "tv", datetime(2016,1,1))
+get_period("bedroom", "tv", datetime(2016,1,1), datetime(2016,1,3))
+db
+start
+start + timedelta(days=1)
+start + datetime.timedelta(days=1)
+from datetime import datetime, timedelta
+start + datetime.timedelta(days=1)
+start + timedelta(days=1)
+x = db.device_usage
+x
+db((x.room=="bedroom")&(x.device=="tv")&(x.usetime >= datetime(2016,1,1))&(x.use_time < datetime(2016,1,3)))
+db((x.room=="bedroom")&(x.device=="tv")&(x.use_time >= datetime(2016,1,1))&(x.use_time < datetime(2016,1,3)))
+db((x.room=="bedroom")&(x.device=="tv")&(x.use_time >= datetime(2016,1,1))&(x.use_time < datetime(2016,1,3))).select()
+y = db((x.room=="bedroom")&(x.device=="tv")&(x.use_time >= datetime(2016,1,1))&(x.use_time < datetime(2016,1,3))).select()
+y
+print(y)
+db.executesql(';')
+db.executesql('SELECT DISTINCT room FROM daily_usage;')
+tmp = db.executesql('SELECT DISTINCT room FROM device_usage;')
+tmp
+quit()
+db.tables
+db.demo_rooms.insert(room='bedroom',icon_p)
+db.commit()
+db.tables
+db.demo_rooms.drop()
+db.commit()
+quit()
+db.tables
+quit()
+db.demo_rooms.insert(room='bedroom',icon_path='/bedroom.png')
+db(db.demo_rooms).select()
+print(db(db.demo_rooms).select())
+db.demo_rooms.insert(room='bedroom2',icon_path='/bedroom.png')
+db(db.demo_rooms).select()
+x = db(db.demo_rooms).select()
+x
+print(x)
+db.commit()
+response.json()
+response.json(dict())
+response.json(dict(x))
+x
+response.json(dict(x=x))
+db(db.demo_rooms.room=="bedroom2").delete()
+x = db(db.demo_rooms).select()
+x
+db.demo_rooms.insert(room='kitchen',icon_path='/kitchen.png')
+x = db(db.demo_rooms).select()
+x
+db.demo_rooms.insert(room='office',icon_path='/office.png')
+db.demo_rooms.insert(room='bathroom',icon_path='/bathroom.png')
+db.demo_rooms.insert(room='livingroom',icon_path='/livingroom.png')
+db.commit
+db.commit()
+db.demo_rooms.drop()
+quit()
+db.demo_rooms.insert(room='bedroom',icon_path='/bedroom.png', device='tv,light,desktop,ac')
+db.demo_rooms.insert(room='kitchen',icon_path='/kitchen.png', device='freezer,fridge,toaster,microwave,light')
+db.demo_rooms.insert(room='office',icon_path='/office.png', device='desktop,light,ipad,shredder')
+db.demo_rooms.insert(room='bathroom',icon_path='/bathroom.png', device='light,hairdryer,shaver')
+db.demo_rooms.insert(room='livingroom',icon_path='/livingroom.png', device='tv,xbox,soundsystem,light')
+x = db(db.demo_rooms).select()
+print(x)
+db.commit()
+quit)(
+quit()
+db.tables
+db.demo_rooms.drop()
+db.commit()
+quit)(
+quit()
+db.demo_rooms.drop()
+db.define_table('demo_rooms',
+                Field('room', 'text'),
+                Field('icon_path', 'text'),
+                Field('device', 'text'),
+                Field('mod_header', 'text'),
+                )
+db.demo_rooms.insert(room='bedroom',
+                     icon_path='/bedroom.png',
+                     device='tv,light,desktop,ac',
+                     mod_header='activity,devices,graph,consumption,notification')
+db.demo_rooms.insert(room='kitchen',
+                     icon_path='/kitchen.png',
+                     device='freezer,fridge,toaster,microwave,light',
+                     mod_header='activity,devices,graph,consumption,notification')
+db.demo_rooms.insert(room='office',
+                     icon_path='/office.png',
+                     device='desktop,light,ipad,shredder',
+                     mod_header='activity,devices,graph,consumption,notification')
+db.demo_rooms.insert(room='bathroom',
+                     icon_path='/bathroom.png',
+                     device='light,hairdryer,shaver',
+                     mod_header='activity,devices,graph,consumption,notification')
+db.demo_rooms.insert(room='livingroom',
+                     icon_path='/livingroom.png',
+                     device='tv,xbox,soundsystem,light',
+                     mod_header='activity,devices,graph,consumption,notification')
+db.commit()
+quit()
+db
+db.tables
+x= db(db.demo_rooms).select()
+x
+print(x)
+db.demo_rooms.drop()
+db.define_table('demo_rooms',
+                Field('room', 'text'),
+                Field('icon_path', 'text'),
+                Field('device', 'text'),
+                Field('mod_header', 'text'),
+                )
+db.commit()
+quit()
+db.tables
+quit()
+x= db(db.demo_rooms).select()
+x
+print(x)
+User1 = {
+    'id' : 0,
+    'name' : 'Ewing',
+    'email' : 'ylin62@ucsc.edu',
+    'rooms' : {
+        'bedroom' :
+            {
+                'icon_path' : '/bedroom.png',
+                'device' : 'tv,light,desktop,ac',
+                'mod_header' : 'activity,devices,graph,consumption,notification',
+            },
+        'kitchen' :
+            {
+                'icon_path' : '/kitchen.png',
+                'device' : 'freezer,fridge,toaster,microwave,light',
+                'mod_header' : 'activity,devices,graph,consumption,notification',
+            }
+    }
+}
+User1
+import json
+json.load(USer1)
+json.load(User1)
+json.dump(User1)
+json.dumps('asd')
+json.dumps(User1)
+json.loads(User1)
+x = json.dumps(User1)
+x
+y = json.load(x)
+y = json.loads(x)
+y
+y.id
+y['id']
+y['email']
+response.json(x)
+quit()
+demo_user
+db.tables
+json.dumps(demo_user)
+x = json.dumps(demo_user)
+x
+db.user_info.insert(rooms=x,id=0,)
+quit()
+x = json.dumps(demo_user)
+quit()
+x = json.dumps(demo_user)
+db.user_info.insert(rooms=x,user_id=0,name='Ewing',email='ylin62@ucsc.edu')
+db.commit()
+quit()
+db(db.user_info).select()
+x = db(db.user_info).select()
+print(x)
+import pprint
+pprint(x)
+pprint.print(x)
+print(x)
+quit()
+x = db(db.user_info).select()
+print(x)
+db(db.user_info.user_id==0).select()
+x = db(db.user_info.user_id==0).select()
+print(x)
+quit()
+x = db(db.user_info.user_id==0).select()
+print(x)
+db(db.user_info).select()
+x = db(db.user_info.user_id==0).select()
+x
+print(x)
+x.rooms
+x['rooms']
+x[0]['rooms']
+xJSON =json.dumps(x[0]['room'])
+xJSON =json.dumps(x[0]['rooms'])
+xJSON
+for key in xJSON:
+    print(key)
+type(xJSON)
+rows = db(db.user_info.user_id==0).select().first() 
+rows
+row = rows[0]
+rows = db(db.user_info.user_id==0).select()
+row = rows[0]
+row
+rowsJSON = json.loads(row['rooms'])
+rowsJSON
+for key in rowsJSON:
+    print(key)
+row
+row['rooms']
+for key in rowsJSON:
+  
+;
+for key in rowsJSON['room']:
+     print(key)
+for key in rowsJSON['rooms']:
+    print(key)
+quit)(
+quit()
+rows = db(db.user_info.user_id==0).select()
+row = rows[0]
+row['rooms']
+row['rooms']
+rowsJSON = json.loads(row['rooms'])
+rowsJSON
+rowsJSON['rooms']
+rooms = rowsJSON['rooms']
+rooms['device']
+rooms
+rooms['bedroom']
+rooms['device']
+quit()

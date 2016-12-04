@@ -1,0 +1,110 @@
+/* The switch - the box around the slider */
+$orange: #EA5019;
+$orange1: #FF472E;
+$gray: #F2F6FC;
+$gray1: #9abcf4;
+$blue: #459DFF;
+$blue1: #2D5CB0;
+$border-test: 1px black dashed;
+$module-border: 0.5px #A1A8B2 solid;
+
+.switch {
+    position: relative;
+    left: 100px;
+    display: inline-block;
+    width: 70px;
+    height: 30px;
+}
+
+
+/* Hide default HTML checkbox */
+
+.switch input {
+    display: none;
+}
+
+
+/* The slider */
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 6px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: $orange1;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px $orange;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(36px);
+    -ms-transform: translateX(36px);
+    transform: translateX(36px);
+}
+
+
+/* Rounded sliders */
+
+.slider.round {
+    border-radius: 30px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.device-list {
+    border: none;
+    height: 400px;
+    overflow-y: scroll;
+    width: 90%;
+    margin: auto;
+    .btn-wrap{
+        padding: 10px;
+        text-align: center;
+        .addbtn{
+            border-radius: 10px;
+        }
+    }
+    .list-group-item {
+        //border: $border-test;
+        height: 46px;
+        padding: 5px;
+        font-size: 18px;
+        background-color: $gray;
+        /*line-height: 10px;*/
+    }
+    .active{
+        color: $orange;
+        background-color: $orange1;
+    }
+    .item-name {
+        position: relative;
+        top: -8px;
+        width: 40%;
+        display: inline-block;
+        ;
+    }
+}
