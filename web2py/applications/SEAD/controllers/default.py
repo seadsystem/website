@@ -23,6 +23,11 @@ def index():
 def dashboard():
     return dict()
 
+
+def landing_page():
+    return dict()
+
+
 def user():
     """
     exposes:
