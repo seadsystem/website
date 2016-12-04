@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<meta name="google-signin-client_id" content="1078328176295-alcbrr54jhi6djku91thnqlj6rmps933.apps.googleusercontent.com">
+	</head>
+    <body>
+        
+        <!--
+         This is the App ID & Secret code provided by Google for our hosted application throught their 
+         developer site.
+         
+         App ID: 1078328176295-alcbrr54jhi6djku91thnqlj6rmps933.apps.googleusercontent.com
+         Secret: 3zjkucUe-nbk8hXWs0D4XyIH
+         -->
+        
+        
+        <!--
+         Include Google Platform Library 
+         -->
+         <script src="https://apis.google.com/js/platform.js" async defer></script>
+        
+        
+        <!--
+        Add Google SignIn Button for Google 
+        -->
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+        
+        
+        <!-- 
+        Retrieve Profile Information from the User
+        --> 
+        <script>
+        function onSignIn(googleUser) {
+  		var profile = googleUser.getBasicProfile();
+  		console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  		console.log('Name: ' + profile.getName());
+  		console.log('Image URL: ' + profile.getImageUrl());
+  		console.log('Email: ' + profile.getEmail());
+		}
+        </script>
+        
+        <!-- 
+        Allow the user to LogOut without LoggingOut of Google,
+        Attach a function that calls the GoogleAuth.signOut() method to the link's onclick
+        event
+        -->
+        <a href="#" onclick="signOut();">Sign out</a>
+		<script>
+  		function signOut() {
+    	var auth2 = gapi.auth2.getAuthInstance();
+    	auth2.signOut().then(function () {
+      	console.log('User signed out.');
+    		});
+  		}
+		</script>
+    </body>
+</html>
