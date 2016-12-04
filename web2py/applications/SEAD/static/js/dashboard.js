@@ -2,69 +2,11 @@
 
 
 //dummy data for scatterdataset
-var scatterdataset = [{
-    "amount": 3.15,
-    "device": "AC",
-    "hour": 18,
-    "epc": 317,
-    "total": 98.9,
-    "was_on": 312
-}, {
-
-    "amount": 0.75,
-    "device": "AC",
-    "hour": 12,
-    "epc": 120,
-    "total": 57,
-    "was_on": 1359
-}, {
-    "amount": 1.71,
-    "device": "AC",
-    "hour": 10,
-    "epc": 171,
-    "total": 21.7,
-    "was_on": 127
-}, {
-    "amount": 1.85,
-    "device": "AC",
-    "hour": 8,
-    "epc": 171,
-    "total": 14.1,
-    "was_on": 83
-}, {
-    "amount": 1.72,
-    "device": "AC",
-    "hour": 6,
-    "epc": 170,
-    "total": 10.7,
-    "was_on": 63
-}, {
-    "amount": 1.43,
-    "device": "AC",
-    "hour": 4,
-    "epc": 143,
-    "total": 8.8,
-    "was_on": 62
-}, {
-    "amount": 0.58,
-    "device": "AC",
-    "hour": 2,
-    "epc": 58,
-    "total": 11.3,
-    "was_on": 195
-}, {
-    "amount": 1.26,
-    "device": "AC",
-    "hour": 0,
-    "epc": 126,
-    "total": 7.6,
-    "was_on": 60
-
-}];
 
 // for areaspline
-var asline_data1 = [7, 3, 8, 7, 9, 11, 12];
-var asline_data2 = [1, 4, 3, 5, 6, 10, 11];
+var tmp_data;
+// var asline_data1 = [300, 300, 800, 700, 900, 110, 120];
+// var asline_data2 = [100, 400, 300, 500, 600, 100, 110];
 
 
 var app = function() {
@@ -157,28 +99,114 @@ var app = function() {
         for (i = 0; i < self.vue.rooms[0].modules.length; i++) {
             self.create_chart(0, i);
         }
+
     }
 
     var initRooms = function() {
-        self.vue.modal_chosen_icon_path = img_path + "/bedroom.png";
-        self.add_room();
-        self.vue.modal_chosen_icon_path = img_path + "/kitchen.png";
-        self.add_room();
-        self.vue.modal_chosen_icon_path = img_path + "/office.png";
-        self.add_room();
-        self.vue.modal_chosen_icon_path = img_path + "/bathroom.png";
-        self.add_room();
-        self.vue.modal_chosen_icon_path = img_path + "/livingroom.png";
-        self.add_room();
-        self.modal_reinit();
-        self.manage_btn_toggle(0);
+        var callback = function()
+        {
+            var rooms = self.vue.room_structure.rooms;
+            // console.log(rooms);
+            for(var i = 1; i < rooms.length; i++){
+                // console.log("icon_path: " + rooms[i].icon_path);
+                // console.log("room: " + rooms[i].room)
+                self.vue.modal_chosen_icon_path = img_path + rooms[i].icon_path;
+                self.vue.modal_room_name = rooms[i].room;
+                self.add_room();
+                self.modal_reinit();
+            }
+            console.log('Room Inited');
+            enumerate(self.vue.rooms);
+            self.modal_reinit();
+            self.manage_btn_toggle(0);
+            self.vue.isInitialized = true;
+        };
+        self.get_room(callback);
         // self.reload_house();
     }
 
+    var date_picker = function () {
+        $(function() {
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+
+            function cb(start, end) {
+                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                self.vue.start_date = start.format('YYYY,M,D');
+                self.vue.end_date = end.format('YYYY,M,D');
+            }
+
+            $('#reportrange').daterangepicker({
+                startDate: start,
+                endDate: end,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                }
+            }, cb);
+
+            cb(start, end);
+
+        });
+    }
+
+    //---------------API calls-----------------
+    self.get_room = function (callback) {
+        $.getJSON(get_room_url + "?" + $.param({user_id: self.vue.user_id}),
+            function (info) {
+                console.log('get room success');
+                // console.log(info);
+                self.vue.room_structure = info;
+                // success: callback;
+                success: callback();
+            }
+        );
+    }
+
+    function get_data_url_param(room, device, start, end) {
+        var param = {
+            room: room,
+            device: device,
+            start: start,
+        };
+        if (end != null){
+            param.end = end;
+        }
+        return get_data_url + "?" + $.param(param);
+    }
+
+    self.get_data = function (room, device, start, end, room_i) {
+        $.getJSON(get_data_url_param(room, device, start, end),
+            function (info) {
+                console.log('get data success');
+                // console.log(info);
+                self.vue.rooms[room_i].data[0] = info;
+                tmp_data = info;
+                self.reload_mod(0,0);
+            }
+        );
+    };
+
     //--------------------------------------
 
-    self.test = function(i) {
-        self.reload_room(self.vue.action_room)
+
+    self.test = function(i){
+        // $.getJSON(test_url,
+        //     function (data) {
+        //         console.log('test success');
+        //         tmp_data = data.user;
+        //     }
+        // );
+        self.get_data("bedroom", "tv", self.vue.start_date, self.vue.end_date, 0);
+        // console.log(tmp);
+        // self.vue.rooms[0].data[0] = tmp_data;
+        // console.log(self.vue.rooms[0].data[0]);
+        // self.reload_house();
+        // self.reload_room(self.vue.action_room)
             // self.vue.rooms[i].data[0] = scatterdataset; //test
             // scatter(self.vue.rooms[i], 0, 0);
             // scatter(self.vue.rooms[i], 1, 0);
@@ -227,7 +255,6 @@ var app = function() {
     }
 
     self.add_room = function() {
-        // console.log('add_room');
         var name = (self.vue.modal_room_name ? self.vue.modal_room_name : default_room_name(self.vue.modal_chosen_icon_path));
         var id_name = name.replace(/ /g, "_") + "_"; // edit to id format
         var new_room = {
@@ -239,27 +266,47 @@ var app = function() {
             'isActive': false,
             'icon_path': self.vue.modal_chosen_icon_path,
         };
-        self.vue.rooms.push(new_room);
-        console.log('add ' + name);
-        self.vue.action_room = self.vue.rooms.length - 1;
-        self.add_module(1, 'Activity'); // number refers to module type
-        self.add_module(3, 'Devices');
-        self.add_module(2, 'Device Graph');
-        self.add_module(3, 'Consumption');
-        self.add_module(2, 'Notification');
-        if (self.vue.isInitialized) {
-            self.manage_btn_toggle(self.vue.rooms.length - 1); //set this to active (jump to this page)
+
+        var add_room_action = function () {
+            // console.log('add_room');
+            self.vue.rooms.push(new_room);
+            console.log('add ' + name);
+            self.vue.action_room = self.vue.rooms.length - 1;
+            self.add_module(1, 'activity'); // number refers to module type
+            self.add_module(3, 'devices');
+            self.add_module(2, 'graph');
+            self.add_module(3, 'consumption');
+            self.add_module(2, 'notification');
+            if (self.vue.isInitialized) {
+                self.manage_btn_toggle(self.vue.rooms.length - 1); //set this to active (jump to this page)
+            }
+            //!!!***dummy data
+            // self.vue.rooms[new_room._idx].data[0] = scatterdataset; //test
+            // self.vue.rooms[new_room._idx].data[1] = asline_data1;
+            // self.vue.rooms[new_room._idx].data[2] = asline_data2;
+            self.vue.rooms[new_room._idx].data[3] = [40, 50, 80];
+            enumerate(self.vue.rooms);
         }
-        //!!!***dummy data
-        self.vue.rooms[new_room._idx].data[0] = scatterdataset; //test
-        self.vue.rooms[new_room._idx].data[1] = asline_data1;
-        self.vue.rooms[new_room._idx].data[2] = asline_data2;
-        self.vue.rooms[new_room._idx].data[3] = [40, 50, 80];
 
         if (self.vue.isInitialized) {
-            setTimeout(function() {
-                self.reload_room(_idx);
-            }, 2);
+            // Add to server if is init
+            $.post(add_room_url,
+            {
+                'rooms': self.vue.room_structure.rooms.push(name),
+            },  function (data) {
+                    console.log('add room success');
+                    add_room_action();
+                    setTimeout(function() {
+                        self.reload_room(new_room._idx);
+                    }, 2);
+                }
+            ).fail(
+                function(response) {
+                    alert('Error: ' + response.responseText);
+                }
+            );
+        } else {
+            add_room_action();
         }
 
         enumerate(self.vue.rooms); //just for check
@@ -269,7 +316,9 @@ var app = function() {
     };
 
     self.reload_house = function() {
-        for (i = 0; i < self.vue.rooms.length; i++) {
+        console.log(self.vue.rooms.length)
+        for (var i = 0; i < self.vue.rooms.length; i++) {
+            console.log('here');
             self.reload_room(i);
         }
     }
@@ -277,7 +326,7 @@ var app = function() {
     self.reload_room = function(room_i) {
         var room = self.vue.rooms[room_i];
         console.log('Reload Room ' + room.name);
-        for (i = 0; i < room.modules.length; i++) {
+        for (var i = 0; i < room.modules.length; i++) {
             self.reload_mod(room_i, i);
         }
     }
@@ -285,9 +334,10 @@ var app = function() {
     self.reload_mod = function(room_i, mod_i) {
         var mod = self.vue.rooms[room_i].modules[mod_i];
         console.log('Reloading Mod ' + mod.header);
-        console.log('Destroy graph ');
         if (mod.chart != "") {
             mod.chart.destroy();
+        } else if (mod.header == "devices") {
+            $('#' + mod.el_id).empty();
         }
         self.create_chart(room_i, mod_i);
         console.log('----DONE');
@@ -296,34 +346,70 @@ var app = function() {
     self.create_chart = function(room_i, mod_i) {
         var mod = self.vue.rooms[room_i].modules[mod_i];
         if (room_i == 0) { //Home condition
-            if (mod.header == "Activity") {
+            if (mod.header == "activity") {
                 areaspline(self.vue.rooms, room_i, mod_i);
-            } else if (mod.header == "Devices") {
-                gauge(self.vue.rooms[room_i], mod_i, 3);
-            } else if (mod.header == "Device Graph") {
+            } else if (mod.header == "devices") {
+                htmltag = gen_dev_list(room_i);
+                tmp = self.vue.rooms[room_i].modules[mod_i];
+                $('#'+tmp.el_id).append("\
+                    <div class=\"device-list\">\
+                    <div class=\"list-group\">"
+                    + htmltag +
+                    "</div>\
+                    </div>\
+                ");
+                // gauge(self.vue.rooms[room_i], mod_i, 3);
+            } else if (mod.header == "graph") {
                 bar(self.vue.rooms[room_i], mod_i, 3);
-            } else if (mod.header == "Consumption") {
+            } else if (mod.header == "consumption") {
                 gauge(self.vue.rooms[room_i], mod_i, 3);
-            } else if (mod.header == "Notification") {
+            } else if (mod.header == "notification") {
                 gauge(self.vue.rooms[room_i], mod_i, 3);
             } else {
                 console.log("create_chart() error: " + mod.header);
             }
         } else { // Normal room   ** Not done yet
-            if (mod.header == "Activity") {
+            if (mod.header == "activity") {
                 areaspline(self.vue.rooms, room_i, mod_i);
-            } else if (mod.header == "Devices") {
-                areaspline(self.vue.rooms, room_i, mod_i);
-            } else if (mod.header == "Device Graph") {
+            } else if (mod.header == "devices") {
+                htmltag = gen_dev_list(room_i);
+                tmp = self.vue.rooms[room_i].modules[mod_i];
+                $('#'+tmp.el_id).append("\
+                    <div class=\"device-list\">\
+                    <div class=\"list-group\">"
+                    + htmltag +
+                    "</div>\
+                    </div>\
+                ");
+            } else if (mod.header == "graph") {
                 bar(self.vue.rooms[room_i], mod_i, 3);
-            } else if (mod.header == "Consumption") {
+            } else if (mod.header == "consumption") {
                 gauge(self.vue.rooms[room_i], mod_i, 3); // 3 to be changes
-            } else if (mod.header == "Notification") {
+            } else if (mod.header == "notification") {
                 areaspline(self.vue.rooms, room_i, mod_i);
             } else {
                 console.log("create_chart() error: " + mod.header);
             }
         }
+    }
+
+
+    var gen_dev_list = function (room_i) {
+        // room = self.vue.rooms[room_i];
+        room_data = ['ipad', 'tv', 'light', 'ac'];   //new, change in future
+        htmltag = '';
+        // for(i=0; i < room_data.length; i++){
+        var i = 0;
+        while (i < room_data.length){
+            htmltag += '<li class="list-group-item">';
+            htmltag += '<span class="item-name">' + room_data[i] + '</span>';
+            htmltag += '<label class="switch">';
+            htmltag += '<input type="checkbox" checked>';
+            htmltag += '<div class="slider round"></div></label></li>';
+            i+=1;
+        }
+        htmltag += '<div class="btn-wrap"><button class="btn btn-warning addbtn">add device</button></div>';
+        return htmltag;
     }
 
     self.add_module = function(type, header) {
@@ -396,7 +482,7 @@ var app = function() {
         console.log('del_module : ' + self.vue.rooms[r_idx].name + "-" + mod.header);
         var wrap = $("#" + mod.id);
         var mod_element = $("#" + mod.el_id);
-        $.when(wrap.fadeOut(300)).done(function() {
+        $.when(wrap.fadeOut(200)).done(function() {
             $.when(wrap.css('display', '')).done(
                 function() {
                     // console.log('here');
@@ -486,6 +572,19 @@ var app = function() {
     //                 </a>'
     // }); // ***the delimiter in template does not change
 
+    // device-list
+    Vue.component('device-list', {
+        props: ['room'],
+        template: ' <li class="list-group-item">\
+                    <span class="item-name">Device-1</span>\
+                    <!-- Rounded switch -->\
+                    <label class="switch">\
+                        <input type="checkbox" checked>\
+                        <div class="slider round"></div>\
+                    </label>\
+                    </li>'
+    }); // ***the delimiter in template does not change
+
     // manage-bar => manage-list
     Vue.component('manage-item', {
         props: ['room', 'manage_btn_toggle'],
@@ -507,6 +606,7 @@ var app = function() {
                     {{room.name}}\
                     </a>'
     }); // ***the delimiter in template does not change
+
 
     // page-wrap => module-wrap
     Vue.component('module', {
@@ -537,7 +637,10 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             house_id: 99, // Not sure, from query file
-            user_id: 123, // from query file
+            user_id: 0, // from query file
+            name: 'Ewing',
+            email: 'ylin62@ucsc.edu',
+            room_structure: [],
             rooms: [{
                 'name': 'Home', // or possibly separated from room
                 '_idx': 0, // index of local manage-list
@@ -546,35 +649,35 @@ var app = function() {
                 'icon_path': img_path + "/home.png",
                 'isActive': true,
                 'modules': [{
-                    'header': 'Activity',
+                    'header': 'activity',
                     '_idx': 0,
                     'modType': 'module1', // type of module (1-3, css differ)
                     'el_id': 'Home_el_0', //for plot use( the inner el box )
                     'id': 'Home_0', // this should be computed and assigned at the insertion
                     'chart': '',
                 }, {
-                    'header': 'Devices',
+                    'header': 'devices',
                     '_idx': 1,
                     'modType': 'module3',
                     'el_id': 'Home_el_1',
                     'id': 'Home_1',
                     'chart': '',
                 }, {
-                    'header': 'Device Graph',
+                    'header': 'graph',
                     '_idx': 2,
                     'modType': 'module2',
                     'el_id': 'Home_el_2',
                     'id': 'Home_2',
                     'chart': '',
                 }, {
-                    'header': 'Consumption',
+                    'header': 'consumption',
                     '_idx': 3,
                     'modType': 'module3',
                     'el_id': 'Home_el_3',
                     'id': 'Home_3',
                     'chart': '',
                 }, {
-                    'header': 'Notification',
+                    'header': 'notification',
                     '_idx': 4,
                     'modType': 'module2',
                     'el_id': 'Home_el_4',
@@ -599,6 +702,8 @@ var app = function() {
             action_room: 0, //_idx of room, 0 refers to Home
             adding_room: true, // modal is for editng or adding
             isInitialized: false,
+            start_date: moment().subtract(7, 'days').format('YYYY,M,D'),
+            end_date: moment().format('YYYY,M,D'),
         },
         methods: {
             manage_btn_toggle: self.manage_btn_toggle,
@@ -618,8 +723,8 @@ var app = function() {
 
     modal_event_init();
 
-    d3.select(window).on('resize', rendering);
-    console.log('d3 resize event added');
+    // d3.select(window).on('resize', rendering);
+    // console.log('d3 resize event added');
 
     // rendering();
     // console.log('d3 first rendering');
@@ -637,9 +742,11 @@ var app = function() {
     // self.vue.modal_chosen_icon_path = img_path + "/livingroom.png";
     // self.add_room();
 
-    self.vue.rooms[0].data[0] = scatterdataset; //test
-    self.vue.rooms[0].data[1] = asline_data1;
-    self.vue.rooms[0].data[2] = asline_data2;
+
+
+    // self.vue.rooms[0].data[0] = scatterdataset; //test
+    // self.vue.rooms[0].data[1] = asline_data1;
+    // self.vue.rooms[0].data[2] = asline_data2;
     self.vue.rooms[0].data[3] = [40, 50, 80];
 
     // areaspline(self.vue.rooms, 0, 0);
@@ -654,12 +761,16 @@ var app = function() {
     // scatter(self.vue.rooms[2], 0, 0);
     // d3tree(self.vue.rooms[0].modules[0].el_id);
 
+    date_picker();
     initHome();
     initRooms();
 
     //when not isInitialized, don't add graph when add default room above,
     // (manage_btn_toggle will trigger add graph event).
-    self.vue.isInitialized = true;
+    // self.vue.isInitialized = true;    //now in initRooms
+    console.log('Create Date Range Picker');
+
+
     $("#vue-div").show();
     console.log('Vue initialized');
     return self;
@@ -673,6 +784,13 @@ jQuery(function() {
     APP = app();
     console.log('APP returned');
 });
+
+
+
+
+
+
+
 
 
 //draggable Example   module component draggable class

@@ -1,0 +1,108 @@
+/* The switch - the box around the slider */
+/* line 11, ../sass/list-group.scss */
+.switch {
+  position: relative;
+  left: 100px;
+  display: inline-block;
+  width: 70px;
+  height: 30px;
+}
+
+/* Hide default HTML checkbox */
+/* line 22, ../sass/list-group.scss */
+.switch input {
+  display: none;
+}
+
+/* The slider */
+/* line 29, ../sass/list-group.scss */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+/* line 41, ../sass/list-group.scss */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 6px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+/* line 53, ../sass/list-group.scss */
+input:checked + .slider {
+  background-color: #FF472E;
+}
+
+/* line 57, ../sass/list-group.scss */
+input:focus + .slider {
+  box-shadow: 0 0 1px #EA5019;
+}
+
+/* line 61, ../sass/list-group.scss */
+input:checked + .slider:before {
+  -webkit-transform: translateX(36px);
+  -ms-transform: translateX(36px);
+  transform: translateX(36px);
+}
+
+/* Rounded sliders */
+/* line 70, ../sass/list-group.scss */
+.slider.round {
+  border-radius: 30px;
+}
+
+/* line 74, ../sass/list-group.scss */
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* line 78, ../sass/list-group.scss */
+.device-list {
+  border: none;
+  height: 400px;
+  overflow-y: scroll;
+  width: 90%;
+  margin: auto;
+}
+/* line 84, ../sass/list-group.scss */
+.device-list .btn-wrap {
+  padding: 10px;
+  text-align: center;
+}
+/* line 87, ../sass/list-group.scss */
+.device-list .btn-wrap .addbtn {
+  border-radius: 10px;
+}
+/* line 91, ../sass/list-group.scss */
+.device-list .list-group-item {
+  height: 46px;
+  padding: 5px;
+  font-size: 18px;
+  background-color: #F2F6FC;
+  /*line-height: 10px;*/
+}
+/* line 99, ../sass/list-group.scss */
+.device-list .active {
+  color: #EA5019;
+  background-color: #FF472E;
+}
+/* line 103, ../sass/list-group.scss */
+.device-list .item-name {
+  position: relative;
+  top: -8px;
+  width: 40%;
+  display: inline-block;
+}
