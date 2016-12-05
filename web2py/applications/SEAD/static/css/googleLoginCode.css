@@ -1,0 +1,33 @@
+
+.google-body {
+    background-image: url("../images/ecobackground.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+}
+
+#container {
+    width: 200px;
+    height: 200px;
+    margin-left:40.8%;
+    margin-top:6.5%;
+    background-color: transparent;
+
+
+}
+
+
+
+.g-sign-in {
+    padding: 35% 10% 10% 20%;
+    z-index: 10;
+}
+
+.sign-out-btn {
+    padding-left:55px;
+    margin-left:20% ;
+    text-align: center;
+}
+.auth-sign-in {
+    z-index: 10
+}

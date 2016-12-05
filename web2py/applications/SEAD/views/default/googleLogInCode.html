@@ -1,8 +1,29 @@
+{{block head}}
+
+<link rel="stylesheet" type="text/css" href="{{=URL('static','css/googleLoginCode.css')}}">
+
+{{end}}
+
+{{extend 'layout.html'}}
+
+<script>
+    $(document).ready(function() {
+        $('#authenticate-google-bar').hide();
+
+
+    });
+
+    function show_auth() {
+        $('#authenticate-google-bar').show();
+    }
+</script>
+
+
 <html>
 	<head>
 		<meta name="google-signin-client_id" content="1078328176295-alcbrr54jhi6djku91thnqlj6rmps933.apps.googleusercontent.com">
 	</head>
-    <body>
+    <body class="google-body">
         
         <!--
          This is the App ID & Secret code provided by Google for our hosted application throught their 
@@ -21,8 +42,12 @@
         <!--
         Add Google SignIn Button for Google 
         -->
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
-        
+        <div id="container">
+            <div class="g-signin2 g-sign-in" onClick="show_auth()" data-onsuccess="onSignIn"></div>
+            <input id="authenticate-google-bar" class="auth-sign-in" type=button onClick="location.href='index.html'" value='Authentication Successful, Proceed.'>
+            <button class="btn btn-info btn-md sign-out-btn"><a href="#" style="color:black;" onclick="signOut();">Sign out</a></button>
+
+        </div>
         
         <!-- 
         Retrieve Profile Information from the User
@@ -37,8 +62,8 @@
         
         
         // display button for user to click to continue to the splash page
-        <input type=button onClick="location.href='index.html'" value='Authentication Successful, Proceed.'>
-        
+        <input style="margin 50%" type=button onClick="location.href='index.html'" value='Authentication Successful, Proceed.'>
+
 		}
         </script>
         
@@ -47,7 +72,6 @@
         Attach a function that calls the GoogleAuth.signOut() method to the link's onclick
         event
         -->
-        <a href="#" onclick="signOut();">Sign out</a>
 		<script>
   		function signOut() {
     	var auth2 = gapi.auth2.getAuthInstance();
