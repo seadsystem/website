@@ -37,7 +37,6 @@
                                            }
                                            });
             };
-        
         // process the response form the login SDK, pull back data from the API and update the contents
         // of the <div> to display a welcome message
         
@@ -53,6 +52,9 @@
                     document.getElementById (‘welcome’).innerHTML=’Good to see you,
                     ‘ + response.name + ‘.’;
                     });
+                    
+               // display button for user to click to continue to the splash page
+              <input type=button onClick="location.href='index.html'" value='Authentication Successful, Proceed.'>
          }
         </script>
         
