@@ -4,8 +4,28 @@ var areaspline = function(rooms, room_i, mod_i) {
     // 3. module to add graph (0 in Home)
     //needs to be change here
     var room = rooms[room_i];
-    var data1 = room.data[1];
-    var data2 = room.data[2];
+    var data1 = {
+        name: 'Bedroom',
+        data: room.data[1],
+    }
+    var data2 = {
+        name: 'Living',
+        data: room.data[2],
+    }
+    var tmp = [data1, data2];
+    if (room.data[0]) {
+        var data = room.data[0];
+        console.log('here');
+        console.log(data.device);
+        console.log(data.data);
+        var data3 = {
+            name: data.device,
+            data: data.data,
+        };
+        tmp.push(data3);
+        console.log(tmp);
+    }
+    // var cat = data.time;
 
 
     // $("#" + room.modules[mod_i].el_id).highcharts({
@@ -59,12 +79,6 @@ var areaspline = function(rooms, room_i, mod_i) {
                 fillOpacity: 0.8
             }
         },
-        series: [{
-            name: 'Bedroom',
-            data: data1
-        }, {
-            name: 'Living room',
-            data: data2
-        }]
+        series: tmp,
     });
 }

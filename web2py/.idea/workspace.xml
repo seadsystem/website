@@ -27,31 +27,157 @@
       <file leaf-file-name="default.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/applications/SEAD/controllers/default.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="4" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="4" />
+<<<<<<< Updated upstream
+            <state relative-caret-position="930">
+              <caret line="62" column="0" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
+=======
+            <state relative-caret-position="323">
+              <caret line="19" column="4" lean-forward="false" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="4" />
+>>>>>>> Stashed changes
               <folding />
             </state>
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="api.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/applications/SEAD/controllers/api.py">
+          <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
+            <state relative-caret-position="-330">
+              <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
+              <folding>
+                <element signature="e#0#40#0" expanded="true" />
+              </folding>
+=======
+            <state relative-caret-position="2533">
+              <caret line="149" column="26" lean-forward="false" selection-start-line="149" selection-start-column="26" selection-end-line="149" selection-end-column="26" />
+              <folding />
+>>>>>>> Stashed changes
+            </state>
+          </provider>
+        </entry>
+      </file>
+<<<<<<< Updated upstream
+      <file leaf-file-name="tables.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/applications/SEAD/models/tables.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="55" column="15" selection-start-line="55" selection-start-column="12" selection-end-line="55" selection-end-column="15" />
+              <folding>
+                <element signature="e#391#406#0" expanded="true" />
+=======
+      <file leaf-file-name="landing_page.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/applications/SEAD/static/css/landing_page.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1360">
+              <caret line="15" column="20" lean-forward="false" selection-start-line="15" selection-start-column="20" selection-end-line="15" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="web2py.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web2py.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#47#56#0" expanded="true" />
+>>>>>>> Stashed changes
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+<<<<<<< Updated upstream
       <file leaf-file-name="dashboard.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/dashboard.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2235">
-              <caret line="149" column="26" selection-start-line="149" selection-start-column="26" selection-end-line="149" selection-end-column="26" />
+            <state relative-caret-position="382">
+              <caret line="80" column="50" selection-start-line="80" selection-start-column="50" selection-end-line="80" selection-end-column="50" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="true" />
+                <element signature="e#5248#5254#0#HTML" expanded="true" />
+              </folding>
+=======
+      <file leaf-file-name="layout.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/applications/SEAD/views/layout.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="935">
+              <caret line="55" column="52" lean-forward="false" selection-start-line="55" selection-start-column="52" selection-end-line="55" selection-end-column="52" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dashboard.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="landing_page.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/landing_page.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="374">
+              <caret line="22" column="25" lean-forward="true" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
+              <folding />
+>>>>>>> Stashed changes
+            </state>
+          </provider>
+        </entry>
+      </file>
+<<<<<<< Updated upstream
+      <file leaf-file-name="dashboard.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/applications/SEAD/static/js/dashboard.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9990">
-              <caret line="666" column="0" selection-start-line="666" selection-start-column="0" selection-end-line="666" selection-end-column="0" />
+            <state relative-caret-position="240">
+              <caret line="258" column="65" selection-start-line="258" selection-start-column="65" selection-end-line="258" selection-end-column="65" />
               <folding>
-                <marker date="1479891995000" expanded="true" signature="22723:22805" ph="{...}" />
+                <marker date="1480843314000" expanded="true" signature="11453:11811" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="11626:11791" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="11652:11700" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="11652:11789" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="11700:11716" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="11700:11717" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="11700:11718" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="11700:11761" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="12702:12839" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="13671:13927" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="13797:13920" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="20324:20646" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="20474:20619" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="20850:21093" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="21326:21594" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="21832:22670" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="21877:22642" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="21940:22610" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="22011:22350" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="22180:22310" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="22424:22574" ph="..." />
+                <marker date="1480843314000" expanded="true" signature="22490:22534" ph="..." />
+=======
+      <file leaf-file-name="user.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/user.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="34">
+              <caret line="2" column="38" lean-forward="false" selection-start-line="2" selection-start-column="38" selection-end-line="2" selection-end-column="38" />
+              <folding>
+                <element signature="n#style#0;n#body#0;n#!!top" expanded="true" />
+>>>>>>> Stashed changes
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+<<<<<<< Updated upstream
+      <file leaf-file-name="areaspline.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/applications/SEAD/static/js/areaspline.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-438">
+              <caret line="23" column="10" selection-start-line="23" selection-start-column="10" selection-end-line="23" selection-end-column="10" />
+=======
+      <file leaf-file-name="layout2.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/applications/SEAD/views/layout2.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="816">
+              <caret line="48" column="6" lean-forward="false" selection-start-line="48" selection-start-column="5" selection-end-line="48" selection-end-column="6" />
+>>>>>>> Stashed changes
+              <folding />
             </state>
           </provider>
         </entry>
@@ -59,46 +185,33 @@
       <file leaf-file-name="dashboard.scss" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/applications/SEAD/static/sass/dashboard.scss">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3555">
-              <caret line="237" column="38" selection-start-line="237" selection-start-column="38" selection-end-line="237" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tables.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/applications/SEAD/models/tables.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1515">
-              <caret line="101" column="44" selection-start-line="101" selection-start-column="39" selection-end-line="101" selection-end-column="44" />
-              <folding>
-                <element signature="e#391#406#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="layout.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/applications/SEAD/views/layout.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" column="65" selection-start-line="27" selection-start-column="65" selection-end-line="27" selection-end-column="65" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/index.html">
-          <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
+            <state relative-caret-position="255">
+              <caret line="23" column="18" selection-start-line="23" selection-start-column="18" selection-end-line="23" selection-end-column="18" />
+=======
             <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+>>>>>>> Stashed changes
               <folding />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+<<<<<<< Updated upstream
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+=======
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>footer</find>
+    </findStrings>
+>>>>>>> Stashed changes
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -125,7 +238,22 @@
         <option value="$PROJECT_DIR$/applications/web2py_start_2016/views/default/dashboard.html" />
         <option value="$PROJECT_DIR$/applications/web2py_start_2016/static/sass/dashboard.scss" />
         <option value="$PROJECT_DIR$/routes.py" />
+        <option value="$PROJECT_DIR$/app.yaml" />
+        <option value="$PROJECT_DIR$/applications/SEAD/static/sass/list-group.scss" />
         <option value="$PROJECT_DIR$/applications/SEAD/models/tables.py" />
+<<<<<<< Updated upstream
+        <option value="$PROJECT_DIR$/applications/SEAD/controllers/api.py" />
+        <option value="$PROJECT_DIR$/applications/SEAD/static/js/areaspline.js" />
+        <option value="$PROJECT_DIR$/applications/SEAD/static/sass/dashboard.scss" />
+        <option value="$PROJECT_DIR$/applications/SEAD/views/default/dashboard.html" />
+        <option value="$PROJECT_DIR$/applications/SEAD/static/js/dashboard.js" />
+=======
+        <option value="$PROJECT_DIR$/applications/SEAD/views/layout.html" />
+        <option value="$PROJECT_DIR$/applications/SEAD/views/layout2.html" />
+        <option value="$PROJECT_DIR$/applications/SEAD/views/default/landing_page.html" />
+        <option value="$PROJECT_DIR$/applications/SEAD/static/css/landing_page.css" />
+        <option value="$PROJECT_DIR$/applications/SEAD/views/default/user.html" />
+>>>>>>> Stashed changes
       </list>
     </option>
   </component>
@@ -136,19 +264,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="23" />
-    <option name="width" value="1438" />
-    <option name="height" value="873" />
-  </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
-    <OptionsSetting value="true" id="Add" />
-    <OptionsSetting value="true" id="Remove" />
-    <OptionsSetting value="true" id="Checkout" />
-    <OptionsSetting value="true" id="Update" />
-    <OptionsSetting value="true" id="Status" />
-    <OptionsSetting value="true" id="Edit" />
-    <ConfirmationsSetting value="0" id="Add" />
-    <ConfirmationsSetting value="0" id="Remove" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1382" />
+    <option name="height" value="744" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -165,15 +284,13 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+<<<<<<< Updated upstream
+      <pane id="Scratches" />
       <pane id="Scope" />
+=======
+>>>>>>> Stashed changes
       <pane id="ProjectPane">
         <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SEAD" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="SEAD" />
@@ -182,10 +299,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="web2py" />
               <option name="myItemType" value="com.jetbrains.web2py.projectView.Web2PyBaseDirNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="web2py" />
-              <option name="myItemType" value="com.jetbrains.web2py.projectView.Web2PyLibDirNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -286,6 +399,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+<<<<<<< Updated upstream
               <option name="myItemId" value="static" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -360,32 +474,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="static" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SEAD" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="web2py" />
-              <option name="myItemType" value="com.jetbrains.web2py.projectView.Web2PyBaseDirNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="applications" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SEAD" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="models" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -408,46 +496,40 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="databases" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SEAD" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="web2py" />
-              <option name="myItemType" value="com.jetbrains.web2py.projectView.Web2PyBaseDirNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="applications" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SEAD" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
+=======
+>>>>>>> Stashed changes
               <option name="myItemId" value="controllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+<<<<<<< Updated upstream
+=======
+      <pane id="Scope" />
       <pane id="Scratches" />
+>>>>>>> Stashed changes
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="nodejs_interpreter_path" value="/usr/local/bin/node" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../web2py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
+    <property name="js.eslint.eslintPackage" value="" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+<<<<<<< Updated upstream
+      <recent name="$PROJECT_DIR$/applications/SEAD/models" />
+      <recent name="$PROJECT_DIR$" />
+=======
+      <recent name="C:\Users\aland\Desktop\SEADS\website\web2py\applications\SEAD\views" />
+      <recent name="C:\Users\aland\Desktop\SEADS\website\web2py\applications\SEAD\static\js" />
+>>>>>>> Stashed changes
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
@@ -471,6 +553,12 @@
       <option name="CUSTOM_SETTINGS" value="false" />
       <option name="USE_OPTIONS" value="false" />
       <option name="OPTIONS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
@@ -545,7 +633,7 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
-      <command value="run-script" />
+      <command value="run" />
       <scripts />
       <node-interpreter value="project" />
       <envs />
@@ -697,17 +785,24 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1438" height="873" extended-state="6" />
-    <editor active="false" />
+<<<<<<< Updated upstream
+    <frame x="0" y="23" width="1438" height="873" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21418338" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19770774" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+=======
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22012103" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+>>>>>>> Stashed changes
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23815621" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3289689" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -719,6 +814,9 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -733,23 +831,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="7" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/views/default/edit.html" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/static/sass/_main.scss" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/views/default/index.html" />
-    <entry file="file://$PROJECT_DIR$/applications/examples/models/menu.py" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/controllers/default.py" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/views/default/edit.html" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/static/sass/_main.scss" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/views/default/index.html" />
-    <entry file="file://$PROJECT_DIR$/applications/examples/models/menu.py" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/controllers/default.py" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/views/default/edit.html" />
-    <entry file="file://$PROJECT_DIR$/applications/posting_site/static/sass/_main.scss" />
     <entry file="file://$PROJECT_DIR$/applications/posting_site/views/default/index.html" />
     <entry file="file://$PROJECT_DIR$/applications/posting_site/controllers/default.py" />
     <entry file="file://$PROJECT_DIR$/applications/posting_site/views/default/edit.html" />
@@ -779,73 +865,59 @@
     <entry file="file://$PROJECT_DIR$/applications/SEAD/controllers/appadmin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/js/dashboard.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9990">
-          <caret line="666" column="0" selection-start-line="666" selection-start-column="0" selection-end-line="666" selection-end-column="0" />
-          <folding>
-            <marker date="1479891995000" expanded="true" signature="22723:22805" ph="{...}" />
-          </folding>
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/routes.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1740">
-          <caret line="116" column="0" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
+          <caret line="116" column="0" lean-forward="false" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
         </state>
       </provider>
     </entry>
+<<<<<<< Updated upstream
+    <entry file="file://$PROJECT_DIR$/routes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1740">
+          <caret line="116" column="0" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
+          <folding>
+            <marker date="1479896796000" expanded="true" signature="7865:7985" ph="import ..." />
+=======
     <entry file="file://$PROJECT_DIR$/applications/SEAD/models/menu.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1500">
-          <caret line="100" column="19" selection-start-line="100" selection-start-column="19" selection-end-line="100" selection-end-column="19" />
+          <caret line="100" column="19" lean-forward="false" selection-start-line="100" selection-start-column="19" selection-end-line="100" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/applications/SEAD/models/db.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
-          <caret line="19" column="49" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="49" />
+          <caret line="19" column="49" lean-forward="false" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="49" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/dashboard.html">
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/databases/storage.db-journal" />
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/databases/sql.log">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2235">
-          <caret line="149" column="26" selection-start-line="149" selection-start-column="26" selection-end-line="149" selection-end-column="26" />
-          <folding />
+        <state relative-caret-position="495">
+          <caret line="49" column="25" lean-forward="false" selection-start-line="49" selection-start-column="25" selection-end-line="49" selection-end-column="25" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/applications/SEAD/controllers/default.py">
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/models/tables.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="4" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="4" />
-          <folding />
+        <state relative-caret-position="404">
+          <caret line="101" column="44" lean-forward="false" selection-start-line="101" selection-start-column="39" selection-end-line="101" selection-end-column="44" />
+          <folding>
+            <element signature="e#391#406#0" expanded="false" />
+>>>>>>> Stashed changes
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/sass/dashboard.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3555">
-          <caret line="237" column="38" selection-start-line="237" selection-start-column="38" selection-end-line="237" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+<<<<<<< Updated upstream
     <entry file="file://$PROJECT_DIR$/applications/SEAD/databases/storage.db-journal" />
     <entry file="file://$PROJECT_DIR$/applications/SEAD/databases/sql.log">
       <provider selected="true" editor-type-id="text-editor">
@@ -862,12 +934,222 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/gaehandler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+=======
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/sass/dashboard.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="237" column="38" lean-forward="false" selection-start-line="237" selection-start-column="38" selection-end-line="237" selection-end-column="38" />
+>>>>>>> Stashed changes
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
+        <state relative-caret-position="537">
+          <caret line="100" column="19" selection-start-line="100" selection-start-column="19" selection-end-line="100" selection-end-column="19" />
+=======
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+>>>>>>> Stashed changes
+          <folding />
+        </state>
+      </provider>
+    </entry>
+<<<<<<< Updated upstream
+    <entry file="file://$PROJECT_DIR$/app.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="45" selection-start-line="15" selection-start-column="45" selection-end-line="15" selection-end-column="45" />
+=======
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/js/dashboard.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7450">
+          <caret line="666" column="0" lean-forward="false" selection-start-line="666" selection-start-column="0" selection-end-line="666" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web2py.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#47#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/views/layout2.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="816">
+          <caret line="48" column="6" lean-forward="false" selection-start-line="48" selection-start-column="5" selection-end-line="48" selection-end-column="6" />
+>>>>>>> Stashed changes
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/js/bar.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="9" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="9" />
+          <folding>
+            <marker date="1479946062000" expanded="true" signature="883:897" ph="..." />
+            <marker date="1479946062000" expanded="true" signature="968:998" ph="..." />
+            <marker date="1479946062000" expanded="true" signature="1052:1061" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/sass/list-group.scss">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
+        <state relative-caret-position="1440">
+          <caret line="96" column="30" selection-start-line="96" selection-start-column="30" selection-end-line="96" selection-end-column="30" />
+=======
+        <state relative-caret-position="2533">
+          <caret line="149" column="26" lean-forward="false" selection-start-line="149" selection-start-column="26" selection-end-line="149" selection-end-column="26" />
+>>>>>>> Stashed changes
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/models/db.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-708">
+          <caret line="20" column="34" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/js/calendar.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="61" selection-start-line="1" selection-start-column="41" selection-end-line="1" selection-end-column="61" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/js/areaspline.js">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
+        <state relative-caret-position="-438">
+          <caret line="23" column="10" selection-start-line="23" selection-start-column="10" selection-end-line="23" selection-end-column="10" />
+=======
+        <state relative-caret-position="323">
+          <caret line="19" column="4" lean-forward="false" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="4" />
+>>>>>>> Stashed changes
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/views/layout.html">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< Updated upstream
+        <state relative-caret-position="255">
+          <caret line="23" column="18" selection-start-line="23" selection-start-column="18" selection-end-line="23" selection-end-column="18" />
+=======
+        <state relative-caret-position="935">
+          <caret line="55" column="52" lean-forward="false" selection-start-line="55" selection-start-column="52" selection-end-line="55" selection-end-column="52" />
+>>>>>>> Stashed changes
+          <folding />
+        </state>
+      </provider>
+    </entry>
+<<<<<<< Updated upstream
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/dashboard.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="382">
+          <caret line="80" column="50" selection-start-line="80" selection-start-column="50" selection-end-line="80" selection-end-column="50" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="e#5248#5254#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/controllers/default.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="930">
+          <caret line="62" column="0" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
+=======
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/css/landing_page.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1360">
+          <caret line="15" column="20" lean-forward="false" selection-start-line="15" selection-start-column="20" selection-end-line="15" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/landing_page.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="22" column="25" lean-forward="true" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
+>>>>>>> Stashed changes
+          <folding />
+        </state>
+      </provider>
+    </entry>
+<<<<<<< Updated upstream
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/controllers/api.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-330">
+          <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/applications/SEAD/models/tables.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1515">
-          <caret line="101" column="44" selection-start-line="101" selection-start-column="39" selection-end-line="101" selection-end-column="44" />
+        <state relative-caret-position="180">
+          <caret line="55" column="15" selection-start-line="55" selection-start-column="12" selection-end-line="55" selection-end-column="15" />
+=======
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/views/default/user.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="38" lean-forward="false" selection-start-line="2" selection-start-column="38" selection-end-line="2" selection-end-column="38" />
+>>>>>>> Stashed changes
           <folding>
-            <element signature="e#391#406#0" expanded="true" />
+            <element signature="n#style#0;n#body#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/applications/SEAD/static/js/dashboard.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="258" column="65" selection-start-line="258" selection-start-column="65" selection-end-line="258" selection-end-column="65" />
+          <folding>
+            <marker date="1480843314000" expanded="true" signature="11453:11811" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="11626:11791" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="11652:11700" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="11652:11789" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="11700:11716" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="11700:11717" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="11700:11718" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="11700:11761" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="12702:12839" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="13671:13927" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="13797:13920" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="20324:20646" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="20474:20619" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="20850:21093" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="21326:21594" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="21832:22670" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="21877:22642" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="21940:22610" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="22011:22350" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="22180:22310" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="22424:22574" ph="..." />
+            <marker date="1480843314000" expanded="true" signature="22490:22534" ph="..." />
           </folding>
         </state>
       </provider>

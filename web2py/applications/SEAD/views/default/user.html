@@ -1,23 +1,35 @@
+{{block head}}
+
+<link rel="stylesheet" type="text/css" href="{{=URL('static','css/login_page.css')}}">
+
+{{end}}
+
 {{extend 'layout.html'}}
 
-<h2>
+<body class="loginbody">
+<h2 style="margin-left: 10%">
 {{=T('Sign Up') if request.args(0) == 'register' else T('Log In') if request.args(0) == 'login' else T(request.args(0).replace('_',' ').title())}}
 </h2>
 
 <div class="container">
     <div class="row">
-        <div id="web2py_user_form" class="col-lg-6">
+        <div id="web2py_user_form" class="col-lg-6 loginbox">
         {{
         if request.args(0)=='login':
             if not 'register' in auth.settings.actions_disabled:
-                form.add_button(T('Sign Up'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn btn-default')
+                form.add_button(T('Sign Up'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn btn-primary')
             pass
             if not 'request_reset_password' in auth.settings.actions_disabled:
-                form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn btn-default')
+                form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn btn-danger')
             pass
         pass
         =form
         }}
+            <!--Google & Facebook login buttons-->
+            <div style="margin:0 0 3% 35%">
+            <a href="{{=URL('default', 'fbLogInCode')}}"><i class="fa fa-facebook-square fa-4x" aria-hidden="true"></i></a>
+            <a style="margin-left: 5%" href="{{=URL('default', 'googleLogInCode')}}"><i class="fa fa-google fa-4x" aria-hidden="true"></i></a>
+            </div>
         </div>
     </div>
 </div>
@@ -33,3 +45,6 @@
 {{pass}}
 </script>
 {{end page_js}}
+
+
+</body>

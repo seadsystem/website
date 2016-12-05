@@ -1,0 +1,151 @@
+
+.navbar {
+    position:fixed;
+}
+/*
+.jumbotron {
+    background: rgba(200, 54, 54, 0.5);
+}*/
+.cover {
+
+    background:rgba(0,0,0,0.6);
+    width:100%;
+
+}
+.register {
+    padding-right: 35px;
+}
+/*Home screen behind video player*/
+#home {
+    height:800px;
+    /*background-image: url("../images/pretty-house.jpg");*/
+    background-image: url("../images/PR-DEMO-TR.png");
+    left:0px;
+    right:0px;
+    top:155px;
+    /*background-size: 500px 500px;*/
+    background-position: center;
+    /*background-size: cover;*/
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    z-index: -1;
+}
+.login-header {
+    text-align: center;
+    padding-bottom: 10px;
+    font-size: 36px;
+}
+
+/*Class for adjusting positon of video player element*/
+.page_one {
+    padding-top:15px;
+    /*padding-left: 300px;
+    padding-right: 0px;*/
+}
+#page_two {
+    background-color: #48BD9C;
+    padding:0px 0px 0px 0px;
+
+}
+.container-fluid {
+    width:100%;
+    padding:0px;
+}
+.body {
+    margin:0px;
+}
+.container {
+    padding:0px;
+}
+#video-btn {
+    margin: 350px 33%;
+
+}
+
+#promo-video {
+    margin: 70px auto;
+    width: 720px;
+    /*position: absolute;
+    text-align: center;
+    top: 150px;
+    left:300px;
+    padding-top:150px;*/
+}
+
+
+.log-in-window {
+
+   /* position:absolute;*/
+
+    /*margin-top: 150px;
+    margin-left: 400px;*/
+}
+
+.text-row {
+   /* padding-top:60px;*/
+}
+
+.text-head {
+    font-size: 58px;
+}
+.product-description {
+    padding-top:30px;
+    padding-bottom: 40px;
+}
+.PD-header {
+    text-align:center;
+}
+#PF_row_one {
+    opacity:0;
+}
+
+#PF_row_two {
+    opacity:0;
+}
+
+#PF_row_three {
+    opacity:0;
+}
+
+.fade_in {
+    opacity:1;
+}
+
+.PF-two {
+    padding-top:50px;
+}
+
+.PF-three {
+    padding-top:50px;
+    padding-bottom: 20px;
+}
+
+.how-it-works {
+    padding-top:40px;
+    padding-bottom: 70px;
+    background-color: #E6EAEF;
+
+    /*text-align: center;
+    width: 350px;
+    padding-left: 200px;*/
+}
+
+.hide_element {
+    opacity:0;
+}
+
+.hideme {
+  -vendor-animation-duration: 30s;
+  -vendor-animation-delay: 0s;
+  -vendor-animation-iteration-count: 1;
+}
+
+/*
+#left-text-block {
+    opacity:0;
+}*/
+
+
+.PD-header-sub {
+    padding-bottom: 3%;
+}

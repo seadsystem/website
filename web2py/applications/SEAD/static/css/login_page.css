@@ -1,0 +1,14 @@
+.loginbody {
+    background-image: url("../images/ecobackground.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+
+}
+
+.loginbox {
+    background-color: #c1de98;
+    padding-top: 30px;
+    border-style:solid;
+    border-color: darkgreen;
+}
