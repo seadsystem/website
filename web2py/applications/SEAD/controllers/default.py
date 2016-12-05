@@ -20,11 +20,20 @@ def index():
     redirect(URL('default', 'dashboard'))
     return dict(message=T('Welcome to web2py!'))
 
+
 def dashboard():
     return dict()
 
 
 def landing_page():
+    return dict()
+
+
+def fbLogInCode():
+    return dict()
+
+
+def googleLogInCode():
     return dict()
 
 
