@@ -1,7 +1,15 @@
 
 .navbar {
     position:fixed;
+    background-color: #26A69A;
+
+
+
 }
+.navbar-left {
+    margin-left: 20px;
+}
+
 /*
 .jumbotron {
     background: rgba(200, 54, 54, 0.5);
@@ -29,6 +37,7 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     z-index: -1;
+
 }
 .login-header {
     text-align: center;
@@ -41,15 +50,27 @@
     padding-top:15px;
     /*padding-left: 300px;
     padding-right: 0px;*/
+
 }
 #page_two {
     background-color: #48BD9C;
     padding:0px 0px 0px 0px;
+    margin-top: -20px;
+
+}
+
+#page_four {
+    background-color: #6dffd8;
+    padding:0px 0px 0px 0px;
+    margin-bottom: 0px;
+    margin-right: -20px;
+    margin-left: -20px;
 
 }
 .container-fluid {
     width:100%;
     padding:0px;
+
 }
 .body {
     margin:0px;
@@ -87,6 +108,7 @@
 
 .text-head {
     font-size: 58px;
+    margin-right: 0px;
 }
 .product-description {
     padding-top:30px;
