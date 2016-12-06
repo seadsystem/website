@@ -11,14 +11,14 @@ $(document).ready(function() {
 
             //Scroll Position detection function
             var options = [
-                {selector: '#PF_row_one', offset: 400, callback: function() {
+                {selector: '#PF_row_one', offset: 1200, callback: function() {
                     $('#PF_row_one').addClass('animated fadeInUp');
                     //fade_first_div();
                 } },
-                {selector: '#PF_row_two', offset:300, callback: function(){
+                {selector: '#PF_row_two', offset:200, callback: function(){
                     $('#PF_row_two').addClass('animated fadeInUp');
                 }},
-                {selector: '#PF_row_three', offset:300, callback: function() {
+                {selector: '#PF_row_three', offset:200, callback: function() {
                     $('#PF_row_three').addClass('animated fadeInUp')
                 }}
                 ];

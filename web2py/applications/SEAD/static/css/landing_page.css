@@ -27,7 +27,7 @@
 #home {
     height:800px;
     /*background-image: url("../images/pretty-house.jpg");*/
-    background-image: url("../images/PR-DEMO-TR.png");
+    background-image:url("../images/PR-DEMO-TR2.png");
     left:0px;
     right:0px;
     top:155px;
@@ -37,7 +37,21 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     z-index: -1;
+}
 
+#second-bg {
+    /*image: url("../images/CES.png");*/
+    top:69.7%;
+    left:57.4%;
+    width: 70px;
+    height: 70px;
+    background: transparent;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+    /*background-size: 500px 500px;*/
+    position: fixed;
+    z-index: 999;
 }
 .login-header {
     text-align: center;
