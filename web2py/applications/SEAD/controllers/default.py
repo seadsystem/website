@@ -29,7 +29,7 @@ def landing_page():
     return dict()
 
 
-def fbLogInCode():
+def fbLogInAPI():
     return dict()
 
 
