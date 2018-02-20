@@ -57,34 +57,6 @@ function create_url(start, end, gran, panel) {
             + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
 
-
-var repeater = null;
-//repeat in ms
-function pick(func, repeat) {
-    if (repeater) {
-        clearInterval(repeater);
-        repeater = null;
-    }
-    if (repeat) {
-        repeater = setInterval(func, repeat);
-    }
-    var end = Math.floor(Date.now() / 1000);
-    var start = end - HOUR_SECONDS;
-    var panels = [];
-    var i = 0;
-    $('#panels .active').each(function(){
-        panels[i]= $(this).attr('id'); 
-        i++;
-    });
-    func(panels, start, end);
-}
-
-function make_picker(func, repeat) {
-    return function(event) {
-        return pick(func, repeat);
-    };
-}
-
 // Pull data for the last hour every minute
 function live_data() {
     var end = Math.floor(Date.now() / 1000);
@@ -92,11 +64,8 @@ function live_data() {
     pick_date(start, end);
 }
 
-
 function end_live_data() {
-    console.log("end_live_data called " + $("#live-button").attr("aria-pressed"));
     if(JSON.parse($("#live-button").attr("aria-pressed"))) {
-        console.log("Live timer was activated, deactivating");
         $("#live-button").attr("aria-pressed", false);
         $("#live-button").button("toggle");
     }
@@ -105,7 +74,6 @@ function end_live_data() {
 }
 
 function pick_date(start, end) {
-    console.log("pick_date called with " + start + " " + end);
     var gran = 0;
     var urls = [];
     var panels = ['Panel1', 'Panel2', 'Panel3', 'PowerS'];
