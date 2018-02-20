@@ -85,7 +85,27 @@ function make_picker(func, repeat) {
     };
 }
 
+// Pull data for the last hour every minute
+function live_data() {
+    var end = Math.floor(Date.now() / 1000);
+    var start = end - HOUR_SECONDS;
+    pick_date(start, end);
+}
+
+
+function end_live_data() {
+    console.log("end_live_data called " + $("#live-button").attr("aria-pressed"));
+    if(JSON.parse($("#live-button").attr("aria-pressed"))) {
+        console.log("Live timer was activated, deactivating");
+        $("#live-button").attr("aria-pressed", false);
+        $("#live-button").button("toggle");
+    }
+    clearInterval(liveTimer);
+    liveTimer = null;
+}
+
 function pick_date(start, end) {
+    console.log("pick_date called with " + start + " " + end);
     var gran = 0;
     var urls = [];
     var panels = ['Panel1', 'Panel2', 'Panel3', 'PowerS'];
@@ -93,7 +113,6 @@ function pick_date(start, end) {
         urls[i] = create_url(start, end, gran, panels[i]);
     }
     fetch_aggregate(urls, generate_chart, true, panels);
-
 }
 
 function fetch_aggregate(urls, callback, seperate, panels) {
@@ -126,7 +145,8 @@ function fetch_aggregate(urls, callback, seperate, panels) {
     };
     
     var onFailed = function() {
-        console.log("it broke");
+        console.log(urls);
+        console.log("it broked");
     };
     
     for (var i = 0; i < urls.length; i++) {
@@ -397,8 +417,7 @@ function generate_chart(responses, gran, panels) {
         });
     } else {
         chart.load({
-            columns:data,
-            unload:chart.columns
+            columns:data
         });
 
     }
@@ -446,7 +465,7 @@ function generate_appliance_chart() {
     });
 }
 
-
+var liveTimer;
 $(document).ready(function() {
     //onload
     $(".list-group button").click(function(e) {
@@ -512,7 +531,15 @@ $(document).ready(function() {
     $("#bad").hide();
 
     /*-- Initialize datepickers and buttons --*/
-    $("#live-button").on("click", make_picker(pick_date, 60 * 1000));
+    $("#live-button").on("click", function() {
+        if(!liveTimer) {
+            live_data();
+            liveTimer = setInterval(live_data, 30 * 1000);
+        } else {
+            clearInterval(liveTimer);
+            liveTimer = null;
+        }
+    });
 
     $("#modal-close").on("click", function() {
         $('#myModal').modal('toggle');
@@ -522,13 +549,13 @@ $(document).ready(function() {
 
     $("#daily-date").datetimepicker({
         format: 'MM/DD/YYYY'
-
     });
 
     $("#daily-date").on("dp.change", function(){
         var date = $("#daily-date").data("DateTimePicker").getDate();
         var start = Math.floor(date / 1000);
         var end = start + DAY_SECONDS;
+        end_live_data();
         pick_date(start, end);
     });
 
@@ -543,6 +570,7 @@ $(document).ready(function() {
         var endDate = $("#range-end").data("DateTimePicker").getDate();
         var start = Math.floor(startDate / 1000);
         var end = Math.floor(endDate / 1000);
+        end_live_data();
         pick_date(start, end);
     });
 
@@ -557,6 +585,7 @@ $(document).ready(function() {
         var endDate = $("#range-end").data("DateTimePicker").getDate();
         var start = Math.floor(startDate / 1000);
         var end = Math.floor(endDate / 1000);
+        end_live_data();
         pick_date(start, end);
     });
 
