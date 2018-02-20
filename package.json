@@ -4,12 +4,14 @@
   "description": "Seads front end website.",
   "main": "bundle.js",
   "dependencies": {
-    "browserify": "13.0.0",
-    "c3": "0.4.11-rc4"
+    "browserify": "16.1.0",
+    "c3": "0.4.21",
+    "watchify": "3.10.0"
   },
   "scripts": {
-  "postinstall": "browserify seadssite/static/js/graph.js -o seadssite/static/js/bundle.js",
-  "start": "nf start"
+    "postinstall": "browserify seadssite/static/js/graph.js -o seadssite/static/js/bundle.js",
+    "watch": "watchify seadssite/static/js/graph.js -o seadssite/static/js/bundle.js",
+    "start": "nf start"
   },
   "repository": {
     "type": "git",
