@@ -1,14 +1,18 @@
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
 from django.views.generic import View
 
-
 from seadssite.forms import UserForm
 from seadssite.models import Device
 
+import google.auth.transport.requests
+import google.oauth2.id_token
+
+HTTP_REQUEST = google.auth.transport.requests.Request()
+claims = None
 
 class IndexView(TemplateView):
     """
@@ -46,35 +50,67 @@ class RegisterView(View):
         else:
             return render(request, self.template_name, {'form': user_form})
 
+
+def AuthenticateView(request):
+    print('Authenticate view')
+    if not request.is_ajax():
+        return HttpResponseNotAllowed(['POST'])
+
+    id_token = request.META['HTTP_AUTHORIZATION'].split(' ').pop()
+
+    claims = google.oauth2.id_token.verify_firebase_token(id_token, HTTP_REQUEST)
+    if not claims:
+        return HttpResponse(status=401)
+
+    request.session['user_id'] = claims['user_id']
+    request.session['email'] = claims['email']
+    print(request.session['user_id'])
+    return HttpResponse(status=200)
+
+def clear_session(request):
+    if not request.is_ajax() or not request.method == 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    request.session.clear()
+    return HttpResponse(status=200)
+
 '''
 device dashboard page controller
 TODO: users can delete each others devices I think
 '''
 
 def DashboardView(request):
-    # get needed variables set up, and try to make sure only the users devices are shown
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    current_user = request.user
 
-    print(request.POST)
+    print('Dashboard view')
+    if not 'user_id' in request.session:
+        return HttpResponseRedirect('/login/?next=%s' % request.path)
+
+    return render(request, 'dashboard.html', {'devices': {466419818}})
+
+
+    # get needed variables set up, and try to make sure only the users devices are shown
+    # if  not request.user.is_authenticated():
+    #     return HttpResponseRedirect('/login/?next=%s' % request.path)
+    # current_user = request.user
+    #
+    # print(request.POST)
 
     # if the user clicked register (and dashboard -- that is register a device)
     # we set the new id and new name as what was submitted in the form
     # if there are any alerts (invalid id etc), they will get appened to alert
-    if request.POST.get('device_id'):
-        new_device_id = request.POST.get('device_id')
-        new_device_name = request.POST.get('device_name')
-        Device.objects.register_device(new_device_id, new_device_name, current_user)
-    # if the user clicked delete
-    # we delete the specified device
-    elif request.POST.get('delete'):
-        device_id = request.POST.get('delete')
-        device = Device.objects.get(device_id=device_id)
-        device.deactivate_device()
-
-    connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
-    return render(request, 'dashboard.html', {'devices': connected_user_devices})
+    # if request.POST.get('device_id'):
+    #     new_device_id = request.POST.get('device_id')
+    #     new_device_name = request.POST.get('device_name')
+    #     Device.objects.register_device(new_device_id, new_device_name, current_user)
+    # # if the user clicked delete
+    # # we delete the specified device
+    # elif request.POST.get('delete'):
+    #     device_id = request.POST.get('delete')
+    #     device = Device.objects.get(device_id=device_id)
+    #     device.deactivate_device()
+    #
+    # connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
+    # return render(request, 'dashboard.html', {'devices': connected_user_devices})
 
 def TimerView(request):
     # get needed variables set up, and try to make sure only the users devices are shown
@@ -124,3 +160,5 @@ def graph(request):
     connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
 
     return render(request, 'graph.html', {'devices': connected_user_devices})
+
+
