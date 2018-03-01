@@ -23,7 +23,6 @@ urlpatterns = [
                url(r'^dashboard/[0-9]+/$', v.graph),
                url(r'^dashboard/[0-9]+/timer/$', v.TimerView),
                url(r'^dashboard/[0-9]+/appliances/$', v.DevicesView),
-               url(r'^register', v.RegisterView.as_view()),
                url(r'^authenticate', v.AuthenticateView),
-               url(r'^clear_session', v.clear_session)
+               url(r'^logout', v.LogoutView)
 ]

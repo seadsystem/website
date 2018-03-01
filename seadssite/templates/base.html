@@ -63,11 +63,19 @@
                 });
             }
 
+            // Redirect to account selection page to login
+            $('#log-in').click(function (event) {
+                event.preventDefault();
+                var provider = new firebase.auth.GoogleAuthProvider();
+                firebase.auth().signInWithRedirect(provider);
+            });
+
             // Sign out and clear session
             $('#log-out').click(function (event) {
                 event.preventDefault();
                 firebase.auth().signOut().then(function () {
-                    $.post('/clear_session/', { csrfmiddlewaretoken: '{{ csrf_token }}' });
+                    $.post('/logout/', { csrfmiddlewaretoken: '{{ csrf_token }}' });
+                    window.location.replace('/');
                 }, function (error) {
                     console.log(error);
                 });
@@ -119,25 +127,12 @@
                         <li><a href="#present-contributors" class="page-scroll" style="color:white;">THE TEAM</a></li>
                     {% endif %}
 
-                    <li><a class="" id="log-in" href="/login/" style="color:white;">
+                    <li><a class="" id="log-in" href="#" style="color:white;">
                         LOG IN <span class="glyphicon glyphicon-log-in"></span></a></li>
                     <li><a class="" id="register" href="/register/" style="color:white;">
                         REGISTER <span class="glyphicon glyphicon-edit"></span></a></li>
-
-                    <li><button id="log-out" style="color:white;">
-                        LOG OUT <span class="glyphicon glyphicon-log-out"></span></li>
-
-                    {#          {% if user.is_authenticated %}#}
-                    {#            <li><a class="" style="color:white;" href="{% url 'django.contrib.auth.views.logout' %}">#}
-                    {#              LOG OUT <span class="glyphicon glyphicon-log-out"></span></a></li>#}
-                    {#          {% else %}#}
-                    {##}
-                    {##}
-                    {#            <li><a class="" href="{% url 'django.contrib.auth.views.login' %}" style="color:white;">#}
-                    {#              LOG IN <span class="glyphicon glyphicon-log-in"></span></a></li>#}
-                    {#            <li><a class="" href="/register/" style="color:white;">#}
-                    {#              REGISTER <span class="glyphicon glyphicon-edit"></span></a></li>#}
-                    {#          {% endif %}#}
+                    <li><a class="" id="log-out" href="/" style="color:white;">
+                        LOG OUT <span class="glyphicon glyphicon-log-out"></span></a></li>
                 </ul>
             </div>
         </div>

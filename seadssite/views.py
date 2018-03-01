@@ -52,7 +52,6 @@ class RegisterView(View):
 
 
 def AuthenticateView(request):
-    print('Authenticate view')
     if not request.is_ajax():
         return HttpResponseNotAllowed(['POST'])
 
@@ -64,10 +63,9 @@ def AuthenticateView(request):
 
     request.session['user_id'] = claims['user_id']
     request.session['email'] = claims['email']
-    print(request.session['user_id'])
     return HttpResponse(status=200)
 
-def clear_session(request):
+def LogoutView(request):
     if not request.is_ajax() or not request.method == 'POST':
         return HttpResponseNotAllowed(['POST'])
 
