@@ -1,13 +1,22 @@
-from django.contrib.auth import authenticate, login
-from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed
+from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.views.generic import View
 
-
-from seadssite.forms import UserForm
 from seadssite.models import Device
+
+import google.auth.transport.requests
+import google.oauth2.id_token
+
+HTTP_REQUEST = google.auth.transport.requests.Request()
+
+import firebase_admin
+from firebase_admin import credentials, db
+
+cred = credentials.Certificate('./seads-8023c-firebase-adminsdk-ejeko-63518da322.json')
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://seads-8023c.firebaseio.com/'
+})
 
 
 class IndexView(TemplateView):
@@ -16,65 +25,73 @@ class IndexView(TemplateView):
     """
     template_name = 'index.html'
 
-
-class RegisterView(View):
-    """
-    registration page controller
-    sends a user to the registration page
-    """
-    form_class = UserForm
-    template_name = 'registration/register.html'
-
     def get(self, request):
-        if request.user.is_authenticated():
-            return redirect('/dashboard')
-        user_form = self.form_class()
-        return render(request, 'registration/register.html', {'form': user_form})
+        authenticated = False
+        # Check if user is logged in
+        if 'user_id' in request.session and request.session['user_id'] is not None:
+            authenticated = True
 
-    def post(self, request):
-        user_form = UserForm(data=request.POST)
-        if user_form.is_valid():
-            # Creating a new user
-            user = user_form.save(commit=False) #don't save to db, we do this after setting the password
-            user.set_password(user.password)
-            user.save()
-            # log the user in and send them to the homepage
-            user = authenticate(username=request.POST['username'], password=request.POST['password'])
-            login(request, user)
-            return HttpResponseRedirect('/dashboard')
-            # TODO: sending a welcome email to the new user needs to be implemented here
-        else:
-            return render(request, self.template_name, {'form': user_form})
+        return render(request, 'index.html', {'authenticated': authenticated})
+
+
+def AuthenticateView(request):
+    if not request.is_ajax():
+        return HttpResponseNotAllowed(['POST'])
+
+    id_token = request.META['HTTP_AUTHORIZATION'].split(' ').pop()
+
+    # Verify id token
+    claims = google.oauth2.id_token.verify_firebase_token(id_token, HTTP_REQUEST)
+    if not claims:
+        return HttpResponse(status=401)
+
+    # Set session data
+    request.session['user_id'] = claims['user_id']
+    request.session['email'] = claims['email']
+    return HttpResponse(status=200)
+
+
+def LogoutView(request):
+    if not request.is_ajax() or not request.method == 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    request.session.clear()
+    return HttpResponse(status=200)
+
 
 '''
 device dashboard page controller
 TODO: users can delete each others devices I think
 '''
-
 def DashboardView(request):
-    # get needed variables set up, and try to make sure only the users devices are shown
-    if not request.user.is_authenticated():
+    authenticated = False
+    if not 'user_id' in request.session:
         return HttpResponseRedirect('/login/?next=%s' % request.path)
-    current_user = request.user
 
-    print(request.POST)
+    if request.session['user_id'] is not None:
+        authenticated = True
 
-    # if the user clicked register (and dashboard -- that is register a device)
-    # we set the new id and new name as what was submitted in the form
-    # if there are any alerts (invalid id etc), they will get appened to alert
+    ref = db.reference('users').child(request.session['user_id']).child('devices')
+
+    # Register a new device
     if request.POST.get('device_id'):
-        new_device_id = request.POST.get('device_id')
         new_device_name = request.POST.get('device_name')
-        Device.objects.register_device(new_device_id, new_device_name, current_user)
-    # if the user clicked delete
-    # we delete the specified device
+        new_device_id = request.POST.get('device_id')
+        ref.update({
+            new_device_id: {
+                'name': new_device_name
+            }
+        })
+
+    # Delete a device
     elif request.POST.get('delete'):
         device_id = request.POST.get('delete')
-        device = Device.objects.get(device_id=device_id)
-        device.deactivate_device()
+        ref.child(device_id).delete()
 
-    connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
-    return render(request, 'dashboard.html', {'devices': connected_user_devices})
+    devices = ref.get()
+
+    return render(request, 'dashboard.html', {'devices': devices, 'authenticated': authenticated})
+
 
 def TimerView(request):
     # get needed variables set up, and try to make sure only the users devices are shown
@@ -85,6 +102,7 @@ def TimerView(request):
     connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
 
     return render(request, 'timer.html', {'devices': connected_user_devices})
+
 
 def DevicesView(request):
     # get needed variables set up, and try to make sure only the users devices are shown
@@ -116,11 +134,12 @@ def DevicesView(request):
     user_devices = Device.objects.filter(user=current_user, is_active=True)
     return render(request, 'devices.html', {'devices': user_devices})
 
+
 def graph(request):
-    if not request.user.is_authenticated():
+    if not 'user_id' in request.session:
         return HttpResponseRedirect('/login/?next=%s' % request.path)
-    current_user = request.user
 
-    connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
+    if request.session['user_id'] is not None:
+        authenticated = True
 
-    return render(request, 'graph.html', {'devices': connected_user_devices})
+    return render(request, 'graph.html', {'authenticated': authenticated})
