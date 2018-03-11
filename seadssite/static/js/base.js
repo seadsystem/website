@@ -8,19 +8,13 @@ $(function() {
     };
 
     var userIdToken = null;
-
     function configureFirebaseLogin() {
         firebase.initializeApp(config);
-    }
-
-    // Redirect to account selection page to login
-    $('#log-in').click(function (event) {
-        event.preventDefault();
-        var provider = new firebase.auth.GoogleAuthProvider();
-        //firebase.auth().signInWithRedirect(provider);
-        firebase.auth().signInWithPopup(provider).then(function (result) {
-            if (result.user) {
-                result.user.getIdToken().then(function (idToken) {
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                $('#log-in').hide();
+                $('#register').hide();
+                user.getIdToken().then(function (idToken) {
                     userIdToken = idToken;
 
                     // Send id token to backend for verification and session init
@@ -30,34 +24,38 @@ $(function() {
                         }
                     });
 
-                    $(document).ajaxStop(function () {
-                        window.location = "/dashboard/"
-                    })
+                    // Show log out and dashboard buttons
+                    $('#log-out').show();
+                    $('#dashboard').show();
                 });
+            } else {
+                $('#log-out').hide();
+                $('#dashboard').hide();
+                $('#log-in').show();
+                $('#register').show();
             }
         });
+    }
+
+    // Redirect to account selection page to login
+    $('#log-in').click(function (event) {
+        event.preventDefault();
+        var provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithRedirect(provider);
     });
 
     // Sign out and clear session
     $('#log-out').click(function (event) {
-        // Get CSRF token to send with post req
-        var csrf_token = null;
-        if(document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
-            for(var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                if(cookie.substring(0, 10) === ('csrftoken=')) {
-                    csrf_token = decodeURIComponent(cookie.substring(10));
-                    break;
-                }
-            }
-        }
-
-        $.post('/logout/', { csrfmiddlewaretoken: csrf_token });
-        firebase.auth().signOut();
+        event.preventDefault();
+        firebase.auth().signOut().then(function () {
+            $.post('/logout/', { csrfmiddlewaretoken: '{{ csrf_token }}' });
+            window.location.replace('/');
+        }, function (error) {
+            console.log(error);
+        });
     });
-
 
     configureFirebaseLogin();
 
 });
+

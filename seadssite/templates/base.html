@@ -20,6 +20,9 @@
     <script src="{% static 'x-editable/js/bootstrap-editable.min.js' %}"></script>
 
     <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+    <script src="https://cdn.firebase.com/libs/firebaseui/2.6.1/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.6.1/firebaseui.css" />
+
     <script src="{% static 'js/base.js' %}"></script>
 
     <!-- Base is extened to each rendered page. Includes the navbars and ways to make specific navbars depending on the users status (i,e logged in or not -->
@@ -47,12 +50,9 @@
 
             <div class="navbar-collapse collapse navbar-left">
                 <ul class="nav navbar-nav">
-                    {% if authenticated == True %}
-                        <li><a class="navbar-left" id="dashboard" href="/dashboard/"><span
-                                class="glyphicon glyphicon-dashboard"
-                                style="color:white;"></span> <b style="color:white;">DASHBOARD</b></a>
-                        </li>
-                    {% endif %}
+                    <li><a class="navbar-left" id="dashboard" href="/dashboard/"><span class="glyphicon glyphicon-dashboard"
+                                                                                       style="color:white;"></span> <b style="color:white;">DASHBOARD</b></a>
+                    </li>
                 </ul>
             </div>
 
@@ -65,13 +65,12 @@
                         <li><a href="#present-contributors" class="page-scroll" style="color:white;">THE TEAM</a></li>
                     {% endif %}
 
-                    {% if authenticated == True %}
-                        <li><a href="/" class="" id="log-out" style="color:white;">
-                            LOG OUT <span class="glyphicon glyphicon-log-out"></span></a></li>
-                    {% else %}
-                        <li><a class="" id="log-in" href="/dashboard/" style="color:white;">
-                            LOG IN <span class="glyphicon glyphicon-log-in"></span></a></li>
-                    {% endif %}
+                    <li><a class="" id="log-in" href="#" style="color:white;">
+                        LOG IN <span class="glyphicon glyphicon-log-in"></span></a></li>
+                    <li><a class="" id="register" href="/register/" style="color:white;">
+                        REGISTER <span class="glyphicon glyphicon-edit"></span></a></li>
+                    <li><a class="" id="log-out" href="/" style="color:white;">
+                        LOG OUT <span class="glyphicon glyphicon-log-out"></span></a></li>
                 </ul>
             </div>
         </div>
