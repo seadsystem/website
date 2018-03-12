@@ -11,7 +11,7 @@
             </div>
             <!-- for mapped devices, create boxes for them to be shown -->
             <div>
-                {% for device_id, attr in devices.items %}
+                {% for name, device_id in devices.items %}
                     {% if forloop.counter0|divisibleby:4 %}
                         {% if forloop.counter0 == 0 %}
                             <div class="row deviceRow">
@@ -37,7 +37,7 @@
                             </div>
                             <!-- button to visualize specific device -->
                             <div style="float:left;padding:10px;">
-                                <span style="font-size:17px;color:black;">{{ attr.name }}</span>
+                                <span style="font-size:17px;color:black;">{{ name }}</span>
                                 <input style="display:none;" class="device_id" value="{{ device_id }}"/>
                             </div>
                             <span class="glyphicon glyphicon-off" aria-hidden="true"

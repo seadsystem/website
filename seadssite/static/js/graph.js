@@ -528,12 +528,6 @@ $(document).ready(function() {
     });
 
     $("#range-start").on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
-            i++;
-        });
         var startDate = $("#range-start").data("DateTimePicker").getDate();
         var endDate = $("#range-end").data("DateTimePicker").getDate();
         var start = Math.floor(startDate / 1000);
@@ -543,12 +537,6 @@ $(document).ready(function() {
     });
 
     $("#range-end").on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
-            i++;
-        });
         var startDate = $("#range-start").data("DateTimePicker").getDate();
         var endDate = $("#range-end").data("DateTimePicker").getDate();
         var start = Math.floor(startDate / 1000);

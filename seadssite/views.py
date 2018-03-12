@@ -65,7 +65,7 @@ TODO: users can delete each others devices I think
 '''
 def DashboardView(request):
     authenticated = False
-    if not 'user_id' in request.session:
+    if 'user_id' not in request.session:
         return HttpResponseRedirect('/login/?next=%s' % request.path)
 
     if request.session['user_id'] is not None:
@@ -90,18 +90,19 @@ def DashboardView(request):
 
     devices = ref.get()
 
-    return render(request, 'dashboard.html', {'devices': devices, 'authenticated': authenticated})
+    return render(request, 'dashboard.html', {'authenticated': authenticated, 'devices': devices})
 
 
 def TimerView(request):
     # get needed variables set up, and try to make sure only the users devices are shown
-    if not request.user.is_authenticated():
+    if 'user_id' not in request.session:
         return HttpResponseRedirect('/login/?next=%s' % request.path)
-    current_user = request.user
 
-    connected_user_devices = Device.objects.filter(user=current_user, is_active=True)
+    authenticated = False
+    if request.session['user_id'] is not None:
+        authenticated = True
 
-    return render(request, 'timer.html', {'devices': connected_user_devices})
+    return render(request, 'timer.html', {'authenticated': authenticated})
 
 
 def DevicesView(request):
@@ -135,11 +136,16 @@ def DevicesView(request):
     return render(request, 'devices.html', {'devices': user_devices})
 
 
-def graph(request):
-    if not 'user_id' in request.session:
+def graph(request, device_id):
+    if 'user_id' not in request.session:
         return HttpResponseRedirect('/login/?next=%s' % request.path)
 
+    authenticated = False
     if request.session['user_id'] is not None:
         authenticated = True
 
-    return render(request, 'graph.html', {'authenticated': authenticated})
+    # Get info associated with requested device
+    device = db.reference('devices').child(device_id)
+    rooms = device.child('rooms').order_by_child('solar').get()
+
+    return render(request, 'graph.html', {'authenticated': authenticated, 'rooms': rooms})

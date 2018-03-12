@@ -1,174 +1,186 @@
 {% extends "base.html" %}
 {% load static from staticfiles %}
 {% block content %}
-<html>
-  <meta charset="utf-8">
-  <head>
-    <link rel="stylesheet" type="text/css" href="{% static "css/graph.css" %}">
-    <script src="{% static "js/bundle.js" %}"></script>
-  </head>
-  <body>
+    <html>
+    <meta charset="utf-8">
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static "css/graph.css" %}">
+        <script src="{% static "js/bundle.js" %}"></script>
+    </head>
+    <body>
     <div class="container">
-      <div class="row nopadding">
-        <H3 align="center"> Daily Usage</H3><BR>
-        <div class="text-center">
-          <div class="btn-group" id="panels">
-            <button type="button" class="btn btn-default" id="Panel1">Panel 1</button>
-            <button type="button" class="btn btn-default" id="Panel2">Panel 2</button>
-            <button type="button" class="btn btn-default" id="Panel3">Panel 3</button>
-            <button type="button" class="btn btn-success" id="PowerS">Solar</button>
-          </div>
+        <div class="row nopadding">
+            <H3 align="center"> Daily Usage</H3><BR>
+            <div class="text-center">
+                {{ device.rooms.0 }}
+                <div class="btn-group" id="panels">
+                    {% for room, attr in rooms.items %}
+                        <button type="button"
+                                {% if not attr.solar %}
+                                class="btn btn-default"
+                                {% else %}
+                                class="btn btn-success"
+                                {% endif %}
+                                id={{ room }}>{{ room }}</button>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="row nopadding">
-        <div class="col-lg-12 nopadding">
-          <div id="chart"></div>
-          <div class="row nopadding">
-            <div class="col-lg-3 col-md-3 col-sm-3">
-              <div class="form-group">
-                <H4 align="center">24hr Energy Usage</H4>
-                <div class='input-group date' id='daily-date'>
-                  <input type='text' class="form-control"/>
-                  <span class="input-group-addon">
+        <div class="row nopadding">
+            <div class="col-lg-12 nopadding">
+                <div id="chart"></div>
+                <div class="row nopadding">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <H4 align="center">24hr Energy Usage</H4>
+                            <div class='input-group date' id='daily-date'>
+                                <input type='text' class="form-control"/>
+                                <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-3">
-              <H4 align="center">Start</H4>
-              <div class='input-group date' id='range-start'>
-                  <input type='text' class="form-control"/>
-                  <span class="input-group-addon">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <H4 align="center">Start</H4>
+                        <div class='input-group date' id='range-start'>
+                            <input type='text' class="form-control"/>
+                            <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-3">
-              <H4 align="center">End</H4>
-              <div class='input-group date' id='range-end'>
-                <input type='text' class="form-control"/>
-                <span class="input-group-addon">
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <H4 align="center">End</H4>
+                        <div class='input-group date' id='range-end'>
+                            <input type='text' class="form-control"/>
+                            <span class="input-group-addon">
                   <span class="glyphicon glyphicon-calendar"></span>
                 </span>
-              </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 nopadding text-center">
+                        <br/><br/>
+                        <button id="label-button" class="btn btn-success btn-sm">Live Labelling</button>
+                    </div>
+                    <div class="col-md-1 nopadding">
+                        <br/><br/>
+                        <button id="live-button" data-toggle="button" aria-pressed="false"
+                                class="btn btn-success btn-sm">Live Data
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-2 nopadding text-center">
-              <br/><br/>
-              <button id="label-button" class="btn btn-success btn-sm">Live Labelling</button>
-            </div>
-            <div class="col-md-1 nopadding">
-              <br/><br/>
-              <button id="live-button" data-toggle="button" aria-pressed="false" class="btn btn-success btn-sm">Live Data</button>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
     <div class="container">
-      <div class="row">
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 align="center" class="panel-title">
-                Real-time usage</h3>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 align="center" class="panel-title">
+                            Real-time usage</h3>
+                    </div>
+                    <div class="row">
+                        <div id="gauge" style="width:100%;"></div>
+                    </div>
+                </div>
             </div>
-            <div class="row">
-              <div id="gauge" style="width:100%;"></div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 align="center" class="panel-title">
+                            Usage per panel</h3>
+                    </div>
+                    <div class="row">
+                        <div id="pie" style="width:100%;"></div>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 align="center" class="panel-title">
+                            Weekly usage</h3>
+                    </div>
+                    <div class="row">
+                        <div id="bar" style="width:90%;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 align="center" class="panel-title">
-                Usage per panel</h3>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 align="center" class="panel-title">
+                            Appliances (template)</h3>
+                    </div>
+                    <div class="list-group">
+                        <div class="list-group">
+                            <button type="button" class="list-group-item text-left">Cras justo odio</button>
+                            <button type="button" class="list-group-item text-left">Dapibus ac facilisis in</button>
+                        </div>
+
+                        <button type="button" class="list-group-item text-left">Morbi leo risus</button>
+                        <button type="button" class="list-group-item text-left">Porta ac consectetur ac</button>
+                        <button type="button" class="list-group-item text-left">Vestibulum at eros</button>
+                        <button type="button" class="list-group-item text-left">Cras justo odio</button>
+                        <button type="button" class="list-group-item text-left">Dapibus ac facilisis in</button>
+                        <button type="button" class="list-group-item text-left">Morbi leo risus</button>
+                        <button type="button" class="list-group-item text-left">Porta ac consectetur ac</button>
+                        <button type="button" class="list-group-item text-left">Vestibulum at eros</button>
+                    </div>
+                </div>
             </div>
-            <div class="row">
-              <div id="pie" style="width:100%;"></div>
+            <div class="col-md-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 align="center" class="panel-title">
+                            Appliance graph (template)</h3>
+                    </div>
+                    <div id="chart2"></div>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 align="center" class="panel-title">
-                Weekly usage</h3>
-            </div>
-            <div class="row">
-              <div id="bar" style="width:90%;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 align="center" class="panel-title">
-                Appliances (template)</h3>
-            </div>
-            <div class="list-group">
-              <button type="button" class="list-group-item text-left">Cras justo odio</button>
-              <button type="button" class="list-group-item text-left">Dapibus ac facilisis in</button>
-              <button type="button" class="list-group-item text-left">Morbi leo risus</button>
-              <button type="button" class="list-group-item text-left">Porta ac consectetur ac</button>
-              <button type="button" class="list-group-item text-left">Vestibulum at eros</button>
-              <button type="button" class="list-group-item text-left">Cras justo odio</button>
-              <button type="button" class="list-group-item text-left">Dapibus ac facilisis in</button>
-              <button type="button" class="list-group-item text-left">Morbi leo risus</button>
-              <button type="button" class="list-group-item text-left">Porta ac consectetur ac</button>
-              <button type="button" class="list-group-item text-left">Vestibulum at eros</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-8">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 align="center" class="panel-title">
-                Appliance graph (template)</h3>
-            </div>
-            <div id="chart2"></div>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="alert alert-success" id="success-alert">
-      <strong>Success! </strong>
-      You have added a new label
+        <strong>Success! </strong>
+        You have added a new label
     </div>
-    <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="modalLabel">New Label</h4>
-          </div>
-          <div class="modal-body">
-            <h5 id="bad">Entries not valid</h5>
-            <table>
-              <tr>
-                <td>Start: </td>
-                <td><input type="text" id="start-date"/></td>
-              </tr>
-              <tr>
-                <td>End: </td>
-                <td><input type="text" id="end-date"/></td>
-              </tr>
-            </table>
-            <form>
-              <div class="form-group">
-                <label for="message-text" class="control-label">Label Name:</label>
-                <input type="text" class="form-control" id="label-name">
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" id="modal-close">Close</button>
-            <button id="event-submit" type="button" class="btn btn-primary">Submit</button>
-          </div>
+    <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalLabel">New Label</h4>
+                </div>
+                <div class="modal-body">
+                    <h5 id="bad">Entries not valid</h5>
+                    <table>
+                        <tr>
+                            <td>Start:</td>
+                            <td><input type="text" id="start-date"/></td>
+                        </tr>
+                        <tr>
+                            <td>End:</td>
+                            <td><input type="text" id="end-date"/></td>
+                        </tr>
+                    </table>
+                    <form>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">Label Name:</label>
+                            <input type="text" class="form-control" id="label-name">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="modal-close">Close</button>
+                    <button id="event-submit" type="button" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </body>
-</html>
+    </body>
+    </html>
 {% endblock %}
