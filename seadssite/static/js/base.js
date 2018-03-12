@@ -15,9 +15,9 @@ $(function() {
 
     // Redirect to account selection page to login
     $('#log-in').click(function (event) {
+        console.log('login popup');
         event.preventDefault();
         var provider = new firebase.auth.GoogleAuthProvider();
-        //firebase.auth().signInWithRedirect(provider);
         firebase.auth().signInWithPopup(provider).then(function (result) {
             if (result.user) {
                 result.user.getIdToken().then(function (idToken) {
@@ -37,6 +37,7 @@ $(function() {
             }
         });
     });
+
 
     // Sign out and clear session
     $('#log-out').click(function (event) {

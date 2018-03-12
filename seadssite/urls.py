@@ -9,7 +9,6 @@ from seadssite import views as v
 admin.autodiscover()
 
 urlpatterns = [
-               url(r'^login/$', login),
                url(r'^logout/', v.LogoutView),
                url(r'^admin/', include(admin.site.urls)),
                url(r'^$', v.IndexView.as_view()),

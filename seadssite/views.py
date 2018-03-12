@@ -66,7 +66,7 @@ TODO: users can delete each others devices I think
 def DashboardView(request):
     authenticated = False
     if 'user_id' not in request.session:
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
+        return render(request, 'dashboard.html', {'authenticated': authenticated})
 
     if request.session['user_id'] is not None:
         authenticated = True
@@ -79,7 +79,7 @@ def DashboardView(request):
         new_device_id = request.POST.get('device_id')
         ref.update({
             new_device_id: {
-                'name': new_device_name
+                new_device_name: int(new_device_id)
             }
         })
 
@@ -91,6 +91,21 @@ def DashboardView(request):
     devices = ref.get()
 
     return render(request, 'dashboard.html', {'authenticated': authenticated, 'devices': devices})
+
+
+def graph(request, device_id):
+    authenticated = False
+    if 'user_id' not in request.session:
+        return render(request, 'graph.html', {'authenticated': authenticated})
+
+    if request.session['user_id'] is not None:
+        authenticated = True
+
+    # Get info associated with requested device
+    device = db.reference('devices').child(device_id)
+    rooms = device.child('rooms').order_by_child('solar').get()
+
+    return render(request, 'graph.html', {'authenticated': authenticated, 'rooms': rooms})
 
 
 def TimerView(request):
@@ -135,17 +150,3 @@ def DevicesView(request):
     user_devices = Device.objects.filter(user=current_user, is_active=True)
     return render(request, 'devices.html', {'devices': user_devices})
 
-
-def graph(request, device_id):
-    if 'user_id' not in request.session:
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-
-    authenticated = False
-    if request.session['user_id'] is not None:
-        authenticated = True
-
-    # Get info associated with requested device
-    device = db.reference('devices').child(device_id)
-    rooms = device.child('rooms').order_by_child('solar').get()
-
-    return render(request, 'graph.html', {'authenticated': authenticated, 'rooms': rooms})
