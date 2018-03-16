@@ -15,7 +15,6 @@ gunicorn==19.4.5
 itsdangerous==0.24
 Jinja2==2.7.3
 MarkupSafe==0.23
-psycopg2==2.6.1
 python-dateutil==2.3
 PyYAML==3.11
 requests==2.4.3
