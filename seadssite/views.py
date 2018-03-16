@@ -121,31 +121,31 @@ def TimerView(request):
 
 def DevicesView(request):
     # get needed variables set up, and try to make sure only the users devices are shown
-    current_user = request.user
-
-    # if the user clicked the editable field and submitted an edit
-    # changes the edited field to the new submission
-    if request.POST.get('name') == "modify":
-        device_id = request.POST.get('pk')
-        device = Device.objects.get(device_id=device_id)
-        new_name = request.POST.get('value')
-        device.name = new_name
-        device.save()
-    # if the user clicked register
-    # we set the new id and new name as what was submitted in the form
-    # if there are any alerts (invalid id etc), they will get appened to alert
-    elif request.POST.get('register'):
-        new_device_id = request.POST.get('device_id')
-        new_device_name = request.POST.get('device_name')
-        Device.objects.register_device(new_device_id, new_device_name, current_user)
-
-    # if the user clicked delete
-    # fetch request, process data package
-    elif request.POST.get('delete'):
-        device_id = request.POST.get('delete')
-        device = Device.objects.get(device_id=device_id)
-        device.deactivate_device()
-
-    user_devices = Device.objects.filter(user=current_user, is_active=True)
-    return render(request, 'devices.html', {'devices': user_devices})
+    # current_user = request.user
+    #
+    # # if the user clicked the editable field and submitted an edit
+    # # changes the edited field to the new submission
+    # if request.POST.get('name') == "modify":
+    #     device_id = request.POST.get('pk')
+    #     device = Device.objects.get(device_id=device_id)
+    #     new_name = request.POST.get('value')
+    #     device.name = new_name
+    #     device.save()
+    # # if the user clicked register
+    # # we set the new id and new name as what was submitted in the form
+    # # if there are any alerts (invalid id etc), they will get appened to alert
+    # elif request.POST.get('register'):
+    #     new_device_id = request.POST.get('device_id')
+    #     new_device_name = request.POST.get('device_name')
+    #     Device.objects.register_device(new_device_id, new_device_name, current_user)
+    #
+    # # if the user clicked delete
+    # # fetch request, process data package
+    # elif request.POST.get('delete'):
+    #     device_id = request.POST.get('delete')
+    #     device = Device.objects.get(device_id=device_id)
+    #     device.deactivate_device()
+    #
+    # user_devices = Device.objects.filter(user=current_user, is_active=True)
+    return render(request, 'devices.html')
 
