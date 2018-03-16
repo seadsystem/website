@@ -1,7 +1,6 @@
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
-from django.views.generic import View
 
 from seadssite.models import Device
 
@@ -79,7 +78,7 @@ def DashboardView(request):
         new_device_id = request.POST.get('device_id')
         ref.update({
             new_device_id: {
-                new_device_name: int(new_device_id)
+                'name': new_device_name
             }
         })
 
