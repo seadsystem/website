@@ -6,23 +6,13 @@ To deploy with Heroku simply click this button, log in/create a free Heroku acco
 This is a preliminary setup for our seads Frontend website, which will eventually include d3 visualizations. 
 
 To install the necessary dependencies on Ubuntu 16.04, open a terminal and type the following commands.
-1. Install python3
 
     ```sh
     sudo apt-get install python3
-    ```
-    
-2. Install pip3
-
-    ```sh
     sudo apt-get install python3-pip
-    ```
-    
-3. Install other requirements
-
-    ```sh
     sudo pip3 install -r requirements.txt
     ```
+
     
 ##Running the Website
 you can now run the existing Seads website! Just type:
