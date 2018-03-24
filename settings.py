@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import os.path
-import dj_database_url
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -57,9 +56,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -68,8 +64,10 @@ ROOT_URLCONF = 'seadssite.urls'
 
 WSGI_APPLICATION = 'seadssite.wsgi.application'
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 # Update database configuration with $DATABASE_URL.
-DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+DATABASES = {}
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles','images')
 MEDIA_URL = '/images/'
