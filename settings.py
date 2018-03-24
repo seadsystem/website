@@ -69,16 +69,7 @@ ROOT_URLCONF = 'seadssite.urls'
 WSGI_APPLICATION = 'seadssite.wsgi.application'
 
 # Update database configuration with $DATABASE_URL.
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mydb',
-        'USER': 'grant523',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
+DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles','images')
 MEDIA_URL = '/images/'
