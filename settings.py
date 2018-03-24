@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import os.path
+import dj_database_url
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -68,7 +69,16 @@ ROOT_URLCONF = 'seadssite.urls'
 WSGI_APPLICATION = 'seadssite.wsgi.application'
 
 # Update database configuration with $DATABASE_URL.
-DATABASES = {}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mydb',
+        'USER': 'grant523',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles','images')
 MEDIA_URL = '/images/'
