@@ -262,18 +262,15 @@ function generate_bar_graph(data) {
 }
 
 function generate_gauge(data) {
-    console.log(data);
-
     if (typeof data.data[0] != 'undefined') {
         var max = 0;
         var length = data.data.length;
-        for(var i = 0; i < length; i++) {
+        for (var i = 0; i < length; i++) {
             var t = Math.round((data.data[0].energy * 360) * 1000) / 1000;
-            if(t > max) {
+            if (t > max) {
                 max = t;
             }
         }
-        console.log(max);
         var gauge = c3.generate({
             padding: {
                 top: 0,
@@ -306,7 +303,7 @@ function generate_gauge(data) {
                 threshold: {
                     //unit: 'value', // percentage is default
                     //max: 200, // 100 is default
-                    values: [max*0.25, max*0.5, max*0.75, max]
+                    values: [max * 0.25, max * 0.5, max * 0.75, max]
                 }
             },
             size: {
@@ -397,6 +394,13 @@ function generate_chart(responses, gran, panels) {
                 },
                 empty: {label: {text: "No Data Available"}},
             },
+            legend: {
+                show: true,
+                position: 'inset',
+                inset: {
+                    anchor: 'top-right',
+                }
+            },
             zoom: {
                 enabled: true,
             },
@@ -408,11 +412,10 @@ function generate_chart(responses, gran, panels) {
                     }
                 },
                 y: {
-                    tick: {
-                        format: function (d) {
-                            return d + " W";
-                        }
-                    }
+                    label: {
+                        text: 'watts',
+                        position: 'outer-middle'
+                    },
                 }
             },
             point: {
@@ -429,27 +432,6 @@ function generate_chart(responses, gran, panels) {
     /*-- Deselect points when dragging on graph --*/
     $("#chart").mousedown(function () {
         chart.unselect(['energy']);
-    });
-
-    /*-- Invoke modal for labelling --*/
-    $("#chart").mouseup(function () {
-        var elements = chart.selected('energy');
-        if (elements.length === 0) return;
-
-        var start = new Date(elements[0].x);
-        var end = new Date(elements[elements.length - 1].x);
-
-        $('#myModal').modal('show');
-
-        $("#start-date").datetimepicker({
-            format: 'MM/DD/YYYY HH:mm'
-        });
-        $("#end-date").datetimepicker({
-            format: 'MM/DD/YYYY HH:mm'
-        });
-
-        $('#start-date').data('DateTimePicker').setDate(start);
-        $('#end-date').data('DateTimePicker').setDate(end);
     });
 }
 
@@ -474,189 +456,30 @@ function generate_appliance_chart() {
 }
 
 var liveTimer;
-$(document).ready(function () {
-    //onload
-    $(".list-group button").click(function (event) {
-        if ($(this).hasClass("active")) {
-            $(this).removeClass("active");
-        } else {
-            $(this).addClass("active");
-        }
-        generate_appliance_chart();
-    });
+$(function () {
+    var start = moment().subtract(7, 'days');
+    var end = moment();
 
-    // Turn arrow for list group
-    $('.list-group-item').click(function (event) {
-        $('.glyphicon', this)
-            .toggleClass('glyphicon-chevron-right')
-            .toggleClass('glyphicon-chevron-down');
-    });
-
-    // Initialize all panel buttons as selected
-    $('#panels button').each(function () {
-        $(this).addClass('active');
-    });
-
-    // Keep track of which panel buttons are selected
-    $("#panels button").click(function (e) {
-        var count = 0;
-        $('#panels .active').each(function () {
-            count++;
-        });
-
-        var i = 0;
-        var panels = [];
-        if (count > 1) {
-            if ($(this).hasClass("active")) {
-                $(this).removeClass("active");
-                $(this).blur();
-                $('#panels .active').each(function () {
-                    panels[i] = $(this).attr('id');
-                    i++;
-                });
-                chart.toggle($(this).attr('id'));
-            } else {
-                $(this).addClass("active");
-                $('#panels .active').each(function () {
-                    panels[i] = $(this).attr('id');
-                    i++;
-                });
-                chart.toggle($(this).attr('id'));
-            }
-        } else {
-            if (!$(this).hasClass("active")) {
-                $(this).addClass("active");
-                $('#panels .active').each(function () {
-                    panels[i] = $(this).attr('id');
-                    i++;
-                });
-                chart.toggle($(this).attr('id'));
-            }
-        }
-    });
-
-    //Live labelling click event
-    $("#label-button").click(function (event) {
-        var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
-        var deviceId = pathArray[2];
-        window.location.href = "/dashboard/" + deviceId + "/timer/";
-    });
-
-    //hide success alert dialogue
-    $("#success-alert").hide();
-    $("#bad").hide();
-
-    /*-- Initialize datepickers and buttons --*/
-    $("#live-button").on("click", function () {
-        if (!liveTimer) {
-            live_data();
-            liveTimer = setInterval(live_data, 30 * 1000);
-        } else {
-            clearInterval(liveTimer);
-            liveTimer = null;
-        }
-    });
-
-    $("#modal-close").on("click", function () {
-        $('#myModal').modal('toggle');
-        $("#bad").hide();
-        $("#label-name").val('');
-    });
-
-    $("#daily-date").datetimepicker({
-        format: 'MM/DD/YYYY'
-    });
-
-    $("#daily-date").on("dp.change", function () {
-        var date = $("#daily-date").data("DateTimePicker").getDate();
-        var start = Math.floor(date / 1000);
-        var end = start + DAY_SECONDS;
-        end_live_data();
+    function cb(start, end) {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        start = Math.floor(start / 1000);
+        end = Math.floor(end / 1000);
+        console.log(start + " to " + end);
+        console.log(moment.unix(start).format("MM/DD/YYYY h:mm") + " to " + moment.unix(end).format("MM/DD/YYYY h:mm"));
         pick_date(start, end);
-    });
+    }
 
-    $("#range-start").on("dp.change", function () {
-        var startDate = $("#range-start").data("DateTimePicker").getDate();
-        var endDate = $("#range-end").data("DateTimePicker").getDate();
-        var start = Math.floor(startDate / 1000);
-        var end = Math.floor(endDate / 1000);
-        end_live_data();
-        pick_date(start, end);
-    });
-
-    $("#range-end").on("dp.change", function () {
-        var startDate = $("#range-start").data("DateTimePicker").getDate();
-        var endDate = $("#range-end").data("DateTimePicker").getDate();
-        var start = Math.floor(startDate / 1000);
-        var end = Math.floor(endDate / 1000);
-        end_live_data();
-        pick_date(start, end);
-    });
-
-    $("#range-start").datetimepicker({
-        format: 'MM/DD/YYYY HH:mm',
-    });
-    $("#range-end").datetimepicker({
-        format: 'MM/DD/YYYY HH:mm',
-    });
-
-
-    $("#event-submit").on("click", function () {
-        if ($("#label-name").val() !== '' && $("#start-date").data("DateTimePicker").getDate().unix() !== null &&
-            $("#end-date").data("DateTimePicker").getDate().unix() !== null) {
-
-            var label = {
-                start_time: $("#start-date").data("DateTimePicker").getDate().unix(),
-                end_time: $("#end-date").data("DateTimePicker").getDate().unix(),
-                label: $("#label-name").val()
-            };
-
-            post_data_to_server(label);
-            $("#label-name").val('');
-            $('#myModal').modal('hide');
-            $("#success-alert").show();
-            $("#success-alert").fadeTo(2000, 500).slideUp(500, function () {
-                $("#success-alert").hide();
-            });
-            $("#bad").hide();
-        } else {
-            $("#bad").show();
+    $('#reportrange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         }
-
-    });
-
-    var date = $("#daily-date").data("DateTimePicker").getDate();
-    var start = Math.floor(date / 1000);
-    var end = start + DAY_SECONDS;
-    pick_date(start, end);
-
-    var dateNow = Date.now();
-    var end;
-    var start;
-    var gran;
-    var urls;
-
-    //fetch pie graph
-    end = Math.floor(dateNow / 1000);
-    start = end - DAY_SECONDS * 2;
-    gran = DAY_SECONDS;
-    urls = non_solar_urls(start, end, gran);
-    fetch_aggregate(urls, generate_pie_graph, true);
-
-    //fetch gauge graph
-    end = Math.floor(dateNow / 1000);
-    start = end - DAY_SECONDS / 4;
-    gran = 1;
-    urls = non_solar_urls(start, end, gran);
-    fetch_aggregate(urls, generate_gauge);
-
-    //fetch bar graph
-    end = Math.floor((dateNow / 1000) / DAY_SECONDS) * DAY_SECONDS;
-    start = end - DAY_SECONDS * 8;
-    gran = DAY_SECONDS;
-    urls = non_solar_urls(start, end, gran);
-    fetch_aggregate(urls, generate_bar_graph);
-
-    generate_appliance_chart();
-
+    }, cb);
+    cb(start, end);
 });
