@@ -10,13 +10,14 @@ var YELLOW = '#F6C600';
 var ORANGE = '#F97600';
 var RED = '#FF0000';
 
+var rooms;
 
 function post_data_to_server(label) {
     console.log("Sending " + JSON.stringify(label));
 
     var post = new XMLHttpRequest();
 
-    // device ID is 3rd entry in url seperatered by a '/'
+    // device ID is 3rd entry in url separated by a '/'
     var pathArray = window.location.pathname.split('/');
     var deviceId = pathArray[2];
     var url = "http://db.sead.systems:8080/" + deviceId + "/label";
@@ -40,62 +41,54 @@ function post_data_to_server(label) {
     post.send(params);
 }
 
+
+function parse_device_info(device_info) {
+    console.log(device_info);
+    rooms = Object.keys(device_info);
+}
+
 // Returns an array of api calls for all non solar panels
 function non_solar_urls(start, end, gran) {
     var urls = [];
     for (var key in device_info) {
         if (!device_info[key].solar) {
-            urls.push(create_url(start, end, gran, key));
+            urls.push(create_urls(start, end, gran, key));
         }
     }
     return urls;
 }
 
+// Generate urls for all panels and generates chart and bar graph
+function new_range(start, end) {
+    console.log(rooms);
+    var gran = 0;
+    var urls = [];
+    for (var i = 0; i < rooms.length; i++) {
+        urls[i] = create_urls(start, end, gran, rooms[i]);
+    }
+    fetch_aggregate(urls, generate_chart, true, rooms);
 
-function create_url(start, end, gran, panel) {
-    if (gran) {
-        var granularity = gran;
-    } else {
+    gran = DAY_SECONDS;
+    for (var i = 0; i < rooms.length; i++) {
+        urls[i] = create_urls(start, end, gran, rooms[i]);
+    }
+    fetch_aggregate(urls, generate_bar_graph, true, rooms);
+}
+
+// Returns an array of api calls for specified panel, timeframe, and granularity
+function create_urls(start, end, gran, panel) {
+    // If a granularity is not specified
+    if (!gran) {
         var num_nodes = 150;
-        var granularity = Math.ceil((end - start) / num_nodes);
+        gran = Math.ceil((end - start) / num_nodes);
     }
 
-    // device ID is 3rd entry in url seperatered by a '/'
+    // device ID is 3rd entry in url separated by a '/'
     var pathArray = window.location.pathname.split('/');
     var deviceId = pathArray[2];
 
     return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time="
-        + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
-}
-
-// Pull data for the last hour every minute
-function live_data() {
-    var end = Math.floor(Date.now() / 1000);
-    var start = end - HOUR_SECONDS;
-    pick_date(start, end);
-}
-
-function end_live_data() {
-    if (JSON.parse($("#live-button").attr("aria-pressed"))) {
-        $("#live-button").attr("aria-pressed", false);
-        $("#live-button").button("toggle");
-    }
-    clearInterval(liveTimer);
-    liveTimer = null;
-}
-
-// Generate urls for all panels and generates chart
-function pick_date(start, end) {
-    var gran = 0;
-    var urls = [];
-    var panels = [];
-    for (var key in device_info) {
-        panels.push(key);
-    }
-    for (var i = 0; i < panels.length; i++) {
-        urls[i] = create_url(start, end, gran, panels[i]);
-    }
-    fetch_aggregate(urls, generate_chart, true, panels);
+        + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + gran;
 }
 
 function fetch_aggregate(urls, callback, separate, panels) {
@@ -126,11 +119,6 @@ function fetch_aggregate(urls, callback, separate, panels) {
         }
     };
 
-    var onFailed = function () {
-        console.log(urls);
-        console.log("it broked");
-    };
-
     for (var i = 0; i < urls.length; i++) {
         responses[i] = null;
     }
@@ -145,32 +133,15 @@ function fetch_aggregate(urls, callback, separate, panels) {
                         onCompleted();
                     }
                 } else {
-                    onFailed();
+                    console.log("Something went wrong. Calls: ");
+                    console.log(urls);
                 }
             }
         };
-
         request.open("GET", urls[i], true);
         request.send();
     }
 }
-
-function fetch_bar_graph(url) {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function () {
-        if (request.readyState == XMLHttpRequest.DONE) {
-            if (request.status == 200) { //200 OK
-                generate_bar_graph(JSON.parse(request.responseText));
-            } else {
-                console.log("it broke");
-            }
-        }
-    };
-
-    request.open("GET", url, true);
-    request.send();
-}
-
 
 function generate_pie_graph(responses) {
     var data = [];
@@ -212,7 +183,24 @@ function generate_pie_graph(responses) {
     });
 }
 
-function generate_bar_graph(data) {
+function generate_bar_graph(responses) {
+    console.log("generate_bar_graph");
+    var res = [];
+    var data = [];
+    var panels = ["Panel1", "Panel2", "Panel3", "PowerS"];
+    console.log(responses);
+    for (var i = 0; i < responses.length; i++) {
+        res[i] = JSON.parse(responses[i]);
+        data[i + 1] = [panels[i]].concat(res[i].data.map(function (x) {
+            return Math.round(x.energy * 100) / 100;
+        }));
+        if (i == 0) {
+            data[0] = ['x'].concat(res[0].data.map(function (x) {
+                return x.time;
+            }));
+        }
+    }
+    console.log(data);
     c3.generate({
         padding: {
             top: 0,
@@ -224,14 +212,7 @@ function generate_bar_graph(data) {
         data: {
             x: 'x',
             xFormat: '%Y-%m-%d %H:%M:%S',
-            columns: [
-                ['x'].concat(data.data.map(function (x) {
-                    return x.time;
-                })),
-                ['energy'].concat(data.data.map(function (x) {
-                    return Math.round(x.energy * 100) / 100
-                }))
-            ],
+            columns: data,
             type: 'bar',
             empty: {label: {text: "No Data Available"}},
         },
@@ -240,7 +221,7 @@ function generate_bar_graph(data) {
                 type: 'timeseries',
                 tick: {
                     // displays day of week
-                    format: '%a'
+                    format: '%m-%d'
                 }
             },
             y: {
@@ -367,6 +348,7 @@ function generate_chart(responses, gran, panels) {
             }));
         }
     }
+    console.log(data);
     if (chart == null) {
         chart = c3.generate({
             padding: {
@@ -455,29 +437,30 @@ function generate_appliance_chart() {
     });
 }
 
+// Callback for date range picker
+function cb(start, end) {
+    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    start = Math.floor(start / 1000);
+    end = Math.floor(end / 1000);
+    console.log(moment.unix(start).format("MM/DD/YYYY h:mm") + " to " + moment.unix(end).format("MM/DD/YYYY h:mm"));
+    new_range(start, end);
+}
+
 var liveTimer;
 $(function () {
+    parse_device_info(device_info);
+    // Initialize range as past 7 days
     var start = moment().subtract(7, 'days');
     var end = moment();
-
-    function cb(start, end) {
-        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-        start = Math.floor(start / 1000);
-        end = Math.floor(end / 1000);
-        console.log(start + " to " + end);
-        console.log(moment.unix(start).format("MM/DD/YYYY h:mm") + " to " + moment.unix(end).format("MM/DD/YYYY h:mm"));
-        pick_date(start, end);
-    }
-
     $('#reportrange').daterangepicker({
         startDate: start,
         endDate: end,
         ranges: {
-            'Today': [moment(), moment()],
+            'Today': [moment().subtract(1, 'days'), moment()],
             'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
             'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'This Month': [moment().startOf('month'), moment()],
             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         }
     }, cb);
