@@ -17,7 +17,7 @@ function post_data_to_server(label) {
     var post = new XMLHttpRequest();
 
     // device ID is 3rd entry in url seperatered by a '/'
-    var pathArray = window.location.pathname.split('/'); 
+    var pathArray = window.location.pathname.split('/');
     var deviceId = pathArray[2];
     var url = "http://db.sead.systems:8080/" + deviceId + "/label";
     var params = JSON.stringify({data: label});
@@ -27,7 +27,7 @@ function post_data_to_server(label) {
     post.setRequestHeader("Content-length", params.length);
     post.setRequestHeader("Connection", "close");
 
-    post.onreadystatechange = function() {
+    post.onreadystatechange = function () {
         if (post.readyState == XMLHttpRequest.DONE) {
             if (post.status == 200) { //200 OK
                 console.log("Response:");
@@ -40,6 +40,17 @@ function post_data_to_server(label) {
     post.send(params);
 }
 
+// Returns an array of api calls for all non solar panels
+function non_solar_urls(start, end, gran) {
+    var urls = [];
+    for (var key in device_info) {
+        if (!device_info[key].solar) {
+            urls.push(create_url(start, end, gran, key));
+        }
+    }
+    return urls;
+}
+
 
 function create_url(start, end, gran, panel) {
     if (gran) {
@@ -50,65 +61,55 @@ function create_url(start, end, gran, panel) {
     }
 
     // device ID is 3rd entry in url seperatered by a '/'
-    var pathArray = window.location.pathname.split('/'); 
+    var pathArray = window.location.pathname.split('/');
     var deviceId = pathArray[2];
 
-    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time=" 
-            + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
+    return "http://db.sead.systems:8080/" + deviceId + "?start_time=" + start + "&end_time="
+        + end + "&list_format=energy&type=P&device=" + panel + "&granularity=" + granularity;
 }
 
-
-var repeater = null;
-//repeat in ms
-function pick(func, repeat) {
-    if (repeater) {
-        clearInterval(repeater);
-        repeater = null;
-    }
-    if (repeat) {
-        repeater = setInterval(func, repeat);
-    }
+// Pull data for the last hour every minute
+function live_data() {
     var end = Math.floor(Date.now() / 1000);
     var start = end - HOUR_SECONDS;
-    var panels = [];
-    var i = 0;
-    $('#panels .active').each(function(){
-        panels[i]= $(this).attr('id'); 
-        i++;
-    });
-    func(panels, start, end);
+    pick_date(start, end);
 }
 
-function make_picker(func, repeat) {
-    return function(event) {
-        return pick(func, repeat);
-    };
+function end_live_data() {
+    if (JSON.parse($("#live-button").attr("aria-pressed"))) {
+        $("#live-button").attr("aria-pressed", false);
+        $("#live-button").button("toggle");
+    }
+    clearInterval(liveTimer);
+    liveTimer = null;
 }
 
+// Generate urls for all panels and generates chart
 function pick_date(start, end) {
     var gran = 0;
     var urls = [];
-    var panels = ['Panel1', 'Panel2', 'Panel3', 'PowerS'];
-    for(var i = 0; i < panels.length; i++) {
+    var panels = [];
+    for (var key in device_info) {
+        panels.push(key);
+    }
+    for (var i = 0; i < panels.length; i++) {
         urls[i] = create_url(start, end, gran, panels[i]);
     }
     fetch_aggregate(urls, generate_chart, true, panels);
-
 }
 
-function fetch_aggregate(urls, callback, seperate, panels) {
-    if (!seperate) seperate = false;
+function fetch_aggregate(urls, callback, separate, panels) {
+    if (!separate) separate = false;
     var responses = [];
-    var reqs = [];
     var splitUrl = urls[0].split("=");
     var gran = splitUrl[6];
-    
-    var onCompleted = function() {
+
+    var onCompleted = function () {
         for (var i = 0; i < urls.length; i++) {
             if (responses[i] == null) return;
         }
-        if (seperate) {
-            if(callback == generate_chart) {
+        if (separate) {
+            if (callback == generate_chart) {
                 callback(responses, gran, panels);
             } else {
                 callback(responses);
@@ -124,28 +125,29 @@ function fetch_aggregate(urls, callback, seperate, panels) {
             callback({data: dat});
         }
     };
-    
-    var onFailed = function() {
-        console.log("it broke");
+
+    var onFailed = function () {
+        console.log(urls);
+        console.log("it broked");
     };
-    
+
     for (var i = 0; i < urls.length; i++) {
         responses[i] = null;
     }
     for (var i = 0; i < urls.length; i++) {
         var request = new XMLHttpRequest();
         request.seads_index = i;
-        request.onreadystatechange = function() {
-                if (this.readyState == XMLHttpRequest.DONE) {
-                    if (this.status == 200) { //200 OK
-                        if (responses[this.seads_index] == null) {
-                            responses[this.seads_index] = this.responseText;
-                            onCompleted();
-                        }
-                    } else {
-                        onFailed();
+        request.onreadystatechange = function () {
+            if (this.readyState == XMLHttpRequest.DONE) {
+                if (this.status == 200) { //200 OK
+                    if (responses[this.seads_index] == null) {
+                        responses[this.seads_index] = this.responseText;
+                        onCompleted();
                     }
+                } else {
+                    onFailed();
                 }
+            }
         };
 
         request.open("GET", urls[i], true);
@@ -155,7 +157,7 @@ function fetch_aggregate(urls, callback, seperate, panels) {
 
 function fetch_bar_graph(url) {
     var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
+    request.onreadystatechange = function () {
         if (request.readyState == XMLHttpRequest.DONE) {
             if (request.status == 200) { //200 OK
                 generate_bar_graph(JSON.parse(request.responseText));
@@ -174,8 +176,8 @@ function generate_pie_graph(responses) {
     var data = [];
     var res = [];
     for (var i = 0; i < responses.length; i++) {
-        if(typeof (res[i] = JSON.parse(responses[i]).data[0]) != 'undefined') {
-            data[i] = ['Panel' + (i+1), res[i].energy];
+        if (typeof (res[i] = JSON.parse(responses[i]).data[0]) != 'undefined') {
+            data[i] = ['Panel' + (i + 1), res[i].energy];
         } else {
             data = [];
             break;
@@ -183,26 +185,26 @@ function generate_pie_graph(responses) {
     }
     c3.generate({
         padding: {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-            },
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+        },
         bindto: '#pie',
         data: {
             // iris data from R
             columns: data,
             type: 'pie',
             colors: {
-                    Panel1: '#1f77b4',
-                    Panel2: '#FFC51E',
-                    Panel3: '#FF5B1E'
-                },
-            empty: { label: { text: "No Data Available" }   },
+                Panel1: '#1f77b4',
+                Panel2: '#FFC51E',
+                Panel3: '#FF5B1E'
+            },
+            empty: {label: {text: "No Data Available"}},
         },
         pie: {
             label: {
-                format: function(value, ratio, id) {
+                format: function (value, ratio, id) {
                     return Math.round(value * 100) / 100 + " kW";
                 }
             }
@@ -223,11 +225,15 @@ function generate_bar_graph(data) {
             x: 'x',
             xFormat: '%Y-%m-%d %H:%M:%S',
             columns: [
-                ['x'].concat(data.data.map( function(x) { return x.time; })), 
-                ['energy'].concat(data.data.map( function(x) { return Math.round(x.energy * 100) / 100}))
+                ['x'].concat(data.data.map(function (x) {
+                    return x.time;
+                })),
+                ['energy'].concat(data.data.map(function (x) {
+                    return Math.round(x.energy * 100) / 100
+                }))
             ],
             type: 'bar',
-            empty: { label: { text: "No Data Available" }   },
+            empty: {label: {text: "No Data Available"}},
         },
         axis: {
             x: {
@@ -239,7 +245,9 @@ function generate_bar_graph(data) {
             },
             y: {
                 tick: {
-                    format: function (d) { return d + " kWh"; }
+                    format: function (d) {
+                        return d + " kWh";
+                    }
                 }
             }
         },
@@ -254,40 +262,51 @@ function generate_bar_graph(data) {
 }
 
 function generate_gauge(data) {
+    console.log(data);
+
     if (typeof data.data[0] != 'undefined') {
+        var max = 0;
+        var length = data.data.length;
+        for(var i = 0; i < length; i++) {
+            var t = Math.round((data.data[0].energy * 360) * 1000) / 1000;
+            if(t > max) {
+                max = t;
+            }
+        }
+        console.log(max);
         var gauge = c3.generate({
             padding: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                },
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+            },
             bindto: '#gauge',
             data: {
                 columns: [
-                    ['data'].concat(Math.round((data.data[0].energy*360) * 1000) / 1000)
+                    ['data'].concat(Math.round((data.data[0].energy * 360) * 1000) / 1000)
                 ],
                 type: 'gauge',
-                empty: { label: { text: "No Data Available" }   },
+                empty: {label: {text: "No Data Available"}},
             },
             gauge: {
-               label: {
-                   format: function(value, ratio) {
-                       return value;
-                   },
-                   show: true // to turn off the min/max labels.
-               },
-               min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
-               max: 10, // 100 is default
-               units: ' kW',
-               width: 50 // for adjusting arc thickness
+                label: {
+                    format: function (value, ratio) {
+                        return value;
+                    },
+                    show: true // to turn off the min/max labels.
+                },
+                min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+                max: max, // 100 is default
+                units: ' kW',
+                width: 50 // for adjusting arc thickness
             },
             color: {
                 pattern: [GREEN, YELLOW, ORANGE, RED], // the three color levels for the percentage values.
                 threshold: {
                     //unit: 'value', // percentage is default
                     //max: 200, // 100 is default
-                    values: [10, 20, 50, 100]
+                    values: [max*0.25, max*0.5, max*0.75, max]
                 }
             },
             size: {
@@ -297,33 +316,33 @@ function generate_gauge(data) {
     } else {
         var gauge = c3.generate({
             padding: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                },
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+            },
             bindto: '#gauge',
             data: {
                 columns: ['error', 0],
                 type: 'gauge',
             },
             gauge: {
-               label: {
-                   format: function(value, ratio) {
-                       return "0";
-                   },
-                   show: true // to turn off the min/max labels.
-               },
-               min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
-               max: 10, // 100 is default
-               width: 50 // for adjusting arc thickness
+                label: {
+                    format: function (value, ratio) {
+                        return "0";
+                    },
+                    show: true // to turn off the min/max labels.
+                },
+                min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+                max: 2, // 100 is default
+                width: 50 // for adjusting arc thickness
             },
             color: {
                 pattern: [GREEN, YELLOW, ORANGE, RED], // the three color levels for the percentage values.
                 threshold: {
                     //unit: 'value', // percentage is default
                     //max: 200, // 100 is default
-                    values: [10, 20, 50, 100]
+                    values: [.05, 1, 1.5, 2]
                 }
             },
             size: {
@@ -335,17 +354,20 @@ function generate_gauge(data) {
 }
 
 var chart = null;
+
 function generate_chart(responses, gran, panels) {
     var res = [];
     var data = [];
     for (var i = 0; i < responses.length; i++) {
         res[i] = JSON.parse(responses[i]);
-        data[i+1] = [panels[i]].concat(res[i].data.map(function(x){
-                            var power = ((x.energy * 1000) * (3600 / gran));
-                            return Math.round(power * 1000) / 1000; 
-                        }));
-        if(i==0) {
-            data[0] = ['x'].concat(res[0].data.map(function(x){ return x.time; } ));
+        data[i + 1] = [panels[i]].concat(res[i].data.map(function (x) {
+            var power = ((x.energy * 1000) * (3600 / gran));
+            return Math.round(power * 1000) / 1000;
+        }));
+        if (i == 0) {
+            data[0] = ['x'].concat(res[0].data.map(function (x) {
+                return x.time;
+            }));
         }
     }
     if (chart == null) {
@@ -360,20 +382,20 @@ function generate_chart(responses, gran, panels) {
             data: {
                 x: 'x',
                 xFormat: '%Y-%m-%d %H:%M:%S',
-                columns:data,
-                types: { 
+                columns: data,
+                types: {
                     Panel1: 'area',
                     Panel2: 'area',
                     Panel3: 'area',
                     PowerS: 'area',
-                }, 
+                },
                 colors: {
                     Panel1: '#1f77b4',
                     Panel2: '#FFC51E',
                     Panel3: '#FF5B1E',
                     PowerS: '#2ca02c'
                 },
-                empty: { label: { text: "No Data Available" }   },
+                empty: {label: {text: "No Data Available"}},
             },
             zoom: {
                 enabled: true,
@@ -387,7 +409,9 @@ function generate_chart(responses, gran, panels) {
                 },
                 y: {
                     tick: {
-                        format: function(d) {return d + " W";}
+                        format: function (d) {
+                            return d + " W";
+                        }
                     }
                 }
             },
@@ -397,24 +421,23 @@ function generate_chart(responses, gran, panels) {
         });
     } else {
         chart.load({
-            columns:data,
-            unload:chart.columns
+            columns: data
         });
 
     }
-    
+
     /*-- Deselect points when dragging on graph --*/
-    $("#chart").mousedown(function() {
+    $("#chart").mousedown(function () {
         chart.unselect(['energy']);
     });
 
     /*-- Invoke modal for labelling --*/
-    $("#chart").mouseup(function() {
+    $("#chart").mouseup(function () {
         var elements = chart.selected('energy');
         if (elements.length === 0) return;
 
-        var start = new Date(elements[0].x); 
-        var end = new Date(elements[elements.length - 1].x); 
+        var start = new Date(elements[0].x);
+        var end = new Date(elements[elements.length - 1].x);
 
         $('#myModal').modal('show');
 
@@ -430,69 +453,81 @@ function generate_chart(responses, gran, panels) {
     });
 }
 
+// Generates chart of data for any appliances selected
 function generate_appliance_chart() {
+    var data = [];
+    $('#appliances .active').each(function () {
+        // Random data points for now
+        data.push([$(this).attr('id'), Math.floor(Math.random() * 20), Math.floor(Math.random() * 20), Math.floor(Math.random() * 20)]);
+    });
     var chart = c3.generate({
         bindto: '#chart2',
         data: {
-            columns: [
-                ['data1', 300, 350, 300, 0, 0, 0],
-                ['data2', 130, 100, 140, 200, 150, 50]
-            ],
+            columns: data,
             types: {
                 data1: 'area',
                 data2: 'area-spline'
-            }
+            },
+            empty: {label: {text: "No Data Available"}},
         }
     });
 }
 
-
-$(document).ready(function() {
+var liveTimer;
+$(document).ready(function () {
     //onload
-    $(".list-group button").click(function(e) {
-        if( $(this).hasClass( "active" ) ) {
+    $(".list-group button").click(function (event) {
+        if ($(this).hasClass("active")) {
             $(this).removeClass("active");
         } else {
             $(this).addClass("active");
         }
+        generate_appliance_chart();
     });
 
-    $('#Panel1').addClass("active");
-    $('#Panel2').addClass("active");
-    $('#Panel3').addClass("active");
-    $('#PowerS').addClass("active");
+    // Turn arrow for list group
+    $('.list-group-item').click(function (event) {
+        $('.glyphicon', this)
+            .toggleClass('glyphicon-chevron-right')
+            .toggleClass('glyphicon-chevron-down');
+    });
 
+    // Initialize all panel buttons as selected
+    $('#panels button').each(function () {
+        $(this).addClass('active');
+    });
 
-    $("#panels button").click(function(e) {
+    // Keep track of which panel buttons are selected
+    $("#panels button").click(function (e) {
         var count = 0;
-        $('#panels .active').each(function() {
+        $('#panels .active').each(function () {
             count++;
         });
 
         var i = 0;
         var panels = [];
-        if(count > 1) {
-            if($(this).hasClass("active")) {
+        if (count > 1) {
+            if ($(this).hasClass("active")) {
                 $(this).removeClass("active");
                 $(this).blur();
-                $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                $('#panels .active').each(function () {
+                    panels[i] = $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
             } else {
                 $(this).addClass("active");
-                $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                $('#panels .active').each(function () {
+                    panels[i] = $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
             }
         } else {
-            if(!$(this).hasClass("active")) {
+            if (!$(this).hasClass("active")) {
                 $(this).addClass("active");
-                $('#panels .active').each(function(){
-                    panels[i]= $(this).attr('id'); 
+                $('#panels .active').each(function () {
+                    panels[i] = $(this).attr('id');
                     i++;
                 });
                 chart.toggle($(this).attr('id'));
@@ -501,7 +536,7 @@ $(document).ready(function() {
     });
 
     //Live labelling click event
-    $("#label-button").click(function(event){
+    $("#label-button").click(function (event) {
         var pathArray = window.location.pathname.split('/'); // device ID is 3rd entry in url seperatered by a '/'
         var deviceId = pathArray[2];
         window.location.href = "/dashboard/" + deviceId + "/timer/";
@@ -512,9 +547,17 @@ $(document).ready(function() {
     $("#bad").hide();
 
     /*-- Initialize datepickers and buttons --*/
-    $("#live-button").on("click", make_picker(pick_date, 60 * 1000));
+    $("#live-button").on("click", function () {
+        if (!liveTimer) {
+            live_data();
+            liveTimer = setInterval(live_data, 30 * 1000);
+        } else {
+            clearInterval(liveTimer);
+            liveTimer = null;
+        }
+    });
 
-    $("#modal-close").on("click", function() {
+    $("#modal-close").on("click", function () {
         $('#myModal').modal('toggle');
         $("#bad").hide();
         $("#label-name").val('');
@@ -522,41 +565,31 @@ $(document).ready(function() {
 
     $("#daily-date").datetimepicker({
         format: 'MM/DD/YYYY'
-
     });
 
-    $("#daily-date").on("dp.change", function(){
+    $("#daily-date").on("dp.change", function () {
         var date = $("#daily-date").data("DateTimePicker").getDate();
         var start = Math.floor(date / 1000);
         var end = start + DAY_SECONDS;
+        end_live_data();
         pick_date(start, end);
     });
 
-    $("#range-start").on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
-            i++;
-        });
+    $("#range-start").on("dp.change", function () {
         var startDate = $("#range-start").data("DateTimePicker").getDate();
         var endDate = $("#range-end").data("DateTimePicker").getDate();
         var start = Math.floor(startDate / 1000);
         var end = Math.floor(endDate / 1000);
+        end_live_data();
         pick_date(start, end);
     });
 
-    $("#range-end").on("dp.change", function(){
-        var panels = [];
-        var i = 0;
-        $('#panels .active').each(function(){
-            panels[i]= $(this).attr('id'); 
-            i++;
-        });
+    $("#range-end").on("dp.change", function () {
         var startDate = $("#range-start").data("DateTimePicker").getDate();
         var endDate = $("#range-end").data("DateTimePicker").getDate();
         var start = Math.floor(startDate / 1000);
         var end = Math.floor(endDate / 1000);
+        end_live_data();
         pick_date(start, end);
     });
 
@@ -568,10 +601,10 @@ $(document).ready(function() {
     });
 
 
-    $("#event-submit").on("click", function() {
-        if ($("#label-name").val() !== '' && $("#start-date").data("DateTimePicker").getDate().unix() !== null && 
-                                            $("#end-date").data("DateTimePicker").getDate().unix() !== null) {
-            
+    $("#event-submit").on("click", function () {
+        if ($("#label-name").val() !== '' && $("#start-date").data("DateTimePicker").getDate().unix() !== null &&
+            $("#end-date").data("DateTimePicker").getDate().unix() !== null) {
+
             var label = {
                 start_time: $("#start-date").data("DateTimePicker").getDate().unix(),
                 end_time: $("#end-date").data("DateTimePicker").getDate().unix(),
@@ -582,7 +615,7 @@ $(document).ready(function() {
             $("#label-name").val('');
             $('#myModal').modal('hide');
             $("#success-alert").show();
-            $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
+            $("#success-alert").fadeTo(2000, 500).slideUp(500, function () {
                 $("#success-alert").hide();
             });
             $("#bad").hide();
@@ -601,38 +634,28 @@ $(document).ready(function() {
     var end;
     var start;
     var gran;
+    var urls;
 
     //fetch pie graph
     end = Math.floor(dateNow / 1000);
-    start = end - DAY_SECONDS*2;
+    start = end - DAY_SECONDS * 2;
     gran = DAY_SECONDS;
-    
-    fetch_aggregate([create_url(start, end, gran, "Panel1"),
-             create_url(start, end, gran, "Panel2"),
-             create_url(start, end, gran, "Panel3")],
-             generate_pie_graph, true);
-
+    urls = non_solar_urls(start, end, gran);
+    fetch_aggregate(urls, generate_pie_graph, true);
 
     //fetch gauge graph
-    end = Math.floor(dateNow / 1000)
-    start = end - DAY_SECONDS/4;
+    end = Math.floor(dateNow / 1000);
+    start = end - DAY_SECONDS / 4;
     gran = 1;
-    
-    fetch_aggregate([create_url(start, end, gran, "Panel1"),
-             create_url(start, end, gran, "Panel2"),
-             create_url(start, end, gran, "Panel3")],
-             generate_gauge);
+    urls = non_solar_urls(start, end, gran);
+    fetch_aggregate(urls, generate_gauge);
 
-    //getch bar graph
-    end = Math.floor((dateNow / 1000)/DAY_SECONDS)*DAY_SECONDS;
-    start = end - DAY_SECONDS*8;
+    //fetch bar graph
+    end = Math.floor((dateNow / 1000) / DAY_SECONDS) * DAY_SECONDS;
+    start = end - DAY_SECONDS * 8;
     gran = DAY_SECONDS;
-    
-    fetch_aggregate([create_url(start, end, gran, "Panel1"),
-             create_url(start, end, gran, "Panel2"),
-             create_url(start, end, gran, "Panel3")],
-             generate_bar_graph);
-
+    urls = non_solar_urls(start, end, gran);
+    fetch_aggregate(urls, generate_bar_graph);
 
     generate_appliance_chart();
 
