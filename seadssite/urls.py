@@ -11,8 +11,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', v.IndexView.as_view()),
     url(r'^dashboard/$', v.DashboardView),
-    url(r'^dashboard/(?P<device_id>[0-9]+)/$', v.graph),
-    url(r'^dashboard/[0-9]+/timer/$', v.TimerView),
-    url(r'^dashboard/[0-9]+/appliances/$', v.DevicesView),
     url(r'^authenticate', v.AuthenticateView)
 ]

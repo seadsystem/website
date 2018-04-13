@@ -70,41 +70,7 @@ def DashboardView(request):
     if request.session['user_id'] is not None:
         authenticated = True
 
-    ref = db.reference('users').child(request.session['user_id']).child('devices')
-
-    # Register a new device
-    if request.POST.get('device_id'):
-        new_device_name = request.POST.get('device_name')
-        new_device_id = request.POST.get('device_id')
-        ref.update({
-            new_device_id: {
-                'name': new_device_name
-            }
-        })
-
-    # Delete a device
-    elif request.POST.get('delete'):
-        device_id = request.POST.get('delete')
-        ref.child(device_id).delete()
-
-    devices = ref.get()
-
-    return render(request, 'dashboard.html', {'authenticated': authenticated, 'devices': devices})
-
-
-def graph(request, device_id):
-    authenticated = False
-    if 'user_id' not in request.session:
-        return render(request, 'graph.html', {'authenticated': authenticated})
-
-    if request.session['user_id'] is not None:
-        authenticated = True
-
-    # Get info associated with requested device
-    device = db.reference('devices').child(device_id)
-    rooms = device.child('rooms').order_by_child('solar').get()
-
-    return render(request, 'graph.html', {'authenticated': authenticated, 'rooms': rooms})
+    return render(request, 'dashboard.html', {'authenticated': authenticated})
 
 
 def TimerView(request):
