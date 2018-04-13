@@ -2,10 +2,10 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllow
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
-from seadssite.models import Device
-
 import google.auth.transport.requests
 import google.oauth2.id_token
+
+import simplejson
 
 HTTP_REQUEST = google.auth.transport.requests.Request()
 
@@ -70,7 +70,10 @@ def DashboardView(request):
     if request.session['user_id'] is not None:
         authenticated = True
 
-    return render(request, 'dashboard.html', {'authenticated': authenticated})
+    ref = db.reference('users').child(request.session['user_id']).child('devices')
+    devices = simplejson.dumps(ref.get())
+
+    return render(request, 'dashboard.html', {'authenticated': authenticated, 'devices': devices})
 
 
 def TimerView(request):
