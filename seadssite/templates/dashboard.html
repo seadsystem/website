@@ -12,6 +12,28 @@
             })
         </script>
     {% else %}
+        <link rel="stylesheet" type="text/css" href="{% static "css/dashboard.css" %}">
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+        <script>
+            var user_devices = {{ devices | safe }};
+        </script>
+        <script src="{% static 'js/dashboard.js' %}"></script>
+
+        <div id="vue-div">
+            <div id="manage-bar" class="manage-bar navbar navbar-fixed-left">
+                <div id="sead-logo" class="">
+                    <img src="{% static "images/logo.png" %}" class="logo">
+                </div>
+
+                <div v-for="(deviceInfo, deviceId) in devices" :device="deviceId">${deviceInfo.name}</div>
+            </div>
+
+            <div id="page-wrap" class="page-wrap">
+
+            </div>
+        </div>
+
 
     {% endif %}
 {% endblock %}
