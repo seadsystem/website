@@ -17,6 +17,7 @@
 
         <script>
             var user_devices = {{ devices | safe }};
+            var img_path = "{% static "images" %}";
         </script>
         <script src="{% static 'js/dashboard.js' %}"></script>
 
@@ -26,7 +27,16 @@
                     <img src="{% static "images/logo.png" %}" class="logo">
                 </div>
 
-                <div v-for="(deviceInfo, deviceId) in devices" :device="deviceId">${deviceInfo.name}</div>
+                <div data-toggle="modal" data-target="#add-room-modal"
+                     id="room-icon" class="room-icon">
+                    <img :src="icon_path" class="room-img" id="room-img">
+{#                    <div>#}
+{#                        <div id="room-label" class="room-label"> ${rooms[action_room].name}</div>#}
+{#                    </div>#}
+                </div>
+
+                <device-menu v-for="(deviceInfo, deviceId) in devices" :device-id="deviceId"
+                             v-bind:device-info="deviceInfo"></device-menu>
             </div>
 
             <div id="page-wrap" class="page-wrap">

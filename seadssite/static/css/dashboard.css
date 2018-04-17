@@ -76,7 +76,7 @@ body {
   border: 0px;
 }
 /* line 87, ../sass/dashboard.scss */
-.manage-bar .manage-list .manage-item {
+.manage-bar .manage-list .device_info {
   padding-left: 40px;
   border: 0px;
   border-radius: 5px;
