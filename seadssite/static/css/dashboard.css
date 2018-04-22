@@ -1,503 +1,145 @@
-/* line 9, ../sass/dashboard.scss */
-body {
-  over-flow-x: hidden;
-  margin: 0px;
-  padding: 0px;
-  font-weight: 300;
-  font-size: 15px;
-  font-family: 'Josefin Sans', sans-serif;
+#main_window {
+   overflow: hidden;
+   position: relative;
+   padding-top: 10px;
+   padding-left: 10px;
+   clear: right;
 }
 
-/* line 20, ../sass/dashboard.scss */
-#space-for-search-bar {
-  margin-top: 50px;
-  padding: 10px;
-  wdith: 300px;
+.page {
+   display: none;
 }
 
-/* line 27, ../sass/dashboard.scss */
-.manage-bar {
-  position: fixed;
-  z-index: 1000px;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  width: 230px;
-  text-align: center;
-  padding: 10px;
-}
-/* line 37, ../sass/dashboard.scss */
-.manage-bar .logo {
-  margin-top: 70px;
-  width: 165px;
-}
-/* line 42, ../sass/dashboard.scss */
-.manage-bar .room-icon {
-  margin-bottom: 30px;
-}
-/* line 45, ../sass/dashboard.scss */
-.manage-bar .room-icon .room-img {
-  width: 70px;
-  -webkit-transition: width 0.5s;
-  /* Safari */
-  transition: width 0.5s;
-}
-/* line 52, ../sass/dashboard.scss */
-.manage-bar .room-icon .room-label {
-  font-size: 18px;
-  width: 150px;
-  margin: auto;
-  -webkit-transition: font-size 0.5s;
-  /* Safari */
-  transition: font-size 0.5s;
-}
-/* line 63, ../sass/dashboard.scss */
-.manage-bar .room-icon:hover .room-img {
-  cursor: pointer;
-  width: 80px;
-  -webkit-transition: width 0.5s;
-  /* Safari */
-  transition: width 0.5s;
-}
-/* line 71, ../sass/dashboard.scss */
-.manage-bar .room-icon:hover .room-label {
-  font-size: 22px;
-  width: 150px;
-  margin: auto;
-  text-decoration: underline;
-  background-color: #F2F6FC;
-  -webkit-transition: font-size 0.5s;
-  /* Safari */
-  transition: font-size 0.5s;
-}
-/* line 83, ../sass/dashboard.scss */
-.manage-bar .manage-list {
-  text-align: left;
-  border: 0px;
-}
-/* line 87, ../sass/dashboard.scss */
-.manage-bar .manage-list .device_info {
-  padding-left: 40px;
-  border: 0px;
-  border-radius: 5px;
-}
-/* line 93, ../sass/dashboard.scss */
-.manage-bar .manage-list .active {
-  box-shadow: 0 0 8px #FF472E;
-  background-color: #EA5019;
-  padding-left: 50px;
-}
-/* line 99, ../sass/dashboard.scss */
-.manage-bar .manage-list .add-room {
-  margin-top: 5px;
-}
-/* line 101, ../sass/dashboard.scss */
-.manage-bar .manage-list .add-room .icon {
-  color: #459DFF;
-  font-size: 20px;
-}
-/* line 105, ../sass/dashboard.scss */
-.manage-bar .manage-list .add-room .icon:hover {
-  color: #2D5CB0;
-}
-/* line 109, ../sass/dashboard.scss */
-.manage-bar .manage-list .badge {
-  background-color: #FF472E;
+#graphs_page {
+   display: inline;
 }
 
-/* line 115, ../sass/dashboard.scss */
-.page-wrap {
-  margin-right: 0px;
-  margin-left: 250px;
-}
-/* line 119, ../sass/dashboard.scss */
-.page-wrap .search-bar {
-  z-index: 100;
-  position: fixed;
-  top: 0px;
-  width: 100%;
-  background-color: #F2F6FC;
-  height: 50px;
-  padding: 10px;
-  padding-left: 5%;
-  border: 0.5px #A1A8B2 solid;
-}
-/* line 129, ../sass/dashboard.scss */
-.page-wrap .search-bar .bar-display {
-  display: none;
-}
-/* line 132, ../sass/dashboard.scss */
-.page-wrap .search-bar .fa {
-  color: #797B82;
-  margin-right: 10px;
-}
-/* line 137, ../sass/dashboard.scss */
-.page-wrap .search-bar .icon-wrap {
-  width: 150px;
-  position: fixed;
-  top: 14px;
-  right: 0px;
-  text-align: center;
-}
-/* line 144, ../sass/dashboard.scss */
-.page-wrap .search-bar .icon-wrap .dropdown {
-  display: inline;
-}
-/* line 146, ../sass/dashboard.scss */
-.page-wrap .search-bar .icon-wrap .dropdown .icon {
-  margin-left: 5%;
-  margin-right: 5%;
-  font-size: 20px;
-}
-/* line 151, ../sass/dashboard.scss */
-.page-wrap .search-bar .icon-wrap .dropdown .icon:hover {
-  margin-left: 5%;
-  margin-right: 5%;
-  font-size: 20px;
-  color: #9abcf4;
-}
-/* line 159, ../sass/dashboard.scss */
-.page-wrap .search-bar .search-bar-input {
-  width: 400px;
-  background-color: #F2F6FC;
-  border-width: 0px;
-  border: none;
-}
-/* line 167, ../sass/dashboard.scss */
-.page-wrap .top-manage-bar {
-  display: none;
-}
-/* line 169, ../sass/dashboard.scss */
-.page-wrap .top-manage-bar .add-room {
-  margin-right: 5px;
-}
-/* line 171, ../sass/dashboard.scss */
-.page-wrap .top-manage-bar .add-room .add-room-icon {
-  margin-right: 3px;
-  margin-left: 3px;
-  font-size: 40px;
-}
-/* line 176, ../sass/dashboard.scss */
-.page-wrap .top-manage-bar .add-room .add-room-word {
-  font-size: 20px;
-  position: relative;
-  top: -10px;
+#livegraphs_page {
+   display: inline;
 }
 
-/* line 186, ../sass/dashboard.scss */
-.module-wrap {
-  width: 100%;
-  height: 1200px;
-  padding-right: 20px;
-}
-/* line 192, ../sass/dashboard.scss */
-.module-wrap .mo {
-  display: inline-block;
-  margin-top: 20px;
-  margin-right: 20px;
-}
-/* line 197, ../sass/dashboard.scss */
-.module-wrap .mo .mo-el {
-  width: 100%;
-}
-/* line 200, ../sass/dashboard.scss */
-.module-wrap .mo .mo-el .panel {
-  margin: 0;
-  background-color: #F2F6FC;
-  border-radius: 5px;
-  border: 0.5px #A1A8B2 solid;
-  border-top: none;
-}
-/* line 207, ../sass/dashboard.scss */
-.module-wrap .mo .mo-el .panel .panel-heading {
-  background-color: #F2F6FC;
-  border-radius: 5px;
-}
-/* line 214, ../sass/dashboard.scss */
-.module-wrap .module1 {
-  margin-right: 20px;
-  width: 100%;
-  height: 380px;
-  padding-right: 40px;
-}
-/* line 220, ../sass/dashboard.scss */
-.module-wrap .module2 {
-  width: 64%;
-  height: 300px;
-}
-/* line 224, ../sass/dashboard.scss */
-.module-wrap .module3 {
-  width: 31%;
-  height: 300px;
+.page h1 {
+	font-size: 3em;
+	font-weight: bold;
+	color: #4d4d4d;
+	padding: .5em 0 1em 0;
+	text-indent: 1.5em;
+	text-transform: uppercase;
 }
 
-/* line 235, ../sass/dashboard.scss */
-.add-room-modal .modal-dialog .modal-content .modal-footer {
-  margin-top: 100px;
-  border: none;
-}
-/* line 238, ../sass/dashboard.scss */
-.add-room-modal .modal-dialog .modal-content .modal-footer .btn {
-  height: 25px;
-  border-radius: 5px;
-  line-height: 12px;
-}
-/* line 247, ../sass/dashboard.scss */
-.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .chosen-icon .panel-chosen-icon {
-  margin-top: 10px;
-  width: 220px;
-  -webkit-transition: width 0.5s;
-  /* Safari */
-  transition: width 0.5s;
-}
-/* line 254, ../sass/dashboard.scss */
-.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .chosen-icon .panel-chosen-icon:hover {
-  width: 240px;
-  -webkit-transition: width 0.5s;
-  /* Safari */
-  transition: width 0.5s;
-}
-/* line 260, ../sass/dashboard.scss */
-.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .chosen-icon .chosen-description {
-  padding: 20px;
-  margin-left: 180px;
-}
-/* line 265, ../sass/dashboard.scss */
-.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .input-group {
-  margin-top: 10px;
-}
-/* line 275, ../sass/dashboard.scss */
-.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .panel .panel-collapse .panel-body .panel-icon {
-  margin: 8px;
-  width: 50px;
-  -webkit-transition: width 0.5s;
-  /* Safari */
-  transition: width 0.5s;
-}
-/* line 282, ../sass/dashboard.scss */
-.add-room-modal .modal-dialog .modal-content .modal-body .panel-group .panel .panel-collapse .panel-body .panel-icon:hover {
-  width: 60px;
-  -webkit-transition: width 0.5s;
-  /* Safari */
-  transition: width 0.5s;
+.page h2 {
+	font-size: 2em;
+	font-weight: bold;
+	color: #4d4d4d;
+	padding: .5em 0 .5em 0;
+	text-transform: uppercase;
 }
 
-@media only screen and (max-width: 1025px) {
-  /* For flip ipad */
-  /* line 301, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .mo {
-    margin-right: 0px;
-    margin-left: 10px;
-  }
-  /* line 306, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module2 {
-    width: 100%;
-  }
-  /* line 309, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module3 {
-    width: 360px;
-  }
+.page h1 img{
+margin: -.1em .5em -.7em 0;
 }
-@media only screen and (max-width: 768px) {
-  /* For tablets:ipad */
-  /* line 318, ../sass/dashboard.scss */
-  #space-for-search-bar {
-    margin-top: 50px;
-  }
 
-  /* line 321, ../sass/dashboard.scss */
-  #manage-bar {
-    display: none;
-  }
+.page hr {
+	width: 95%;
+	padding-right: 1em;
+}
 
-  /* line 324, ../sass/dashboard.scss */
-  #page-wrap {
-    margin-left: 0px;
-  }
-  /* line 327, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .mo {
-    margin-right: 0px;
-    margin-left: 10px;
-  }
-  /* line 332, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module2 {
-    width: 100%;
-  }
-  /* line 335, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module3 {
-    width: 360px;
-  }
-
-  /* line 340, ../sass/dashboard.scss */
-  #icon-wrap {
-    margin-left: 0px;
-  }
-
-  /* line 343, ../sass/dashboard.scss */
-  #search-bar-input {
-    width: 200px;
-  }
-
-  /* line 346, ../sass/dashboard.scss */
-  #bar-display {
+/* Tab Content - menucool.com */
+.tabs ul
+{
+    padding: 7px 0;
+    margin:0;
+    font-size: 0;
+    list-style-type: none;
+    text-align: left; /*set to left, center, or right to align the tabs as desired*/
+    padding-left:20px; /* Offset of the first tab */
+}
+        
+.tabs ul li
+{
+    display: inline;
+    margin: 0;/*no distance between tabs*/
+    background: White;
+    margin-left: -4px;
+}
+        
+.tabs ul li a
+{
+    font: normal 12px Verdana;
+    text-decoration: none;
+    position: relative;
+    padding: 7px 22px;
     color: #000;
-    font-size: 25px;
-    display: inline-block;
-  }
-
-  /* line 351, ../sass/dashboard.scss */
-  #search-display {
-    display: none;
-  }
+    outline:none;
+    background: #D3D3D3;
+    border:1px solid #CCC;
+    border-right:0;
 }
-@media only screen and (max-width: 750px) {
-  /* For flip i6p: */
-  /* line 358, ../sass/dashboard.scss */
-  #manage-bar {
-    display: none;
-  }
 
-  /* line 361, ../sass/dashboard.scss */
-  #page-wrap {
-    margin-left: 0px;
-  }
-  /* line 364, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .mo {
-    margin-right: 0px;
-    margin-left: 10px;
-  }
-  /* line 369, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module2 {
-    width: 100%;
-  }
-  /* line 372, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module3 {
-    width: 360px;
-  }
-
-  /* line 377, ../sass/dashboard.scss */
-  #icon-wrap {
-    margin-left: 0px;
-  }
-
-  /* line 380, ../sass/dashboard.scss */
-  #search-bar-input {
-    width: 200px;
-  }
+/*Note: IE8 and earlier doesn't support li:last-child. You have to add another class to the last tab (LI) and specify its border-right as below.*/
+.tabs ul li:last-child a
+{
+    border-right:1px solid #CCC;
 }
-@media only screen and (max-width: 700px) {
-  /* For flip i6: */
-  /* line 403, ../sass/dashboard.scss */
-  #manage-bar {
-    display: none;
-  }
-
-  /* line 406, ../sass/dashboard.scss */
-  #page-wrap {
-    margin-left: 0px;
-  }
-
-  /* line 409, ../sass/dashboard.scss */
-  #icon-wrap {
-    margin-left: 0px;
-  }
-
-  /* line 412, ../sass/dashboard.scss */
-  #search-bar-input {
-    width: 200px;
-  }
-
-  /* line 417, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .mo {
-    margin-right: 0px;
-    margin-left: 10px;
-  }
-  /* line 422, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module2 {
-    width: 100%;
-  }
-  /* line 425, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module3 {
-    width: 300px;
-  }
+  
+        
+.tabs ul li a:hover
+{
+    color: #000;
+    background: #f7f7f7;
 }
-@media only screen and (max-width: 420px) {
-  /* For phone6 */
-  /* line 434, ../sass/dashboard.scss */
-  #manage-bar {
-    display: none;
-  }
-
-  /* line 437, ../sass/dashboard.scss */
-  #page-wrap {
-    margin-left: 0px;
-  }
-
-  /* line 440, ../sass/dashboard.scss */
-  #icon-wrap {
-    margin-left: 0px;
-  }
-
-  /* line 443, ../sass/dashboard.scss */
-  #search-bar-input {
-    width: 150px;
-  }
-
-  /* line 448, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .mo {
-    margin-left: 5px;
-  }
-  /* line 451, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module1 {
-    width: 400px;
-    padding-right: 0px;
-  }
-  /* line 455, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module2 {
-    width: 400px;
-    padding-right: 0px;
-  }
-  /* line 459, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module3 {
-    width: 400px;
-  }
+        
+.tabs ul li.ui-tabs-active a, .tabs ul li.ui-tabs-active a:hover
+{
+    top: 0px;
+    font-weight:normal;
+    background: #f7f7f7;
+    border-bottom: 1px solid #f7f7f7;
+    color: #000;
 }
-@media only screen and (max-width: 375px) {
-  /* For phone5 and low */
-  /* line 468, ../sass/dashboard.scss */
-  #manage-bar {
-    display: none;
-  }
+        
+        
+.tabs ul li.ui-tabs-active a:hover
+{
+    text-decoration: none;
+}
 
-  /* line 471, ../sass/dashboard.scss */
-  #page-wrap {
-    margin-left: 0px;
-  }
+.tabs > div
+{
+    border-top: 1px solid #CCC; padding: 30px 10px;
+}
 
-  /* line 474, ../sass/dashboard.scss */
-  #icon-wrap {
-    margin-left: 0px;
-  }
+.tabs
+{
+    width: 95%;
+	padding-left: 2.8em;
+}
 
-  /* line 477, ../sass/dashboard.scss */
-  #search-bar-input {
-    width: 150px;
-  }
+#shemp-graph {
+   width: 100%;
+   height: 80%;
+}
 
-  /* line 482, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .mo {
-    margin-left: 3%;
-  }
-  /* line 485, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module1 {
-    width: 100%;
-  }
-  /* line 488, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module2 {
-    width: 100%;
-  }
-  /* line 491, ../sass/dashboard.scss */
-  #page-wrap .module-wrap .module3 {
-    width: 100%;
-  }
+.greenButton {
+   display:inline-block;
+   width:117px;height:58px;
+   background:url(../images/icons/green_button_download.png) no-repeat;
+   text-indent:-9999999px;
+   text-align:left;
+   overflow:hidden;
+   cursor:pointer;
+}
+
+.ui-widget-overlay {
+   position: fixed !important;
+   background: #000 !important;
+   opacity: .3 !important;
+   -moz-opacity: 0.3 !important;
+   filter: alpha(opacity=30) !important;
+}
+
+.ui-dialog { z-index: 1000 !important ;}
+
+.navbar.navbar-default.navbar-static-top {
+   margin-bottom: 0px;
 }

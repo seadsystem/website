@@ -57,6 +57,12 @@ def LogoutView(request):
     request.session.clear()
     return HttpResponse(status=200)
 
+class DashboardTest(TemplateView):
+    """
+    load main page as "index"
+    """
+    template_name = 'dashboard_test.html'
+
 
 '''
 device dashboard page controller
