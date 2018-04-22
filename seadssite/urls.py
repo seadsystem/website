@@ -12,5 +12,5 @@ urlpatterns = [
     url(r'^$', v.IndexView.as_view()),
     url(r'^dashboard/$', v.DashboardView),
     url(r'^authenticate', v.AuthenticateView),
-    url(r'^dashboard_test/$', v.DashboardTest.as_view()),
+    url(r'^dashboard_test/$', v.DashboardTest),
 ]

@@ -107,7 +107,7 @@ var app = function() {
         {
             var rooms = self.vue.room_structure.rooms;
             // console.log(rooms);
-            for(var i = 1; i < rooms.length; i++){
+            for(var i = 0; i < rooms.length; i++){
                 // console.log("icon_path: " + rooms[i].icon_path);
                 // console.log("room: " + rooms[i].room)
                 self.vue.modal_chosen_icon_path = img_path + rooms[i].icon_path;
@@ -156,27 +156,26 @@ var app = function() {
 
     //---------------API calls-----------------
     self.get_room = function (callback) {
+      var rooms = user_devices["\"466419818\""].rooms;
+      var roomIds = Object.keys(rooms);
+      var roomsVueStruct = [];
+      var modHeader = "activity,devices,graph,consumption,notification";
+
+      for (var i = 0; i < roomIds.length; i++) {
+        var roomName = roomIds[i];
+        var room = rooms[roomName];
+        var appliancesIds = Object.keys(room.appliances);
+        var roomVueStruct = {
+          "room": roomName,
+          "icon_path": "/" + room.icon + ".png",
+          "device": appliancesIds,
+          "mod_header": modHeader
+        }
+        roomsVueStruct.push(roomVueStruct);
+      }
+
       var info = {
-        "rooms" : [
-          {
-            "room" : "bedroom",
-            "icon_path" : "/bedroom.png",
-            "device" : "tv,light,desktop,ac",
-            "mod_header" : "activity,devices,graph,consumption,notification",
-          },
-          {
-            "room" : "kitchen",
-            "icon_path" : "/kitchen.png",
-            "device" : "freezer,fridge,toaster,microwave,light",
-            "mod_header" : "activity,devices,graph,consumption,notification",
-          },
-          {
-            "room" : "office",
-            "icon_path" : "/office.png",
-            "device" : "desktop,light,ipad,shredder",
-            "mod_header" : "activity,devices,graph,consumption,notification",
-          },
-        ]
+        "rooms": roomsVueStruct
       };
       self.vue.room_structure = info;
       callback();

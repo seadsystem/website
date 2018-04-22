@@ -18,6 +18,9 @@
 <script>
 var img_path = "{% static 'images' %}";
 </script>
+<script>
+var user_devices = {{ devices | safe }};
+</script>
 <div id="vue-div" style="display: hidden;">
     <div id="manage-bar" class="manage-bar navbar navbar-fixed-left">
         <div id="sead-logo" class="">

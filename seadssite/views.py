@@ -57,11 +57,22 @@ def LogoutView(request):
     request.session.clear()
     return HttpResponse(status=200)
 
-class DashboardTest(TemplateView):
+def DashboardTest(request):
     """
     load main page as "index"
     """
-    template_name = 'dashboard_test.html'
+    authenticated = False
+    if 'user_id' not in request.session:
+        return render(request, 'dashboard_test.html', {'authenticated': authenticated})
+
+    if request.session['user_id'] is not None:
+        authenticated = True
+
+    userRef = db.reference('users').child(request.session['user_id']).child('devices')
+    devices = simplejson.dumps(userRef.get());
+
+    print(devices)
+    return render(request, 'dashboard_test.html', {'authenticated': authenticated, 'devices': devices})
 
 
 '''
@@ -123,4 +134,3 @@ def DevicesView(request):
     #
     # user_devices = Device.objects.filter(user=current_user, is_active=True)
     return render(request, 'devices.html')
-
