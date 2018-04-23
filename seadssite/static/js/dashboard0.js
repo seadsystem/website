@@ -180,7 +180,31 @@ var app = function () {
         self.vue.room_structure = info;
         callback();
     }
-
+    // this function calls the seads api and generates power from start to end
+    // currently is only good for the last weeks data, i'll be making it more generic in the next few days
+    function gen_data_points(start_date,end_date,panel) {
+        var points = []
+        // the iteration value can be changed later to a function parameter, currently 24*60*60 for daily data points
+        for (i = start_date-100; i <= end_date-100; i += (24*60*60)){ 
+            $.ajax({
+                url:"http://db.sead.systems:8080/466419818?start_time="+i+"&end_time="+i+"&device="+panel+"&type=P",
+                dataType: 'json',
+                async: false,
+                success: function(data_test){
+                    // console.log(data_test)
+                    points.push(data_test[1])
+                }
+            })
+        }
+        temp1 = []
+        for (i = 1; i < points.length; i++) {
+            temp1.push({
+                date:points[i][0],
+                data:((points[i-1][1]-points[i][1])/3600000)
+                })
+        }
+        return temp1
+    }
     function get_data_url_param(room, device, start, end) {
         var param = {
             room: room,
@@ -362,7 +386,7 @@ var app = function () {
         var mod = self.vue.rooms[room_i].modules[mod_i];
         if (room_i == 0) { //Home condition
             if (mod.header == "activity") {
-                areaspline(self.vue.rooms, room_i, mod_i);
+                areaspline(self.vue.rooms, room_i, mod_i,gen_data_points(self.vue.start_date,self.vue.end_date,"Panel1"));
             } else if (mod.header == "devices") {
                 htmltag = gen_dev_list(room_i);
                 tmp = self.vue.rooms[room_i].modules[mod_i];
@@ -721,8 +745,8 @@ var app = function () {
             action_room: 0, //_idx of room, 0 refers to Home
             adding_room: true, // modal is for editng or adding
             isInitialized: false,
-            start_date: moment().subtract(7, 'days').format('YYYY,M,D'),
-            end_date: moment().format('YYYY,M,D'),
+            start_date: moment().utc().unix() - (7*86400),
+            end_date: moment().utc().unix(),
         },
         methods: {
             manage_btn_toggle: self.manage_btn_toggle,
