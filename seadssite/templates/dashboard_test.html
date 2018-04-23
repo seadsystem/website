@@ -1,5 +1,5 @@
 {% load static from staticfiles %}
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <link href="{% static 'css/bar-chart.css' %}" rel="stylesheet" media="screen">
 <link href="{% static 'css/d3tree.css' %}" rel="stylesheet" media="screen">
 <link href="{% static 'css/dashboard.css' %}" rel="stylesheet" media="screen">
@@ -16,10 +16,8 @@
 <!-- For Areaspline -->
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
 <script>
-var img_path = "{% static 'images' %}";
-</script>
-<script>
-var user_devices = {{ devices | safe }};
+    var img_path = "{% static 'images' %}";
+    var user_devices = {{ devices | safe }};
 </script>
 <div id="vue-div" style="display: hidden;">
     <div id="manage-bar" class="manage-bar navbar navbar-fixed-left">
@@ -28,19 +26,23 @@ var user_devices = {{ devices | safe }};
             <img src="{% static 'images/logo.jpg' %}" class="logo">
         </div>
         <!-- change according to #manage-list -->
-        <div v-on:click.prevent="adding_editing_room('edit');" data-toggle="modal" data-target="#add-room-modal" id="room-icon" class="room-icon">
+        <div v-on:click.prevent="adding_editing_room('edit');" data-toggle="modal" data-target="#add-room-modal"
+             id="room-icon" class="room-icon">
             <img :src="icon_path" class="room-img" id="room-img">
             <div>
-                <div id="room-label" class="room-label"> ${rooms[action_room].name} </div>
+                <div id="room-label" class="room-label"> ${rooms[action_room].name}</div>
             </div>
         </div>
         <div id="manage-list" class="list-group manage-list">
             <!-- use v-for here -->
-            <manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test"></manage-item>
+            <manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle"
+                         :test="test"></manage-item>
             <div class="add-room text-right">
                 <!-- Trigger the modal with a button -->
-                <i class="fa fa-plus-square-o icon" v-on:click.prevent="adding_editing_room('add');" href="" type="button" data-toggle="modal" data-target="#add-room-modal" aria-hidden="true"></i>
-                <i class="fa fa-minus-square-o icon" aria-hidden="true" data-toggle="modal" data-target="#del-room-modal"></i>
+                <i class="fa fa-plus-square-o icon" v-on:click.prevent="adding_editing_room('add');" href=""
+                   type="button" data-toggle="modal" data-target="#add-room-modal" aria-hidden="true"></i>
+                <i class="fa fa-minus-square-o icon" aria-hidden="true" data-toggle="modal"
+                   data-target="#del-room-modal"></i>
             </div>
         </div>
     </div>
@@ -51,10 +53,12 @@ var user_devices = {{ devices | safe }};
                 <i id="bar-display" class="fa fa-bars bar-display"></i>
             </a>
             <i id="search-display" class="fa fa-search"></i>
-            <input type="text" name="search-bar-input" id="search-bar-input" class="search-bar-input" placeholder="Search For Device" v-model="search_bar_input_val">
+            <input type="text" name="search-bar-input" id="search-bar-input" class="search-bar-input"
+                   placeholder="Search For Device" v-model="search_bar_input_val">
             <div id="icon-wrap" class="icon-wrap">
                 <div class="dropdown">
-                    <i class="fa fa-cog icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle" data-toggle="dropdown"></i>
+                    <i class="fa fa-cog icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle"
+                       data-toggle="dropdown"></i>
                     <ul class="dropdown-menu dropdown-menu-right">
                         <li class="dropdown-header">ADD BOXES</li>
                         <li><a href="#" v-on:click.prevent="add_module(1,'Activity');">Activity</a></li>
@@ -65,7 +69,8 @@ var user_devices = {{ devices | safe }};
                     </ul>
                 </div>
                 <div class="dropdown">
-                    <i class="fa fa-bell icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle" data-toggle="dropdown"></i>
+                    <i class="fa fa-bell icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle"
+                       data-toggle="dropdown"></i>
                     <ul class="dropdown-menu dropdown-menu-right">
                         <li><a href="#">HTML</a></li>
                         <li><a href="#">CSS</a></li>
@@ -73,7 +78,8 @@ var user_devices = {{ devices | safe }};
                     </ul>
                 </div>
                 <div class="dropdown">
-                    <i class="fa fa-user icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle" data-toggle="dropdown"></i>
+                    <i class="fa fa-user icon" aria-hidden="true" v-on:click.prevent class="dropdown-toggle"
+                       data-toggle="dropdown"></i>
                     <ul class="dropdown-menu dropdown-menu-right">
                         <li><a href="#">HTML</a></li>
                         <li><a href="#">CSS</a></li>
@@ -83,20 +89,24 @@ var user_devices = {{ devices | safe }};
             </div>
         </div>
         <div id="space-for-search-bar">
-            <div id="reportrange" class="pull-left" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc;">
+            <div id="reportrange" class="pull-left"
+                 style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc;">
                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                 <span></span> <b class="caret"></b>
             </div>
         </div>
         <div id="top-manage-bar" class="top-manage-bar">
-            <top-manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test" :top_manage_bar_toggle="top_manage_bar_toggle"></top-manage-item>
+            <top-manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test"
+                             :top_manage_bar_toggle="top_manage_bar_toggle"></top-manage-item>
             <div class="add-room text-right" id="">
-                <a class="add-room-icon" v-on:click.prevent="adding_editing_room('add');" href="" type="button" data-toggle="modal" data-target="#add-room-modal">
+                <a class="add-room-icon" v-on:click.prevent="adding_editing_room('add');" href="" type="button"
+                   data-toggle="modal" data-target="#add-room-modal">
                     <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                 </a>
                 <span class="add-room-word">Room</span>
                 <a class="add-room-icon" v-on:click.prevent href="">
-                    <i class="fa fa-minus-square-o" aria-hidden="true" data-toggle="modal" data-target="#del-room-modal"></i>
+                    <i class="fa fa-minus-square-o" aria-hidden="true" data-toggle="modal"
+                       data-target="#del-room-modal"></i>
                 </a>
             </div>
         </div>
@@ -114,7 +124,8 @@ var user_devices = {{ devices | safe }};
                 </div>
                 <div class="modal-body">
                     <div class="list-group">
-                        <a href="#" class="del-room-list list-group-item" v-for="room in rooms" v-on:click.prevent="del_room(room._idx)">${room.name}</a>
+                        <a href="#" class="del-room-list list-group-item" v-for="room in rooms"
+                           v-on:click.prevent="del_room(room._idx)">${room.name}</a>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -142,7 +153,8 @@ var user_devices = {{ devices | safe }};
                             </div>
                             <div id="collapse1" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    <a v-on:click.prevent="modal_choose_icon(icon); " v-for="icon in icons" data-toggle="collapse" href="#collapse1">
+                                    <a v-on:click.prevent="modal_choose_icon(icon); " v-for="icon in icons"
+                                       data-toggle="collapse" href="#collapse1">
                                         <img class="panel-icon" :src="icon">
                                     </a>
                                 </div>
@@ -151,7 +163,8 @@ var user_devices = {{ devices | safe }};
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon" id="basic-addon1">Room Name</span>
-                            <input id="modal-input" v-model="modal_room_name" type="text" class="form-control" placeholder="Master Bedroom" aria-describedby="basic-addon1">
+                            <input id="modal-input" v-model="modal_room_name" type="text" class="form-control"
+                                   placeholder="Master Bedroom" aria-describedby="basic-addon1">
                         </div>
                         <div class="chosen-icon text-center">
                             <div v-on:click.prevent data-toggle="collapse" href="#collapse1">
@@ -164,22 +177,28 @@ var user_devices = {{ devices | safe }};
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button v-if="adding_room" v-on:click.prevent="add_room();" type="button" class="btn btn-default" data-dismiss="modal">Add</button>
-                    <button v-if="!adding_room" v-on:click.prevent="edit_room();" type="button" class="btn btn-default" data-dismiss="modal">Edit</button>
-                    <button v-on:click.prevent="modal_reinit();" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button v-if="adding_room" v-on:click.prevent="add_room();" type="button" class="btn btn-default"
+                            data-dismiss="modal">Add
+                    </button>
+                    <button v-if="!adding_room" v-on:click.prevent="edit_room();" type="button" class="btn btn-default"
+                            data-dismiss="modal">Edit
+                    </button>
+                    <button v-on:click.prevent="modal_reinit();" type="button" class="btn btn-default"
+                            data-dismiss="modal">Cancel
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript"><!--
-    // These variables are used by the web2py_ajax_init function in web2py_ajax.js (which is loaded below).
-    var w2p_ajax_confirm_message = "Are you sure you want to delete this object?'";
-    var w2p_ajax_disable_with_message = "Working...";
-    var w2p_ajax_date_format = "%Y-%m-%d";
-    var w2p_ajax_datetime_format = "%Y-%m-%d %H:%M:%S";
-    var ajax_error_500 = 'Ajax 500 error';
-    //--></script>
+// These variables are used by the web2py_ajax_init function in web2py_ajax.js (which is loaded below).
+var w2p_ajax_confirm_message = "Are you sure you want to delete this object?'";
+var w2p_ajax_disable_with_message = "Working...";
+var w2p_ajax_date_format = "%Y-%m-%d";
+var w2p_ajax_datetime_format = "%Y-%m-%d %H:%M:%S";
+var ajax_error_500 = 'Ajax 500 error';
+//--></script>
 <!-- this is default footer -->
 <!-- D3.js Source -->
 <!-- <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script> -->
@@ -191,7 +210,6 @@ var user_devices = {{ devices | safe }};
 <script type="text/javascript" src="{% static 'js/calendar.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/modernizr-2.8.3.min.js' %}"></script>
-
 
 
 <script type="text/javascript" src="{% static 'js/scatterplot2.js' %}"></script>
@@ -215,4 +233,4 @@ var user_devices = {{ devices | safe }};
 <!-- Vue.js -->
 <script type="text/javascript" src="{% static 'js/vue.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/dashboard0.js' %}"></script>
-{{end}}
+{{ end }}

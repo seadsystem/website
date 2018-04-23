@@ -9,7 +9,7 @@ var tmp_data;
 // var asline_data2 = [100, 400, 300, 500, 600, 100, 110];
 
 
-var app = function() {
+var app = function () {
 
     var self = {};
 
@@ -17,25 +17,25 @@ var app = function() {
 
 
     //---------------HELPER-----------------
-    var is_mod = function() {
+    var is_mod = function () {
         console.log('works');
     };
 
-    var array_remove = function(index) {
-        arr = jQuery.grep(arr, function(index) {
+    var array_remove = function (index) {
+        arr = jQuery.grep(arr, function (index) {
             return value != removeItem;
         });
         return arr
     };
 
-    var enumerate = function(v) {
+    var enumerate = function (v) {
         var k = 0;
-        return v.map(function(e) {
+        return v.map(function (e) {
             e._idx = k++;
         });
     };
 
-    var cleanArray = function(actual) {
+    var cleanArray = function (actual) {
         var newArray = new Array();
         for (var i = 0; i < actual.length; i++) {
             if (actual[i]) {
@@ -46,72 +46,72 @@ var app = function() {
         return newArray;
     };
 
-    var new_id = function() {
+    var new_id = function () {
         self.vue.id_tracker += 1;
         return String(self.vue.id_tracker);
     };
 
-    var editing_room = function() {
+    var editing_room = function () {
         self.vue.modal_room_name = self.vue.rooms[self.vue.action_room].name;
         self.vue.modal_chosen_icon_path = self.vue.rooms[self.vue.action_room].icon_path;
     };
 
-    var default_room_name = function(path) {
+    var default_room_name = function (path) {
         var dirname = path.substring(path.lastIndexOf('/') + 1);
         dirname = dirname.substring(0, dirname.lastIndexOf(".")).capitalize();
         return dirname;
     };
 
-    String.prototype.capitalize = function() {
+    String.prototype.capitalize = function () {
         return this.charAt(0).toUpperCase() + this.slice(1);
     };
 
-    var remove_el = function(id) {
+    var remove_el = function (id) {
         var el = $(id); //arbitrary
         el.remove();
     };
 
     //-----------------init-----------------
-    var modal_event_init = function() {
+    var modal_event_init = function () {
         console.log('modal event inited');
-        $(function() { // after all dom elements are loaded
+        $(function () { // after all dom elements are loaded
 
             var add_room_modal = $('#add-room-modal');
 
-            add_room_modal.on('shown.bs.modal', function(w) {
+            add_room_modal.on('shown.bs.modal', function (w) {
                 $('#modal-input').focus();
             });
 
-            add_room_modal.on('hidden.bs.modal', function(e) {
+            add_room_modal.on('hidden.bs.modal', function (e) {
                 self.modal_reinit();
             });
 
             var del_room_modal = $('#del-room-modal');
             // console.log(del_room_modal);
-            del_room_modal.on('show.bs.modal', function(w) {
+            del_room_modal.on('show.bs.modal', function (w) {
                 console.log('modal2');
                 $('.del-room-list').first().addClass('disabled');
             });
         });
     };
 
-    var initHome = function() {
+    var initHome = function () {
         for (i = 0; i < self.vue.rooms[0].modules.length; i++) {
             self.create_chart(0, i);
         }
 
     }
 
-    var initRooms = function() {
-        var callback = function()
-        {
+    var initRooms = function () {
+        var callback = function () {
             var rooms = self.vue.room_structure.rooms;
             // console.log(rooms);
-            for(var i = 0; i < rooms.length; i++){
+            for (var i = 0; i < rooms.length; i++) {
                 // console.log("icon_path: " + rooms[i].icon_path);
                 // console.log("room: " + rooms[i].room)
                 self.vue.modal_chosen_icon_path = img_path + rooms[i].icon_path;
                 self.vue.modal_room_name = rooms[i].room;
+                self.vue.modal_appliances = rooms[i].appliances;
                 self.add_room();
                 self.modal_reinit();
             }
@@ -126,7 +126,7 @@ var app = function() {
     }
 
     var date_picker = function () {
-        $(function() {
+        $(function () {
             var start = moment().subtract(29, 'days');
             var end = moment();
 
@@ -156,29 +156,29 @@ var app = function() {
 
     //---------------API calls-----------------
     self.get_room = function (callback) {
-      var rooms = user_devices["\"466419818\""].rooms;
-      var roomIds = Object.keys(rooms);
-      var roomsVueStruct = [];
-      var modHeader = "activity,devices,graph,consumption,notification";
+        var rooms = user_devices["\"466419818\""].rooms;
+        var roomIds = Object.keys(rooms);
+        var roomsVueStruct = [];
+        var modHeader = "activity,devices,graph,consumption,notification";
 
-      for (var i = 0; i < roomIds.length; i++) {
-        var roomName = roomIds[i];
-        var room = rooms[roomName];
-        var appliancesIds = Object.keys(room.appliances);
-        var roomVueStruct = {
-          "room": roomName,
-          "icon_path": "/" + room.icon + ".png",
-          "device": appliancesIds,
-          "mod_header": modHeader
+        for (var i = 0; i < roomIds.length; i++) {
+            var roomName = roomIds[i];
+            var room = rooms[roomName];
+            var appliances = room.appliances;
+            var roomVueStruct = {
+                "room": roomName,
+                "icon_path": "/" + room.icon + ".png",
+                "appliances": appliances,
+                "mod_header": modHeader
+            }
+            roomsVueStruct.push(roomVueStruct);
         }
-        roomsVueStruct.push(roomVueStruct);
-      }
 
-      var info = {
-        "rooms": roomsVueStruct
-      };
-      self.vue.room_structure = info;
-      callback();
+        var info = {
+            "rooms": roomsVueStruct
+        };
+        self.vue.room_structure = info;
+        callback();
     }
 
     function get_data_url_param(room, device, start, end) {
@@ -187,7 +187,7 @@ var app = function() {
             device: device,
             start: start,
         };
-        if (end != null){
+        if (end != null) {
             param.end = end;
         }
         return get_data_url + "?" + $.param(param);
@@ -200,7 +200,7 @@ var app = function() {
                 // console.log(info);
                 self.vue.rooms[room_i].data[0] = info;
                 tmp_data = info;
-                self.reload_mod(0,0);
+                self.reload_mod(0, 0);
             }
         );
     };
@@ -208,7 +208,7 @@ var app = function() {
     //--------------------------------------
 
 
-    self.test = function(i){
+    self.test = function (i) {
         // $.getJSON(test_url,
         //     function (data) {
         //         console.log('test success');
@@ -221,19 +221,19 @@ var app = function() {
         // console.log(self.vue.rooms[0].data[0]);
         // self.reload_house();
         // self.reload_room(self.vue.action_room)
-            // self.vue.rooms[i].data[0] = scatterdataset; //test
-            // scatter(self.vue.rooms[i], 0, 0);
-            // scatter(self.vue.rooms[i], 1, 0);
-            // scatter(self.vue.rooms[i], 2, 0);
-            // barchart(self.vue.rooms[i], 2, 0);
+        // self.vue.rooms[i].data[0] = scatterdataset; //test
+        // scatter(self.vue.rooms[i], 0, 0);
+        // scatter(self.vue.rooms[i], 1, 0);
+        // scatter(self.vue.rooms[i], 2, 0);
+        // barchart(self.vue.rooms[i], 2, 0);
     }
 
-    self.modal_reinit = function() {
+    self.modal_reinit = function () {
         self.vue.modal_room_name = '';
         self.vue.modal_chosen_icon_path = self.vue.default_icon_path;
     }
 
-    self.adding_editing_room = function(action) {
+    self.adding_editing_room = function (action) {
         // console.log('adding_editing_room');
         if (action == 'edit') {
             self.vue.adding_room = false;
@@ -245,7 +245,7 @@ var app = function() {
         }
     }
 
-    self.add_edit_room_enter = function(action) {
+    self.add_edit_room_enter = function (action) {
         // console.log('adding_editing_room');
         if (self.vue.adding_room) {
             self.add_room();
@@ -257,7 +257,7 @@ var app = function() {
         $('#add-room-modal').modal('hide');
     };
 
-    self.edit_room = function() {
+    self.edit_room = function () {
         // console.log('edit_room');
         var room = self.vue.rooms[self.vue.action_room]
         room.name = self.vue.modal_room_name;
@@ -268,7 +268,7 @@ var app = function() {
         self.modal_reinit();
     }
 
-    self.add_room = function() {
+    self.add_room = function () {
         var name = (self.vue.modal_room_name ? self.vue.modal_room_name : default_room_name(self.vue.modal_chosen_icon_path));
         var id_name = name.replace(/ /g, "_") + "_"; // edit to id format
         var new_room = {
@@ -276,6 +276,7 @@ var app = function() {
             '_idx': self.vue.rooms.length,
             'notice': 0,
             'data': [],
+            'appliances': self.vue.modal_appliances,
             'modules': [],
             'isActive': false,
             'icon_path': self.vue.modal_chosen_icon_path,
@@ -305,17 +306,17 @@ var app = function() {
         if (self.vue.isInitialized) {
             // Add to server if is init
             $.post(add_room_url,
-            {
-                'rooms': self.vue.room_structure.rooms.push(name),
-            },  function (data) {
+                {
+                    'rooms': self.vue.room_structure.rooms.push(name),
+                }, function (data) {
                     console.log('add room success');
                     add_room_action();
-                    setTimeout(function() {
+                    setTimeout(function () {
                         self.reload_room(new_room._idx);
                     }, 2);
                 }
             ).fail(
-                function(response) {
+                function (response) {
                     alert('Error: ' + response.responseText);
                 }
             );
@@ -329,7 +330,7 @@ var app = function() {
         self.modal_reinit();
     };
 
-    self.reload_house = function() {
+    self.reload_house = function () {
         console.log(self.vue.rooms.length)
         for (var i = 0; i < self.vue.rooms.length; i++) {
             console.log('here');
@@ -337,7 +338,7 @@ var app = function() {
         }
     }
 
-    self.reload_room = function(room_i) {
+    self.reload_room = function (room_i) {
         var room = self.vue.rooms[room_i];
         console.log('Reload Room ' + room.name);
         for (var i = 0; i < room.modules.length; i++) {
@@ -345,7 +346,7 @@ var app = function() {
         }
     }
 
-    self.reload_mod = function(room_i, mod_i) {
+    self.reload_mod = function (room_i, mod_i) {
         var mod = self.vue.rooms[room_i].modules[mod_i];
         console.log('Reloading Mod ' + mod.header);
         if (mod.chart != "") {
@@ -357,7 +358,7 @@ var app = function() {
         console.log('----DONE');
     }
 
-    self.create_chart = function(room_i, mod_i) {
+    self.create_chart = function (room_i, mod_i) {
         var mod = self.vue.rooms[room_i].modules[mod_i];
         if (room_i == 0) { //Home condition
             if (mod.header == "activity") {
@@ -365,7 +366,7 @@ var app = function() {
             } else if (mod.header == "devices") {
                 htmltag = gen_dev_list(room_i);
                 tmp = self.vue.rooms[room_i].modules[mod_i];
-                $('#'+tmp.el_id).append("\
+                $('#' + tmp.el_id).append("\
                     <div class=\"device-list\">\
                     <div class=\"list-group\">"
                     + htmltag +
@@ -388,7 +389,7 @@ var app = function() {
             } else if (mod.header == "devices") {
                 htmltag = gen_dev_list(room_i);
                 tmp = self.vue.rooms[room_i].modules[mod_i];
-                $('#'+tmp.el_id).append("\
+                $('#' + tmp.el_id).append("\
                     <div class=\"device-list\">\
                     <div class=\"list-group\">"
                     + htmltag +
@@ -409,24 +410,26 @@ var app = function() {
 
 
     var gen_dev_list = function (room_i) {
-        // room = self.vue.rooms[room_i];
-        room_data = ['ipad', 'tv', 'light', 'ac'];   //new, change in future
+        appliances = self.vue.rooms[room_i].appliances;
+
         htmltag = '';
         // for(i=0; i < room_data.length; i++){
         var i = 0;
-        while (i < room_data.length){
+        for(var key in appliances) {
+            if(!appliances.hasOwnProperty(key))
+                continue;
             htmltag += '<li class="list-group-item">';
-            htmltag += '<span class="item-name">' + room_data[i] + '</span>';
+            htmltag += '<span class="item-name">' + key + '</span>';
             htmltag += '<label class="switch">';
             htmltag += '<input type="checkbox" checked>';
             htmltag += '<div class="slider round"></div></label></li>';
-            i+=1;
+            i += 1;
         }
         htmltag += '<div class="btn-wrap"><button class="btn btn-warning addbtn">add device</button></div>';
         return htmltag;
     }
 
-    self.add_module = function(type, header) {
+    self.add_module = function (type, header) {
         // console.log('add_module');
         var room = self.vue.rooms[self.vue.action_room];
         var id_name = room.name.replace(/ /g, "_") + "_";
@@ -447,21 +450,21 @@ var app = function() {
         };
         room.modules.push(new_module);
         if (self.vue.isInitialized) {
-            setTimeout(function() {
+            setTimeout(function () {
                 self.create_chart(self.vue.action_room, new_module._idx);
-                $("html, body").animate({ scrollTop: $(document).height() }, 1000);
+                $("html, body").animate({scrollTop: $(document).height()}, 1000);
             }, 100);
         }
         enumerate(room.modules);
     }
 
-    self.modal_choose_icon = function(path) {
+    self.modal_choose_icon = function (path) {
         console.log('modal_choose_icon');
         self.vue.modal_chosen_icon_path = path;
         $('#modal-input').focus();
     }
 
-    self.del_room = function(_idx) {
+    self.del_room = function (_idx) {
         console.log('in del_room');
         if (_idx == 0) { //cannot delete room
             console.log('Cannot delete Home');
@@ -485,20 +488,20 @@ var app = function() {
             $('#del-room-modal').modal('hide');
         }
         // self.vue.rooms.splice(_idx, 1); //Only work outside of this call
-        setTimeout(function() {
+        setTimeout(function () {
             self.vue.rooms.splice(_idx, 1);
         }, 200);
         enumerate(self.vue.rooms);
     };
 
 
-    self.del_module = function(r_idx, mod) {
+    self.del_module = function (r_idx, mod) {
         console.log('del_module : ' + self.vue.rooms[r_idx].name + "-" + mod.header);
         var wrap = $("#" + mod.id);
         var mod_element = $("#" + mod.el_id);
-        $.when(wrap.fadeOut(200)).done(function() {
+        $.when(wrap.fadeOut(200)).done(function () {
             $.when(wrap.css('display', '')).done(
-                function() {
+                function () {
                     // console.log('here');
                     // remove_svg("#" + mod.el_id + "svg");
                     var room = self.vue.rooms[r_idx];
@@ -514,7 +517,7 @@ var app = function() {
                     // self.reload_room(r_idx);
                     room.modules.splice(mod._idx, 1);
                     enumerate(self.vue.rooms[r_idx].modules);
-                    setTimeout(function() {
+                    setTimeout(function () {
                         console.log('reloading');
                         self.reload_room(r_idx);
                     }, 5);
@@ -539,13 +542,13 @@ var app = function() {
 
 
     // Extends an array
-    self.extend = function(a, b) {
+    self.extend = function (a, b) {
         for (var i = 0; i < b.length; i++) {
             a.push(b[i]);
         }
     };
 
-    self.manage_btn_toggle = function(_idx) {
+    self.manage_btn_toggle = function (_idx) {
         // console.log('manage_btn_toggle');
         for (i = 0; i < self.vue.rooms.length; i++) {
             if (_idx == self.vue.rooms[i]._idx) {
@@ -560,17 +563,17 @@ var app = function() {
         // This should refresh the action room's graph (delete and re-add.)
         // refresh_graph(self.vue.action_room);
         if (self.vue.isInitialized) {
-            setTimeout(function() {
+            setTimeout(function () {
                 self.reload_room(_idx);
             }, 1);
         }
     };
 
-    self.top_manage_bar_toggle = function() {
+    self.top_manage_bar_toggle = function () {
         // console.log('top_manage_bar_toggle');
         var bar = $("#top-manage-bar");
         self.vue.op_manage_bar_display = !self.vue.op_manage_bar_display;
-        $("html, body").animate({ scrollTop: 0 }, 400);
+        $("html, body").animate({scrollTop: 0}, 400);
         if (self.vue.op_manage_bar_display) {
             bar.hide().slideDown();
         } else {
@@ -660,6 +663,7 @@ var app = function() {
                 '_idx': 0, // index of local manage-list
                 'notice': 0,
                 'data': [],
+                'appliances': [],
                 'icon_path': img_path + "/home.png",
                 'isActive': true,
                 'modules': [{
@@ -698,7 +702,7 @@ var app = function() {
                     'id': 'Home_4',
                     'chart': '',
                 }],
-            }, ],
+            },],
             id_tracker: 4, //according to that last Home_(id)
             search_bar_input_val: '',
             top_manage_bar_display: false,
@@ -713,6 +717,7 @@ var app = function() {
             modal_chosen_icon_path: img_path + "/home.png",
             default_icon_path: img_path + "/home.png",
             modal_room_name: '',
+            modal_appliances: [],
             action_room: 0, //_idx of room, 0 refers to Home
             adding_room: true, // modal is for editng or adding
             isInitialized: false,
@@ -757,7 +762,6 @@ var app = function() {
     // self.add_room();
 
 
-
     // self.vue.rooms[0].data[0] = scatterdataset; //test
     // self.vue.rooms[0].data[1] = asline_data1;
     // self.vue.rooms[0].data[2] = asline_data2;
@@ -778,6 +782,7 @@ var app = function() {
     date_picker();
     initHome();
     initRooms();
+    console.log(self.vue.rooms);
 
     //when not isInitialized, don't add graph when add default room above,
     // (manage_btn_toggle will trigger add graph event).
@@ -794,17 +799,10 @@ var APP = null;
 
 // This will make everything accessible from the js console;
 // for instance, self.x above would be accessible as APP.x
-jQuery(function() {
+jQuery(function () {
     APP = app();
     console.log('APP returned');
 });
-
-
-
-
-
-
-
 
 
 //draggable Example   module component draggable class

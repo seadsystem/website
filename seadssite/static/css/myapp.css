@@ -488,7 +488,7 @@ input:checked + .slider:before {
 .device-list {
   border: none;
   height: 400px;
-  overflow-y: scroll;
+  overflow-y: auto;
   width: 90%;
   margin: auto;
 }

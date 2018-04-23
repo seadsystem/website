@@ -69,7 +69,7 @@ def DashboardTest(request):
         authenticated = True
 
     userRef = db.reference('users').child(request.session['user_id']).child('devices')
-    devices = simplejson.dumps(userRef.get());
+    devices = simplejson.dumps(userRef.get())
 
     print(devices)
     return render(request, 'dashboard_test.html', {'authenticated': authenticated, 'devices': devices})
