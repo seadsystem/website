@@ -1,17 +1,19 @@
-var areaspline = function(rooms, room_i, mod_i,payload) {
+var areaspline = function (rooms, room_i, mod_i, payload) {
     // 1. all rooms
     // 2. room to add graph (Home)
     // 3. module to add graph (0 in Home)
     //needs to be change here
-    var dates = []
-    var datum = []
-    for (var i = 0;i < payload.length;i++)  {
+    var dates = [];
+    var datum = [];
+
+    console.log("areaspline");
+    console.log(payload);
+    for (var i = 0; i < payload.length; i++) {
         dates.push(payload[i].date)
         datum.push(payload[i].data)
     }
 
     var room = rooms[room_i];
-
     room.modules[mod_i].chart = Highcharts.chart(room.modules[mod_i].el_id, {
         chart: {
             type: 'areaspline'
@@ -30,12 +32,12 @@ var areaspline = function(rooms, room_i, mod_i,payload) {
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
         },
         xAxis: {
-            categories: dates,
-            plotBands: [{ // visualize the weekend
-                from: 4.5,
-                to: 6.5,
-                color: 'white'
-            }]
+            type: 'datetime',
+            // ds: [{ // visualize the weekend
+            //     from: 4.5,
+            //     to: 6.5,
+            //     color: 'white'
+            // }]
         },
         yAxis: {
             title: {
@@ -54,12 +56,6 @@ var areaspline = function(rooms, room_i, mod_i,payload) {
                 fillOpacity: 0.8
             }
         },
-        series: [{
-        name : "Appliace1",
-        data : datum
-    }
-    , {
-        
-    }]
+        series: payload
     });
 }

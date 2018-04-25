@@ -99,16 +99,12 @@ var app = function () {
         for (i = 0; i < self.vue.rooms[0].modules.length; i++) {
             self.create_chart(0, i);
         }
-
     }
 
     var initRooms = function () {
         var callback = function () {
             var rooms = self.vue.room_structure.rooms;
-            // console.log(rooms);
             for (var i = 0; i < rooms.length; i++) {
-                // console.log("icon_path: " + rooms[i].icon_path);
-                // console.log("room: " + rooms[i].room)
                 self.vue.modal_chosen_icon_path = img_path + rooms[i].icon_path;
                 self.vue.modal_room_name = rooms[i].room;
                 self.vue.modal_appliances = rooms[i].appliances;
@@ -127,13 +123,13 @@ var app = function () {
 
     var date_picker = function () {
         $(function () {
-            var start = moment().subtract(29, 'days');
+            var start = moment().subtract(7, 'days');
             var end = moment();
 
             function cb(start, end) {
                 $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-                self.vue.start_date = start.format('YYYY,M,D');
-                self.vue.end_date = end.format('YYYY,M,D');
+                self.vue.start_date = Math.floor(start / 1000);
+                self.vue.end_date = Math.floor(end / 1000);
             }
 
             $('#reportrange').daterangepicker({
@@ -180,31 +176,60 @@ var app = function () {
         self.vue.room_structure = info;
         callback();
     }
-    // this function calls the seads api and generates power from start to end
+
+    function gen_room_data(start_date, end_date, room_i) {
+        var appliances = self.vue.rooms[room_i].appliances;
+        var result = {};
+        result.name = self.vue.rooms[room_i].name;
+
+        var temp = [];
+        Object.keys(appliances).forEach(function (key, index) {
+            temp = gen_appl_data(start_date, end_date, key, appliances[key].id).data;
+            if (index == 0) {
+                result.data = temp;
+            } else {
+                for (var i = 0; i < result.data.length; i++) {
+                    result.data[i][1] = result.data[i][1] + temp[i][1];
+                }
+            }
+        });
+        // for (var key in appliances) {
+        //     if (!appliances.hasOwnProperty(key))
+        //         continue;
+        //     result.push(gen_appl_data(start_date, end_date, key, appliances[key].id));
+        // }
+        return result;
+    }
+
+    // Generates power usage data for the specified time frame and appliance and returns a chart-ready payload
     // currently is only good for the last weeks data, i'll be making it more generic in the next few days
-    function gen_data_points(start_date,end_date,panel) {
-        var points = []
+    function gen_appl_data(start_date, end_date, appliance, applianceId) {
+        console.log("gen_appl_data " + start_date + " to " + end_date + " for " + appliance + ", " + applianceId);
+        var points = [];
         // the iteration value can be changed later to a function parameter, currently 24*60*60 for daily data points
-        for (i = start_date-100; i <= end_date-100; i += (24*60*60)){ 
+        for (var i = start_date - 100; i <= end_date - 100; i += (24 * 60 * 60)) {
             $.ajax({
-                url:"http://db.sead.systems:8080/466419818?start_time="+i+"&end_time="+i+"&device="+panel+"&type=P",
+                url: "http://db.sead.systems:8080/466419818?start_time=" + i + "&end_time=" + i + "&device=" + applianceId + "&type=P",
                 dataType: 'json',
                 async: false,
-                success: function(data_test){
+                success: function (data_test) {
                     // console.log(data_test)
                     points.push(data_test[1])
                 }
             })
         }
-        temp1 = []
-        for (i = 1; i < points.length; i++) {
-            temp1.push({
-                date:points[i][0],
-                data:((points[i-1][1]-points[i][1])/3600000)
-                })
+
+        var test = {};
+        test.name = appliance;
+        test.data = [];
+        for (var i = 1; i < points.length; i++) {
+            test.data.push(
+                [moment(points[i][0], "YYYY-MM-DD HH:mm:ss").valueOf(), Math.abs((points[i - 1][1] - points[i][1]) / 3600000)]
+            )
         }
-        return temp1
+        return test;
     }
+
     function get_data_url_param(room, device, start, end) {
         var param = {
             room: room,
@@ -386,7 +411,13 @@ var app = function () {
         var mod = self.vue.rooms[room_i].modules[mod_i];
         if (room_i == 0) { //Home condition
             if (mod.header == "activity") {
-                areaspline(self.vue.rooms, room_i, mod_i,gen_data_points(self.vue.start_date,self.vue.end_date,"Panel1"));
+                var payload = [];
+                Object.keys(self.vue.rooms).forEach(function (key, index) {
+                    if (index != 0) {
+                        payload.push(gen_room_data(self.vue.start_date, self.vue.end_date, index));
+                    }
+                });
+                areaspline(self.vue.rooms, room_i, mod_i, payload);
             } else if (mod.header == "devices") {
                 htmltag = gen_dev_list(room_i);
                 tmp = self.vue.rooms[room_i].modules[mod_i];
@@ -408,8 +439,13 @@ var app = function () {
                 console.log("create_chart() error: " + mod.header);
             }
         } else { // Normal room   ** Not done yet
+            var appliances = self.vue.rooms[room_i].appliances;
+            var payload = [];
             if (mod.header == "activity") {
-                areaspline(self.vue.rooms, room_i, mod_i);
+                Object.keys(appliances).forEach(function (key) {
+                    payload.push(gen_appl_data(self.vue.start_date, self.vue.end_date, key, appliances[key].id));
+                });
+                areaspline(self.vue.rooms, room_i, mod_i, payload);
             } else if (mod.header == "devices") {
                 htmltag = gen_dev_list(room_i);
                 tmp = self.vue.rooms[room_i].modules[mod_i];
@@ -425,7 +461,7 @@ var app = function () {
             } else if (mod.header == "consumption") {
                 gauge(self.vue.rooms[room_i], mod_i, 3); // 3 to be changes
             } else if (mod.header == "notification") {
-                areaspline(self.vue.rooms, room_i, mod_i);
+                //areaspline(self.vue.rooms, room_i, mod_i);
             } else {
                 console.log("create_chart() error: " + mod.header);
             }
@@ -437,10 +473,8 @@ var app = function () {
         appliances = self.vue.rooms[room_i].appliances;
 
         htmltag = '';
-        // for(i=0; i < room_data.length; i++){
-        var i = 0;
-        for(var key in appliances) {
-            if(!appliances.hasOwnProperty(key))
+        for (var key in appliances) {
+            if (!appliances.hasOwnProperty(key))
                 continue;
             htmltag += '<li class="list-group-item">';
             htmltag += '<span class="item-name">' + key + '</span>';
@@ -745,7 +779,7 @@ var app = function () {
             action_room: 0, //_idx of room, 0 refers to Home
             adding_room: true, // modal is for editng or adding
             isInitialized: false,
-            start_date: moment().utc().unix() - (7*86400),
+            start_date: moment().utc().unix() - (7 * 86400),
             end_date: moment().utc().unix(),
         },
         methods: {
@@ -804,9 +838,8 @@ var app = function () {
     // d3tree(self.vue.rooms[0].modules[0].el_id);
 
     date_picker();
-    initHome();
     initRooms();
-    console.log(self.vue.rooms);
+    initHome();
 
     //when not isInitialized, don't add graph when add default room above,
     // (manage_btn_toggle will trigger add graph event).
