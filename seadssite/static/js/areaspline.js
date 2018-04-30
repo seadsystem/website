@@ -1,19 +1,4 @@
-var areaspline = function (rooms, room_i, mod_i, payload) {
-    // 1. all rooms
-    // 2. room to add graph (Home)
-    // 3. module to add graph (0 in Home)
-    //needs to be change here
-    var dates = [];
-    var datum = [];
-
-    console.log("areaspline");
-    console.log(payload);
-    for (var i = 0; i < payload.length; i++) {
-        dates.push(payload[i].date)
-        datum.push(payload[i].data)
-    }
-
-    var room = rooms[room_i];
+var areaspline = function (room, mod_i, payload) {
     room.modules[mod_i].chart = Highcharts.chart(room.modules[mod_i].el_id, {
         chart: {
             type: 'areaspline'
@@ -33,11 +18,9 @@ var areaspline = function (rooms, room_i, mod_i, payload) {
         },
         xAxis: {
             type: 'datetime',
-            // ds: [{ // visualize the weekend
-            //     from: 4.5,
-            //     to: 6.5,
-            //     color: 'white'
-            // }]
+            dateTimeLabelFormats: {
+                day: '%b %e'
+            }
         },
         yAxis: {
             title: {

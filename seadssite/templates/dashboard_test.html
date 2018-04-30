@@ -22,7 +22,6 @@
 <div id="vue-div" style="display: hidden;">
     <div id="manage-bar" class="manage-bar navbar navbar-fixed-left">
         <div id="sead-logo" class="">
-            <button v-on:click.prevent="test(2);">test</button>
             <img src="{% static 'images/logo.jpg' %}" class="logo">
         </div>
         <!-- change according to #manage-list -->
@@ -35,8 +34,7 @@
         </div>
         <div id="manage-list" class="list-group manage-list">
             <!-- use v-for here -->
-            <manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle"
-                         :test="test"></manage-item>
+            <manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle"></manage-item>
             <div class="add-room text-right">
                 <!-- Trigger the modal with a button -->
                 <i class="fa fa-plus-square-o icon" v-on:click.prevent="adding_editing_room('add');" href=""
@@ -96,7 +94,7 @@
             </div>
         </div>
         <div id="top-manage-bar" class="top-manage-bar">
-            <top-manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle" :test="test"
+            <top-manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle"
                              :top_manage_bar_toggle="top_manage_bar_toggle"></top-manage-item>
             <div class="add-room text-right" id="">
                 <a class="add-room-icon" v-on:click.prevent="adding_editing_room('add');" href="" type="button"

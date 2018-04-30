@@ -1,49 +1,14 @@
-// This is the js for the default/index.html view.
-
-
-//dummy data for scatterdataset
-
-// for areaspline
-var tmp_data;
-// var asline_data1 = [300, 300, 800, 700, 900, 110, 120];
-// var asline_data2 = [100, 400, 300, 500, 600, 100, 110];
-
-
 var app = function () {
 
     var self = {};
 
     Vue.config.silent = false; // show all warnings
 
-
-    //---------------HELPER-----------------
-    var is_mod = function () {
-        console.log('works');
-    };
-
-    var array_remove = function (index) {
-        arr = jQuery.grep(arr, function (index) {
-            return value != removeItem;
-        });
-        return arr
-    };
-
     var enumerate = function (v) {
         var k = 0;
         return v.map(function (e) {
             e._idx = k++;
         });
-    };
-
-    var cleanArray = function (actual) {
-        var newArray = new Array();
-        for (var i = 0; i < actual.length; i++) {
-            if (actual[i]) {
-                // console.log('here');
-                newArray.push(actual[i]);
-            }
-        }
-        return newArray;
     };
 
     var new_id = function () {
@@ -57,7 +22,7 @@ var app = function () {
     };
 
     var default_room_name = function (path) {
-        var dirname = path.substring(path.lastIndexOf('/') + 1);
+        var dirname = path.substring(path.lastIndexOf("/") + 1);
         dirname = dirname.substring(0, dirname.lastIndexOf(".")).capitalize();
         return dirname;
     };
@@ -66,30 +31,25 @@ var app = function () {
         return this.charAt(0).toUpperCase() + this.slice(1);
     };
 
-    var remove_el = function (id) {
-        var el = $(id); //arbitrary
-        el.remove();
-    };
-
     //-----------------init-----------------
     var modal_event_init = function () {
-        console.log('modal event inited');
+        console.log("modal event inited");
         $(function () { // after all dom elements are loaded
 
-            var add_room_modal = $('#add-room-modal');
+            var add_room_modal = $("#add-room-modal");
 
-            add_room_modal.on('shown.bs.modal', function (w) {
-                $('#modal-input').focus();
+            add_room_modal.on("shown.bs.modal", function (w) {
+                $("#modal-input").focus();
             });
 
-            add_room_modal.on('hidden.bs.modal', function (e) {
+            add_room_modal.on("hidden.bs.modal", function (e) {
                 self.modal_reinit();
             });
 
-            var del_room_modal = $('#del-room-modal');
+            var del_room_modal = $("#del-room-modal");
             // console.log(del_room_modal);
-            del_room_modal.on('show.bs.modal', function (w) {
-                console.log('modal2');
+            del_room_modal.on("show.bs.modal", function (w) {
+                console.log("modal2");
                 $('.del-room-list').first().addClass('disabled');
             });
         });
@@ -130,9 +90,13 @@ var app = function () {
                 $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
                 self.vue.start_date = Math.floor(start / 1000);
                 self.vue.end_date = Math.floor(end / 1000);
+                console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
             }
 
             $('#reportrange').daterangepicker({
+                dateLimit: {
+                    "months": 1,
+                },
                 startDate: start,
                 endDate: end,
                 ranges: {
@@ -140,7 +104,7 @@ var app = function () {
                     'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
                     'Last 7 Days': [moment().subtract(6, 'days'), moment()],
                     'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'This Month': [moment().startOf('month'), moment()],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                 }
             }, cb);
@@ -177,104 +141,143 @@ var app = function () {
         callback();
     }
 
-    function gen_room_data(start_date, end_date, room_i) {
-        var appliances = self.vue.rooms[room_i].appliances;
-        var result = {};
-        result.name = self.vue.rooms[room_i].name;
 
-        var temp = [];
-        Object.keys(appliances).forEach(function (key, index) {
-            temp = gen_appl_data(start_date, end_date, key, appliances[key].id).data;
-            if (index == 0) {
-                result.data = temp;
-            } else {
-                for (var i = 0; i < result.data.length; i++) {
-                    result.data[i][1] = result.data[i][1] + temp[i][1];
-                }
-            }
-        });
-        // for (var key in appliances) {
-        //     if (!appliances.hasOwnProperty(key))
-        //         continue;
-        //     result.push(gen_appl_data(start_date, end_date, key, appliances[key].id));
-        // }
-        return result;
-    }
+    // Generates monthly usage of specified panel for the last 12 months
+    function gen_monthly_appl_data(device_id, appl_name, appl_id) {
+        var result = [];
 
-    // Generates power usage data for the specified time frame and appliance and returns a chart-ready payload
-    // currently is only good for the last weeks data, i'll be making it more generic in the next few days
-    function gen_appl_data(start_date, end_date, appliance, applianceId) {
-        console.log("gen_appl_data " + start_date + " to " + end_date + " for " + appliance + ", " + applianceId);
         var points = [];
-        // the iteration value can be changed later to a function parameter, currently 24*60*60 for daily data points
-        for (var i = start_date - 100; i <= end_date - 100; i += (24 * 60 * 60)) {
+        var start = moment().subtract(12, "months").startOf("month");
+        var end = moment().subtract(5, "minutes");
+        var time;
+        for (var i = 0; i <= 12; i++) {
+            time = Math.floor(start / 1000);
+            // if (i > 0)
+            //     result.categories.push(moment.unix(time).format("MMMM"));
             $.ajax({
-                url: "http://db.sead.systems:8080/466419818?start_time=" + i + "&end_time=" + i + "&device=" + applianceId + "&type=P",
+                url: "http://db.sead.systems:8080/" + device_id + "?start_time=" + time + "&end_time=" + time + "&device=" + appl_id + "&type=P",
                 dataType: 'json',
                 async: false,
                 success: function (data_test) {
-                    // console.log(data_test)
-                    points.push(data_test[1])
+                    points.push(data_test[1]);
                 }
-            })
+            });
+            if (i >= 11)
+                start = end;
+            else
+                start.add(1, "month");
         }
 
-        var test = {};
-        test.name = appliance;
-        test.data = [];
         for (var i = 1; i < points.length; i++) {
-            test.data.push(
-                [moment(points[i][0], "YYYY-MM-DD HH:mm:ss").valueOf(), Math.abs((points[i - 1][1] - points[i][1]) / 3600000)]
-            )
+            if (points[i] !== undefined && points[i - 1] !== undefined) {
+                result.push(
+                    Math.abs((points[i - 1][1] - points[i][1]) / 3600000)
+                )
+            } else
+                result.push(null);
         }
-        return test;
+        return result;
     }
 
-    function get_data_url_param(room, device, start, end) {
-        var param = {
-            room: room,
-            device: device,
-            start: start,
-        };
-        if (end != null) {
-            param.end = end;
-        }
-        return get_data_url + "?" + $.param(param);
-    }
+    // Generates continous power usage data for the specified parameters
+    function gen_cont_appl_data(device_id, name, appliance_id, start, end, data_points) {
+        console.log("gen_cont_appl_data " + start + " to " + end + " for " + name + " (" + appliance_id + ") for " + data_points + " data points");
+        var granularity = Math.floor((end - start) / data_points);
 
-    self.get_data = function (room, device, start, end, room_i) {
-        $.getJSON(get_data_url_param(room, device, start, end),
-            function (info) {
-                console.log('get data success');
-                // console.log(info);
-                self.vue.rooms[room_i].data[0] = info;
-                tmp_data = info;
-                self.reload_mod(0, 0);
+        var result = [];
+        $.ajax({
+            url: "http://db.sead.systems:8080/" + device_id + "?start_time=" + start + "&end_time=" + end +
+            "&list_format=energy&type=P&device=" + appliance_id + "&granularity=" + granularity,
+            dataType: 'json',
+            async: false,
+            success: function (response) {
+                result = Object.keys(response.data).reverse().map(function (key) {
+                    return [moment(response.data[key]["time"], "YYYY-MM-DD HH:mm:ss").valueOf(), parseFloat(response.data[key]["energy"])];
+                })
             }
-        );
-    };
+        });
+        return result;
+    }
 
-    //--------------------------------------
+    // Generates areaspline graph for the specified room
+    function gen_line_chart(room_i, mod_i) {
+        var payload = [];
+        var appliances;
 
+        var temp = [];
+        if (room_i == 0) {
+            var appl_data;
+            for (var i = 1; i < self.vue.rooms.length; i++) {
+                appliances = self.vue.rooms[i].appliances;
+                Object.keys(appliances).forEach(function (key, index) {
+                    appl_data = self.vue.power_data[appliances[key].id].data;
+                    for (var j = 0; j < appl_data.length; j++) {
+                        if (index == 0)
+                            temp[j] = appl_data[j].slice(0);
+                        else
+                            temp[j][1] = temp[j][1] + appl_data[j][1];
+                    }
+                });
+                payload.push({
+                    name: self.vue.rooms[i].name,
+                    data: temp
+                });
+                temp = [];
+            }
+        } else {
+            appliances = self.vue.rooms[room_i].appliances;
+            Object.keys(appliances).forEach(function (key) {
+                payload.push({
+                    name: appliances[key].id,
+                    data: self.vue.power_data[appliances[key].id].data,
+                });
+            });
+        }
+        areaspline(self.vue.rooms[room_i], mod_i, payload);
+    }
 
-    self.test = function (i) {
-        // $.getJSON(test_url,
-        //     function (data) {
-        //         console.log('test success');
-        //         tmp_data = data.user;
-        //     }
-        // );
-        self.get_data("bedroom", "tv", self.vue.start_date, self.vue.end_date, 0);
-        // console.log(tmp);
-        // self.vue.rooms[0].data[0] = tmp_data;
-        // console.log(self.vue.rooms[0].data[0]);
-        // self.reload_house();
-        // self.reload_room(self.vue.action_room)
-        // self.vue.rooms[i].data[0] = scatterdataset; //test
-        // scatter(self.vue.rooms[i], 0, 0);
-        // scatter(self.vue.rooms[i], 1, 0);
-        // scatter(self.vue.rooms[i], 2, 0);
-        // barchart(self.vue.rooms[i], 2, 0);
+    // Generates bar chart for specified room
+    function gen_bar_chart(room_i, mod_i) {
+        var categories = [];
+        var month = moment().month() + 1;
+        for (var i = 0; i < 12; i++) {
+            categories.push(moment().month(month).format('MMMM'));
+            month = (month + 1) % 12;
+        }
+
+        var payload = [];
+        var appliances;
+        if (room_i == 0) {
+            var temp = [];
+            for (var i = 1; i < self.vue.rooms.length; i++) {
+                appliances = self.vue.rooms[i].appliances;
+                Object.keys(appliances).forEach(function (key, index) {
+                    appl_data = self.vue.power_data[appliances[key].id].monthly_data;
+                    if (index == 0)
+                        temp = appl_data.slice();
+                    else {
+                        for (var j = 0; j < appl_data.length; j++) {
+                            if (appl_data[j] != null)
+                                temp[j] += appl_data[j];
+                        }
+                    }
+                    console.log(JSON.parse(JSON.stringify(temp)));
+                });
+                payload.push({
+                    name: self.vue.rooms[i].name,
+                    data: temp
+                })
+            }
+        } else {
+            appliances = self.vue.rooms[room_i].appliances;
+            Object.keys(appliances).forEach(function (key) {
+                payload.push({
+                    name: key,
+                    data: self.vue.power_data[appliances[key].id].monthly_data
+                });
+            });
+        }
+        bar(self.vue.rooms[room_i], mod_i, categories, payload);
     }
 
     self.modal_reinit = function () {
@@ -344,16 +347,11 @@ var app = function () {
             if (self.vue.isInitialized) {
                 self.manage_btn_toggle(self.vue.rooms.length - 1); //set this to active (jump to this page)
             }
-            //!!!***dummy data
-            // self.vue.rooms[new_room._idx].data[0] = scatterdataset; //test
-            // self.vue.rooms[new_room._idx].data[1] = asline_data1;
-            // self.vue.rooms[new_room._idx].data[2] = asline_data2;
             self.vue.rooms[new_room._idx].data[3] = [40, 50, 80];
             enumerate(self.vue.rooms);
         }
 
         if (self.vue.isInitialized) {
-            // Add to server if is init
             $.post(add_room_url,
                 {
                     'rooms': self.vue.room_structure.rooms.push(name),
@@ -411,13 +409,7 @@ var app = function () {
         var mod = self.vue.rooms[room_i].modules[mod_i];
         if (room_i == 0) { //Home condition
             if (mod.header == "activity") {
-                var payload = [];
-                Object.keys(self.vue.rooms).forEach(function (key, index) {
-                    if (index != 0) {
-                        payload.push(gen_room_data(self.vue.start_date, self.vue.end_date, index));
-                    }
-                });
-                areaspline(self.vue.rooms, room_i, mod_i, payload);
+                gen_line_chart(room_i, mod_i);
             } else if (mod.header == "devices") {
                 htmltag = gen_dev_list(room_i);
                 tmp = self.vue.rooms[room_i].modules[mod_i];
@@ -428,9 +420,8 @@ var app = function () {
                     "</div>\
                     </div>\
                 ");
-                // gauge(self.vue.rooms[room_i], mod_i, 3);
             } else if (mod.header == "graph") {
-                bar(self.vue.rooms[room_i], mod_i, 3);
+                gen_bar_chart(room_i, mod_i);
             } else if (mod.header == "consumption") {
                 gauge(self.vue.rooms[room_i], mod_i, 3);
             } else if (mod.header == "notification") {
@@ -442,10 +433,7 @@ var app = function () {
             var appliances = self.vue.rooms[room_i].appliances;
             var payload = [];
             if (mod.header == "activity") {
-                Object.keys(appliances).forEach(function (key) {
-                    payload.push(gen_appl_data(self.vue.start_date, self.vue.end_date, key, appliances[key].id));
-                });
-                areaspline(self.vue.rooms, room_i, mod_i, payload);
+                gen_line_chart(room_i, mod_i);
             } else if (mod.header == "devices") {
                 htmltag = gen_dev_list(room_i);
                 tmp = self.vue.rooms[room_i].modules[mod_i];
@@ -457,7 +445,7 @@ var app = function () {
                     </div>\
                 ");
             } else if (mod.header == "graph") {
-                bar(self.vue.rooms[room_i], mod_i, 3);
+                gen_bar_chart(room_i, mod_i);
             } else if (mod.header == "consumption") {
                 gauge(self.vue.rooms[room_i], mod_i, 3); // 3 to be changes
             } else if (mod.header == "notification") {
@@ -467,7 +455,6 @@ var app = function () {
             }
         }
     }
-
 
     var gen_dev_list = function (room_i) {
         appliances = self.vue.rooms[room_i].appliances;
@@ -713,9 +700,9 @@ var app = function () {
         data: {
             house_id: 99, // Not sure, from query file
             user_id: 0, // from query file
-            name: 'Ewing',
-            email: 'ylin62@ucsc.edu',
+            device_id: 0,
             room_structure: [],
+            power_data: {},
             rooms: [{
                 'name': 'Home', // or possibly separated from room
                 '_idx': 0, // index of local manage-list
@@ -784,7 +771,6 @@ var app = function () {
         },
         methods: {
             manage_btn_toggle: self.manage_btn_toggle,
-            test: self.test,
             top_manage_bar_toggle: self.top_manage_bar_toggle,
             del_module: self.del_module,
             add_module: self.add_module,
@@ -798,44 +784,24 @@ var app = function () {
         },
     });
 
+    self.vue.device_id = 466419818;
+
+    Object.keys(user_devices["\"466419818\""]["rooms"]).forEach(function (room) {
+        Object.keys(user_devices["\"466419818\""]["rooms"][room]["appliances"]).forEach(function (appliance) {
+            var appl_id = user_devices["\"466419818\""]["rooms"][room]["appliances"][appliance].id;
+            self.vue.power_data[appl_id] = {
+                name: appliance,
+                monthly_data: gen_monthly_appl_data(466419818, appliance, appl_id),
+                data: gen_cont_appl_data(466419818, appliance, appl_id, self.vue.start_date, self.vue.end_date, 30),
+            };
+        })
+    });
+    console.log(JSON.parse(JSON.stringify(self.vue.power_data)));
+
     modal_event_init();
 
-    // d3.select(window).on('resize', rendering);
-    // console.log('d3 resize event added');
-
-    // rendering();
-    // console.log('d3 first rendering');
-
-
-    //test dummy add
-    // self.vue.modal_chosen_icon_path = img_path + "/bedroom.png";
-    // self.add_room();
-    // self.vue.modal_chosen_icon_path = img_path + "/kitchen.png";
-    // self.add_room();
-    // self.vue.modal_chosen_icon_path = img_path + "/office.png";
-    // self.add_room();
-    // self.vue.modal_chosen_icon_path = img_path + "/bathroom.png";
-    // self.add_room();
-    // self.vue.modal_chosen_icon_path = img_path + "/livingroom.png";
-    // self.add_room();
-
-
-    // self.vue.rooms[0].data[0] = scatterdataset; //test
-    // self.vue.rooms[0].data[1] = asline_data1;
-    // self.vue.rooms[0].data[2] = asline_data2;
     self.vue.rooms[0].data[3] = [40, 50, 80];
 
-    // areaspline(self.vue.rooms, 0, 0);
-    // gauge(self.vue.rooms[0], 1, 3);
-    // gauge(self.vue.rooms[0], 2, 3);
-
-    // scatter(self.vue.rooms[0], 2, 0);
-    // self.test();
-    // self.vue.rooms[1].data[0] = scatterdataset; //test
-    // scatter(self.vue.rooms[1], 0, 0);
-    // self.vue.rooms[2].data[0] = scatterdataset; //test
-    // scatter(self.vue.rooms[2], 0, 0);
-    // d3tree(self.vue.rooms[0].modules[0].el_id);
 
     date_picker();
     initRooms();
@@ -845,7 +811,6 @@ var app = function () {
     // (manage_btn_toggle will trigger add graph event).
     // self.vue.isInitialized = true;    //now in initRooms
     console.log('Create Date Range Picker');
-
 
     $("#vue-div").show();
     console.log('Vue initialized');
@@ -860,147 +825,3 @@ jQuery(function () {
     APP = app();
     console.log('APP returned');
 });
-
-
-//draggable Example   module component draggable class
-// $(function() {
-//     console.log('draggable loadeed');
-//     // target elements with the "draggable" class
-//     interact('.draggable')
-//         .draggable({
-//             // enable inertial throwing
-//             inertia: true,
-//             // keep the element within the area of it's parent
-//             restrict: {
-//                 restriction: "parent",
-//                 endOnly: true,
-//                 elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-//             },
-//             // enable autoScroll
-//             autoScroll: true,
-//
-//             // call this function on every dragmove event
-//             onmove: dragMoveListener,
-//             // call this function on every dragend event
-//             onend: function(event) {
-//                 var textEl = event.target.querySelector('p');
-//
-//                 textEl && (textEl.textContent =
-//                     'moved a distance of ' + (Math.sqrt(event.dx * event.dx +
-//                         event.dy * event.dy) | 0) + 'px');
-//             }
-//         });
-//
-//     function dragMoveListener(event) {
-//         var target = event.target,
-//             // keep the dragged position in the data-x/data-y attributes
-//             x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-//             y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-//
-//         // translate the element
-//         target.style.webkitTransform =
-//             target.style.transform =
-//             'translate(' + x + 'px, ' + y + 'px)';
-//
-//         // update the posiion attributes
-//         target.setAttribute('data-x', x);
-//         target.setAttribute('data-y', y);
-//     }
-//
-//     // this is used later in the resizing and gesture demos
-//     window.dragMoveListener = dragMoveListener;
-// });
-//DUMMY ROOM
-// {
-//     'name': 'Home', // or possibly separated from room
-//     '_idx': 0, // index of local manage-list
-//     'notice': 0,
-//     'data': [],
-//     // Data is a list containing all devices data
-//     // according data query file from android team, data should be a
-//     // list of value with heading ["time", "W"]
-//     // follow by lots of data list ["2015-09-29 15:44:14.405187", "-4"]
-//     // integrate with D3.js
-//     'modules': [{
-//         'header': 'Activity',
-//         '_idx': 0,
-//         'modType': 'module1', // type of module (1-3, css differ)
-//         'el_id': 'Home0', //for plot use( the inner el box )
-//         'id': '00001' // this should be computed and assigned at the insertion
-//     }, {
-//         'header': 'Device',
-//         // 'data': [],
-//         '_idx': 2,
-//         'modType': 'module3',
-//         'el_id': 'Home2',
-//         'id': '000055'
-//     }, {
-
-//         'header': 'Device name',
-//         // 'data': [],
-//         '_idx': 1,
-//         'modType': 'module2',
-//         'el_id': 'Home1',
-//         'id': '00002'
-//     }], // a list of module
-//     'isActive': true, // is active or not
-//     'icon_path': 'images/logo2.png'
-// }, {
-//     'name': 'Master Bedroom',
-//     '_idx': 1,
-//     'notice': 0,
-//     'data': [],
-//     'modules': [{
-//         'header': 'Bedroom Dummy0',
-//         // 'data': [],
-//         '_idx': 0,
-//         'modType': 'module1',
-//         'el_id': 'M0',
-//         'id': '00004'
-//     }, {
-//         'header': 'Bedroom Dummy1',
-//         // 'data': [],
-//         '_idx': 1,
-//         'modType': 'module1',
-//         'el_id': 'M1',
-//         'id': '00005'
-//     }, {
-//         'header': 'Bedroom Dummy2',
-//         // 'data': [],
-//         '_idx': 2,
-//         'modType': 'module1',
-//         'el_id': 'M3',
-//         'id': '00006'
-//     }],
-//     'isActive': false,
-//     'icon_path': 'images/bedroom2.png'
-// }, {
-//     'name': 'Living Room',
-//     '_idx': 2,
-//     'notice': 0,
-//     'data': [],
-//     'modules': [{
-//         'header': 'Living Dummy0',
-//         // 'data': [],
-//         '_idx': 0,
-//         'modType': 'module3',
-//         'el_id': 'L0',
-//         'id': '00007'
-//     }, {
-//         'header': 'Living Dummy1',
-//         // 'data': [],
-//         '_idx': 1,
-//         'modType': 'module2',
-//         'el_id': 'L1',
-//         'id': '00008'
-//     }, {
-//         'header': 'Living Dummy2',
-//         // 'data': [],
-//         '_idx': 2,
-//         'modType': 'module1',
-//         'el_id': 'L2',
-//         'id': '00009'
-//     }],
-//     'isActive': false,
-//     'icon_path': 'images/livingroom.png'
-// }
