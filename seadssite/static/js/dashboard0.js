@@ -55,13 +55,71 @@ var app = function () {
         });
     };
 
-    var initHome = function () {
-        for (i = 0; i < self.vue.rooms[0].modules.length; i++) {
+    function date_picker() {
+        var start = moment().subtract(7, 'days');
+        var end = moment();
+
+        function cb(start, end) {
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            self.vue.start_date = Math.floor(start / 1000);
+            self.vue.end_date = Math.floor(end / 1000);
+            console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
+            refresh_data();
+            self.reload_room(self.vue.action_room);
+        }
+
+        $('#reportrange').daterangepicker({
+            dateLimit: {
+                "months": 1,
+            },
+            startDate: start,
+            endDate: end,
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment()],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, cb);
+
+        cb(start, end);
+    }
+
+    // Generates a power data structure and generates monthly power usage data for each appliance
+    function init_data() {
+        var device_id = "\"" + self.vue.device_id + "\"";
+        var appl_id;
+        Object.keys(user_devices[device_id]["rooms"]).forEach(function (room) {
+            Object.keys(user_devices[device_id]["rooms"][room]["appliances"]).forEach(function (appliance) {
+                appl_id = user_devices[device_id]["rooms"][room]["appliances"][appliance].id;
+                self.vue.power_data[appl_id] = {
+                    name: appliance,
+                    monthly_data: gen_monthly_appl_data(self.vue.device_id, appliance, appl_id),
+                    data: undefined,
+                };
+            })
+        });
+    }
+
+    // Refreshes saved power data based on current start and end date
+    function refresh_data() {
+        console.log("refresh_data");
+        Object.keys(self.vue.power_data).forEach(function (appl_id) {
+            self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
+                appl_id, self.vue.start_date, self.vue.end_date, 30);
+        });
+        console.log(JSON.parse(JSON.stringify(self.vue.power_data)));
+    }
+
+    var init_home = function () {
+        for (var i = 0; i < self.vue.rooms[0].modules.length; i++) {
             self.create_chart(0, i);
         }
     }
 
-    var initRooms = function () {
+    var init_rooms = function () {
         var callback = function () {
             var rooms = self.vue.room_structure.rooms;
             for (var i = 0; i < rooms.length; i++) {
@@ -77,45 +135,13 @@ var app = function () {
             self.manage_btn_toggle(0);
             self.vue.isInitialized = true;
         };
-        self.get_room(callback);
-        // self.reload_house();
+        self.get_rooms(callback);
     }
 
-    var date_picker = function () {
-        $(function () {
-            var start = moment().subtract(7, 'days');
-            var end = moment();
 
-            function cb(start, end) {
-                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-                self.vue.start_date = Math.floor(start / 1000);
-                self.vue.end_date = Math.floor(end / 1000);
-                console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
-            }
-
-            $('#reportrange').daterangepicker({
-                dateLimit: {
-                    "months": 1,
-                },
-                startDate: start,
-                endDate: end,
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment()],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                }
-            }, cb);
-
-            cb(start, end);
-
-        });
-    }
 
     //---------------API calls-----------------
-    self.get_room = function (callback) {
+    self.get_rooms = function (callback) {
         var rooms = user_devices["\"466419818\""].rooms;
         var roomIds = Object.keys(rooms);
         var roomsVueStruct = [];
@@ -152,8 +178,6 @@ var app = function () {
         var time;
         for (var i = 0; i <= 12; i++) {
             time = Math.floor(start / 1000);
-            // if (i > 0)
-            //     result.categories.push(moment.unix(time).format("MMMM"));
             $.ajax({
                 url: "http://db.sead.systems:8080/" + device_id + "?start_time=" + time + "&end_time=" + time + "&device=" + appl_id + "&type=P",
                 dataType: 'json',
@@ -181,7 +205,6 @@ var app = function () {
 
     // Generates continous power usage data for the specified parameters
     function gen_cont_appl_data(device_id, name, appliance_id, start, end, data_points) {
-        console.log("gen_cont_appl_data " + start + " to " + end + " for " + name + " (" + appliance_id + ") for " + data_points + " data points");
         var granularity = Math.floor((end - start) / data_points);
 
         var result = [];
@@ -249,6 +272,7 @@ var app = function () {
         var appliances;
         if (room_i == 0) {
             var temp = [];
+            var appl_data;
             for (var i = 1; i < self.vue.rooms.length; i++) {
                 appliances = self.vue.rooms[i].appliances;
                 Object.keys(appliances).forEach(function (key, index) {
@@ -261,7 +285,6 @@ var app = function () {
                                 temp[j] += appl_data[j];
                         }
                     }
-                    console.log(JSON.parse(JSON.stringify(temp)));
                 });
                 payload.push({
                     name: self.vue.rooms[i].name,
@@ -322,7 +345,6 @@ var app = function () {
 
     self.add_room = function () {
         var name = (self.vue.modal_room_name ? self.vue.modal_room_name : default_room_name(self.vue.modal_chosen_icon_path));
-        var id_name = name.replace(/ /g, "_") + "_"; // edit to id format
         var new_room = {
             'name': name,
             '_idx': self.vue.rooms.length,
@@ -430,8 +452,6 @@ var app = function () {
                 console.log("create_chart() error: " + mod.header);
             }
         } else { // Normal room   ** Not done yet
-            var appliances = self.vue.rooms[room_i].appliances;
-            var payload = [];
             if (mod.header == "activity") {
                 gen_line_chart(room_i, mod_i);
             } else if (mod.header == "devices") {
@@ -468,7 +488,6 @@ var app = function () {
             htmltag += '<label class="switch">';
             htmltag += '<input type="checkbox" checked>';
             htmltag += '<div class="slider round"></div></label></li>';
-            i += 1;
         }
         htmltag += '<div class="btn-wrap"><button class="btn btn-warning addbtn">add device</button></div>';
         return htmltag;
@@ -586,16 +605,9 @@ var app = function () {
     };
 
 
-    // Extends an array
-    self.extend = function (a, b) {
-        for (var i = 0; i < b.length; i++) {
-            a.push(b[i]);
-        }
-    };
-
     self.manage_btn_toggle = function (_idx) {
         // console.log('manage_btn_toggle');
-        for (i = 0; i < self.vue.rooms.length; i++) {
+        for (var i = 0; i < self.vue.rooms.length; i++) {
             if (_idx == self.vue.rooms[i]._idx) {
                 // console.log('Click on ' + self.vue.rooms[i].name);
                 self.vue.rooms[i].isActive = true;
@@ -606,7 +618,6 @@ var app = function () {
             }
         }
         // This should refresh the action room's graph (delete and re-add.)
-        // refresh_graph(self.vue.action_room);
         if (self.vue.isInitialized) {
             setTimeout(function () {
                 self.reload_room(_idx);
@@ -786,31 +797,15 @@ var app = function () {
 
     self.vue.device_id = 466419818;
 
-    Object.keys(user_devices["\"466419818\""]["rooms"]).forEach(function (room) {
-        Object.keys(user_devices["\"466419818\""]["rooms"][room]["appliances"]).forEach(function (appliance) {
-            var appl_id = user_devices["\"466419818\""]["rooms"][room]["appliances"][appliance].id;
-            self.vue.power_data[appl_id] = {
-                name: appliance,
-                monthly_data: gen_monthly_appl_data(466419818, appliance, appl_id),
-                data: gen_cont_appl_data(466419818, appliance, appl_id, self.vue.start_date, self.vue.end_date, 30),
-            };
-        })
-    });
-    console.log(JSON.parse(JSON.stringify(self.vue.power_data)));
-
     modal_event_init();
+    init_rooms();
+
 
     self.vue.rooms[0].data[3] = [40, 50, 80];
-
-
+    init_data();
     date_picker();
-    initRooms();
-    initHome();
 
-    //when not isInitialized, don't add graph when add default room above,
-    // (manage_btn_toggle will trigger add graph event).
-    // self.vue.isInitialized = true;    //now in initRooms
-    console.log('Create Date Range Picker');
+    init_home();
 
     $("#vue-div").show();
     console.log('Vue initialized');

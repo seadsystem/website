@@ -28,8 +28,9 @@ var areaspline = function (room, mod_i, payload) {
             },
         },
         tooltip: {
-            shared: true,
-            valueSuffix: ' killowatt hour(s)'
+            valueSuffix: ' kWh',
+            valueDecimals: 3,
+            shared: true
         },
         credits: {
             enabled: true
