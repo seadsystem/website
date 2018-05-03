@@ -369,7 +369,7 @@ var app = function () {
             if (self.vue.isInitialized) {
                 self.manage_btn_toggle(self.vue.rooms.length - 1); //set this to active (jump to this page)
             }
-            self.vue.rooms[new_room._idx].data[3] = [40, 50, 80];
+            // self.vue.rooms[new_room._idx].data[3] = [40, 50, 80];
             enumerate(self.vue.rooms);
         }
 
@@ -445,9 +445,9 @@ var app = function () {
             } else if (mod.header == "graph") {
                 gen_bar_chart(room_i, mod_i);
             } else if (mod.header == "consumption") {
-                gauge(self.vue.rooms[room_i], mod_i, 3);
+                gauge(self.vue.rooms[room_i], mod_i, 3, self.vue.device_id);
             } else if (mod.header == "notification") {
-                gauge(self.vue.rooms[room_i], mod_i, 3);
+                gauge(self.vue.rooms[room_i], mod_i, 3, self.vue.device_id);
             } else {
                 console.log("create_chart() error: " + mod.header);
             }
@@ -467,7 +467,7 @@ var app = function () {
             } else if (mod.header == "graph") {
                 gen_bar_chart(room_i, mod_i);
             } else if (mod.header == "consumption") {
-                gauge(self.vue.rooms[room_i], mod_i, 3); // 3 to be changes
+                gauge(self.vue.rooms[room_i], mod_i, 3, self.vue.device_id); // 3 to be changes
             } else if (mod.header == "notification") {
                 //areaspline(self.vue.rooms, room_i, mod_i);
             } else {
@@ -801,7 +801,7 @@ var app = function () {
     init_rooms();
 
 
-    self.vue.rooms[0].data[3] = [40, 50, 80];
+    // self.vue.rooms[0].data[3] = [40, 50, 80];
     init_data();
     date_picker();
 
