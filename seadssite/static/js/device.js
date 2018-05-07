@@ -89,17 +89,15 @@ var app = function () {
 
     // Generates a power data structure and generates monthly power usage data for each appliance
     function init_data() {
-        var device_id = "\"" + self.vue.device_id + "\"";
-        var appl_id;
-        Object.keys(user_devices[device_id]["rooms"]).forEach(function (room) {
-            Object.keys(user_devices[device_id]["rooms"][room]["appliances"]).forEach(function (appliance) {
-                appl_id = user_devices[device_id]["rooms"][room]["appliances"][appliance].id;
+        Object.keys(device.rooms).forEach(function (room) {
+            Object.keys(device.rooms[room].appliances).forEach(function (appliance) {
+                var appl_id = device.rooms[room].appliances[appliance].id;
                 self.vue.power_data[appl_id] = {
                     name: appliance,
                     monthly_data: gen_monthly_appl_data(self.vue.device_id, appliance, appl_id),
                     data: undefined,
                 };
-            })
+            });
         });
     }
 
@@ -120,53 +118,24 @@ var app = function () {
     }
 
     var init_rooms = function () {
-        var callback = function () {
-            var rooms = self.vue.room_structure.rooms;
-            for (var i = 0; i < rooms.length; i++) {
-                self.vue.modal_chosen_icon_path = img_path + rooms[i].icon_path;
-                self.vue.modal_room_name = rooms[i].room;
-                self.vue.modal_appliances = rooms[i].appliances;
-                self.add_room();
-                self.modal_reinit();
-            }
-            console.log('Room Inited');
-            enumerate(self.vue.rooms);
+        var rooms = self.vue.room_structure.rooms;
+        console.log(rooms);
+        Object.keys(rooms).forEach(function (room_name) {
+            var room = rooms[room_name];
+            console.log(room);
+            self.vue.modal_chosen_icon_path = img_path + "/" + room.icon + ".png";
+            self.vue.modal_room_name = room_name;
+            self.vue.modal_appliances = room.appliances;
+            self.vue.add_room();
             self.modal_reinit();
-            self.manage_btn_toggle(0);
-            self.vue.isInitialized = true;
-        };
-        self.get_rooms(callback);
+        });
+
+        console.log('Room Inited');
+        enumerate(self.vue.rooms);
+        self.modal_reinit();
+        self.manage_btn_toggle(0);
+        self.vue.isInitialized = true;
     }
-
-
-
-    //---------------API calls-----------------
-    self.get_rooms = function (callback) {
-        var rooms = user_devices["\"466419818\""].rooms;
-        var roomIds = Object.keys(rooms);
-        var roomsVueStruct = [];
-        var modHeader = "activity,devices,graph,consumption,notification";
-
-        for (var i = 0; i < roomIds.length; i++) {
-            var roomName = roomIds[i];
-            var room = rooms[roomName];
-            var appliances = room.appliances;
-            var roomVueStruct = {
-                "room": roomName,
-                "icon_path": "/" + room.icon + ".png",
-                "appliances": appliances,
-                "mod_header": modHeader
-            }
-            roomsVueStruct.push(roomVueStruct);
-        }
-
-        var info = {
-            "rooms": roomsVueStruct
-        };
-        self.vue.room_structure = info;
-        callback();
-    }
-
 
     // Generates monthly usage of specified panel for the last 12 months
     function gen_monthly_appl_data(device_id, appl_name, appl_id) {
@@ -251,7 +220,7 @@ var app = function () {
             appliances = self.vue.rooms[room_i].appliances;
             Object.keys(appliances).forEach(function (key) {
                 payload.push({
-                    name: appliances[key].id,
+                    name: key,
                     data: self.vue.power_data[appliances[key].id].data,
                 });
             });
@@ -429,50 +398,26 @@ var app = function () {
 
     self.create_chart = function (room_i, mod_i) {
         var mod = self.vue.rooms[room_i].modules[mod_i];
-        if (room_i == 0) { //Home condition
-            if (mod.header == "activity") {
-                gen_line_chart(room_i, mod_i);
-            } else if (mod.header == "devices") {
-                htmltag = gen_dev_list(room_i);
-                tmp = self.vue.rooms[room_i].modules[mod_i];
-                $('#' + tmp.el_id).append("\
+        if (mod.header == "activity") {
+            gen_line_chart(room_i, mod_i);
+        } else if (mod.header == "devices") {
+            htmltag = gen_dev_list(room_i);
+            tmp = self.vue.rooms[room_i].modules[mod_i];
+            $('#' + tmp.el_id).append("\
                     <div class=\"device-list\">\
                     <div class=\"list-group\">"
-                    + htmltag +
-                    "</div>\
-                    </div>\
-                ");
-            } else if (mod.header == "graph") {
-                gen_bar_chart(room_i, mod_i);
-            } else if (mod.header == "consumption") {
-                gauge(self.vue.rooms[room_i], mod_i, 3, self.vue.device_id);
-            } else if (mod.header == "notification") {
-                gauge(self.vue.rooms[room_i], mod_i, 3, self.vue.device_id);
-            } else {
-                console.log("create_chart() error: " + mod.header);
-            }
-        } else { // Normal room   ** Not done yet
-            if (mod.header == "activity") {
-                gen_line_chart(room_i, mod_i);
-            } else if (mod.header == "devices") {
-                htmltag = gen_dev_list(room_i);
-                tmp = self.vue.rooms[room_i].modules[mod_i];
-                $('#' + tmp.el_id).append("\
-                    <div class=\"device-list\">\
-                    <div class=\"list-group\">"
-                    + htmltag +
-                    "</div>\
-                    </div>\
-                ");
-            } else if (mod.header == "graph") {
-                gen_bar_chart(room_i, mod_i);
-            } else if (mod.header == "consumption") {
-                gauge(self.vue.rooms[room_i], mod_i, 3, self.vue.device_id); // 3 to be changes
-            } else if (mod.header == "notification") {
-                //areaspline(self.vue.rooms, room_i, mod_i);
-            } else {
-                console.log("create_chart() error: " + mod.header);
-            }
+                + htmltag +
+                "</div>\
+                </div>\
+            ");
+        } else if (mod.header == "graph") {
+            gen_bar_chart(room_i, mod_i);
+        } else if (mod.header == "consumption") {
+            gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
+        } else if (mod.header == "notification") {
+            gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
+        } else {
+            console.log("create_chart() error: " + mod.header);
         }
     }
 
@@ -711,8 +656,8 @@ var app = function () {
         data: {
             house_id: 99, // Not sure, from query file
             user_id: 0, // from query file
-            device_id: 0,
-            room_structure: [],
+            device_id: device_id,
+            room_structure: device,
             power_data: {},
             rooms: [{
                 'name': 'Home', // or possibly separated from room
@@ -795,10 +740,10 @@ var app = function () {
         },
     });
 
-    self.vue.device_id = 466419818;
-
     modal_event_init();
     init_rooms();
+
+    console.log(self.vue.rooms);
 
 
     // self.vue.rooms[0].data[3] = [40, 50, 80];

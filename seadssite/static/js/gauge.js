@@ -1,6 +1,6 @@
 // If everyone wrote code like this maybe this project would go somewhere.
 // Yes, I am very modest :B
-var gauge = function(room, mod_i, data_i, device_id) {
+var gauge = function(room, mod_i, device_id) {
         // Get timestamps for the start and end of the week
         // This is our area of interest, since we will be fetching all
         // the data for the week (hourly) - so at most 168 data points.
@@ -14,23 +14,19 @@ var gauge = function(room, mod_i, data_i, device_id) {
         // This object will hold the ids of the appliances we will query.
         var appliance_ids = [];
 
-        // Just a weird Firebase thing. Gotta make it look like string for
-        // Firebase to work ...
-        device_id_string = "\"" + device_id + "\"";
-
         // Home is a special case, we get all the appliances for each room
         if (room.name == "Home") {
-          Object.keys(user_devices[device_id_string]["rooms"]).forEach(function (room) {
-              Object.keys(user_devices[device_id_string]["rooms"][room]["appliances"]).forEach(function (appliance) {
-                appliance_id = user_devices[device_id_string]["rooms"][room]["appliances"][appliance].id;
+          Object.keys(device["rooms"]).forEach(function (room) {
+              Object.keys(device["rooms"][room]["appliances"]).forEach(function (appliance) {
+                appliance_id = device["rooms"][room]["appliances"][appliance].id;
                 appliance_ids.push(appliance_id);
               });
           });
         }
         // Here we just get all the appliances for a specific room.
         else {
-          Object.keys(user_devices[device_id_string]["rooms"][room.name]["appliances"]).forEach(function (appliance) {
-            var appliance_id = user_devices[device_id_string]["rooms"][room.name]["appliances"][appliance].id;
+          Object.keys(device["rooms"][room.name]["appliances"]).forEach(function (appliance) {
+            var appliance_id = device["rooms"][room.name]["appliances"][appliance].id;
             appliance_ids.push(appliance_id);
           })
         }
@@ -175,7 +171,7 @@ var gauge = function(room, mod_i, data_i, device_id) {
                   },
 
                   title: {
-                      text: 'Electricy Consumption',
+                      text: 'Electricity Consumption',
                       style: {
                           fontSize: '24px'
                       }

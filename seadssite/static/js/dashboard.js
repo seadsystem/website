@@ -1,49 +1,50 @@
-$(function () {
-    Vue.component('device-menu', {
-        props: ['deviceId', 'deviceInfo', 'manage_btn_toggle'],
-        template: '<div><a href=""\
-                    class="list-group-item manage-item"\
-                    @click.prevent="toggleChildren">\
-                    <i :class="iconClasses"></i>\
-                     {{deviceInfo.name}}</a>\
-                    <a v-for="(roomInfo, room) in deviceInfo.rooms"\
-                    v-if="showChildren"\
-                    class="list-group-item manage-item" href="">\
-                    {{room}}</a></div>',
-        data: function () {
-            return {
-                showChildren: false
-            }
-        },
-        computed: {
-            iconClasses() {
-                return {
-                    'glyphicon glyphicon-chevron-right': !this.showChildren,
-                    'glyphicon glyphicon-chevron-down': this.showChildren
-                }
-            }
-        },
-        methods: {
-            toggleChildren() {
-                this.showChildren = !this.showChildren;
-            }
-        }
+function validation() {
+    $("#deviceIDNumError").hide();
+    $("#deviceIDEmpty").hide();
+    $("#deviceNameEmpty").hide();
+    var deviceID = $("#device_id").val();
+    if (isNaN(deviceID)) {
+        //alert("not a number");
+        $("#deviceIDNumError").show();
+        return false;
+    }
+    if (!$("#device_id").val()) {
+        $("#deviceIDEmpty").show();
+        return false;
+    }
+    if (!$("#device_name").val()) {
+        $("#deviceNameEmpty").show();
+        return false;
+    }
+    else {
+        $("#deviceRegisterSubmit").click();
+    }
+}
+
+$("#device_id, #device_name").keypress(function (e) {
+    if (e.which == 13) {
+        e.preventDefault();
+        validation();
+    }
+});
+
+function get_api_data(device_id) {
+    $.get("", {device_id: device_id}, function (data) {
+        console.log(data);
     });
+}
 
-    var vm = new Vue({
-        delimiters: ['${', '}'],
-        el: '#vue-div',
-        data: {
-            devices: user_devices,
-            icon_path: img_path + "/home.png",
-            icons: [img_path + "/bedroom.png",
-                img_path + "/bedroom2.png",
-                img_path + "/office.png",
-                img_path + "/kitchen.png",
-                img_path + "/bathroom.png",
-                img_path + "/livingroom.png"
-            ],
-        },
+$(document).ready(function () {
+    $(".delete").click(function (event) {
+        event.stopPropagation();
+    });
+    $(".deviceBox").click(function (event) {
+        event.stopPropagation();
+        var device_id = $(this).find(".device_id").val();
+        window.location.href = "/dashboard/" + device_id + "/";
+    });
+});
 
-    })
-})
+$(".col-md-3 .registerDevice").mouseover(function () {
+    console.log("mouseover event detected.");
+});

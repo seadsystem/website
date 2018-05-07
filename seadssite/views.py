@@ -57,28 +57,6 @@ def LogoutView(request):
     request.session.clear()
     return HttpResponse(status=200)
 
-def DashboardTest(request):
-    """
-    load main page as "index"
-    """
-    authenticated = False
-    if 'user_id' not in request.session:
-        return render(request, 'dashboard_test.html', {'authenticated': authenticated})
-
-    if request.session['user_id'] is not None:
-        authenticated = True
-
-    userRef = db.reference('users').child(request.session['user_id']).child('devices')
-    devices = simplejson.dumps(userRef.get())
-
-    print(devices)
-    return render(request, 'dashboard_test.html', {'authenticated': authenticated, 'devices': devices})
-
-
-'''
-device dashboard page controller
-TODO: users can delete each others devices I think
-'''
 def DashboardView(request):
     authenticated = False
     if 'user_id' not in request.session:
@@ -87,10 +65,45 @@ def DashboardView(request):
     if request.session['user_id'] is not None:
         authenticated = True
 
-    ref = db.reference('users').child(request.session['user_id']).child('devices')
-    devices = simplejson.dumps(ref.get())
+    userRef = db.reference('users').child(request.session['user_id']).child('devices')
+
+    # Register a new device
+    if request.POST.get('device_id'):
+        new_device_name = request.POST.get('device_name')
+        new_device_id = request.POST.get('device_id')
+        userRef.update({
+            new_device_id: {
+                'name': new_device_name
+            }
+        })
+
+    # Delete a device
+    elif request.POST.get('delete'):
+        device_id = request.POST.get('delete')
+        userRef.child(device_id).delete()
+
+    devices = userRef.get()
 
     return render(request, 'dashboard.html', {'authenticated': authenticated, 'devices': devices})
+
+def DeviceView(request, device_id):
+    """
+        load main page as "index"
+        """
+    authenticated = False
+    if 'user_id' not in request.session:
+        return render(request, 'device.html', {'authenticated': authenticated})
+
+    if request.session['user_id'] is not None:
+        authenticated = True
+
+    userRef = db.reference('users').child(request.session['user_id']).child('devices').child(device_id)
+    device = simplejson.dumps(userRef.get())
+
+    print(device_id)
+    print(device)
+    return render(request, 'device.html', {'authenticated': authenticated, 'deviceId': device_id, 'device': device})
+
 
 
 def TimerView(request):
