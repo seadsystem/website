@@ -57,6 +57,7 @@ def LogoutView(request):
     request.session.clear()
     return HttpResponse(status=200)
 
+
 def DashboardView(request):
     authenticated = False
     if 'user_id' not in request.session:
@@ -67,6 +68,7 @@ def DashboardView(request):
 
     userRef = db.reference('users').child(request.session['user_id']).child('devices')
 
+    print(request.POST)
     # Register a new device
     if request.POST.get('device_id'):
         new_device_name = request.POST.get('device_name')
@@ -86,6 +88,7 @@ def DashboardView(request):
 
     return render(request, 'dashboard.html', {'authenticated': authenticated, 'devices': devices})
 
+
 def DeviceView(request, device_id):
     """
         load main page as "index"
@@ -97,13 +100,26 @@ def DeviceView(request, device_id):
     if request.session['user_id'] is not None:
         authenticated = True
 
-    userRef = db.reference('users').child(request.session['user_id']).child('devices').child(device_id)
-    device = simplejson.dumps(userRef.get())
+    deviceRef = db.reference('users').child(request.session['user_id']).child('devices').child(device_id)
+    device = simplejson.dumps(deviceRef.get())
 
-    print(device_id)
-    print(device)
     return render(request, 'device.html', {'authenticated': authenticated, 'deviceId': device_id, 'device': device})
 
+
+def UpdateDeviceView(request):
+    if not request.is_ajax():
+        return HttpResponseNotAllowed(['POST'])
+
+    if 'user_id' not in request.session or request.session['user_id'] is None:
+        return HttpResponse(status=401)
+
+    device_id = request.POST.get('device_id')
+    device = simplejson.loads(request.POST.get('data'))
+
+    device_ref = db.reference('users').child(request.session['user_id']).child('devices').child(device_id)
+    device_ref.set(device)
+
+    return HttpResponse(status=200)
 
 
 def TimerView(request):

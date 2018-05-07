@@ -152,7 +152,7 @@
                             </div>
                             <div id="collapse1" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    <a v-on:click.prevent="modal_choose_icon(icon); " v-for="icon in icons"
+                                    <a v-on:click.prevent="modal_choose_icon(icon); " v-for="(icon, name) in icons"
                                        data-toggle="collapse" href="#collapse1">
                                         <img class="panel-icon" :src="icon">
                                     </a>

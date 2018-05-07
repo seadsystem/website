@@ -28,12 +28,6 @@ $("#device_id, #device_name").keypress(function (e) {
     }
 });
 
-function get_api_data(device_id) {
-    $.get("", {device_id: device_id}, function (data) {
-        console.log(data);
-    });
-}
-
 $(document).ready(function () {
     $(".delete").click(function (event) {
         event.stopPropagation();

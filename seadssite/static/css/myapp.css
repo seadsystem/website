@@ -102,6 +102,10 @@ body {
 #add-room-modal > div.modal-dialog.modal-sm {
   z-index: 1050;
 }
+
+#del-room-modal > div.modal-dialog.modal-sm {
+  z-index: 1050;
+}
 .page-wrap .search-bar {
   z-index: 100;
   position: fixed;

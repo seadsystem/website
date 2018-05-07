@@ -303,7 +303,7 @@ var app = function () {
 
     self.edit_room = function () {
         // console.log('edit_room');
-        var room = self.vue.rooms[self.vue.action_room]
+        var room = self.vue.rooms[self.vue.action_room];
         room.name = self.vue.modal_room_name;
         room.icon_path = self.vue.modal_chosen_icon_path;
         self.vue.icon_path = room.icon_path;
@@ -343,10 +343,18 @@ var app = function () {
         }
 
         if (self.vue.isInitialized) {
-            $.post(add_room_url,
+            var icon = self.vue.modal_chosen_icon_path.split('\\').pop().split('/').pop();
+            icon = icon.substring(0, icon.length - 4);
+            console.log(icon);
+            self.vue.room_structure.rooms[name] = {
+                icon: icon
+            };
+            $.post("/update_info/",
                 {
-                    'rooms': self.vue.room_structure.rooms.push(name),
-                }, function (data) {
+                    csrfmiddlewaretoken: self.vue.csrf_token,
+                    device_id: self.vue.device_id,
+                    data: JSON.stringify(self.vue.room_structure)
+                }, function () {
                     console.log('add room success');
                     add_room_action();
                     setTimeout(function () {
@@ -654,6 +662,20 @@ var app = function () {
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
+            csrf_token: function () {
+                var csrf_token = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        if (cookie.substring(0, 10) === ('csrftoken=')) {
+                            csrf_token = decodeURIComponent(cookie.substring(10));
+                            break;
+                        }
+                    }
+                }
+                return csrf_token;
+            },
             house_id: 99, // Not sure, from query file
             user_id: 0, // from query file
             device_id: device_id,
@@ -740,13 +762,10 @@ var app = function () {
         },
     });
 
+
     modal_event_init();
     init_rooms();
 
-    console.log(self.vue.rooms);
-
-
-    // self.vue.rooms[0].data[3] = [40, 50, 80];
     init_data();
     date_picker();
 
