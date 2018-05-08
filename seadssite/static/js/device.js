@@ -65,7 +65,8 @@ var app = function () {
             self.vue.end_date = Math.floor(end / 1000);
             console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
             refresh_data();
-            self.reload_room(self.vue.action_room);
+            // self.reload_room(self.vue.action_room);
+            self.reload_mod(self.vue.action_room, 0);
         }
 
         $('#reportrange').daterangepicker({
@@ -399,10 +400,14 @@ var app = function () {
             mod.chart.destroy();
         } else if (mod.header == "devices") {
             $('#' + mod.el_id).empty();
+        } else if (mod.header == "Sort appliances") {
+            $('#' + mod.el_id).empty();
         }
         self.create_chart(room_i, mod_i);
         console.log('----DONE');
     }
+
+    var isSortInitialized = false;
 
     self.create_chart = function (room_i, mod_i) {
         var mod = self.vue.rooms[room_i].modules[mod_i];
@@ -424,10 +429,68 @@ var app = function () {
             gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
         } else if (mod.header == "notification") {
             gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
+        } else if (mod.header == "Sort appliances") {
+            tmp = self.vue.rooms[room_i].modules[mod_i];
+            console.log("tmpelid");
+                console.log($('#'+tmp.el_id));
+            if(!isSortInitialized) {
+                // construct string to contain individual divs                
+                var sortAppliancesString = gen_application_sort_string();
+
+                $('#'+tmp.el_id).append(sortAppliancesString);
+
+                isSortInitialized = true;
+            }
         } else {
             console.log("create_chart() error: " + mod.header);
         }
     }
+
+
+    // gen_application_sort_string()
+    // generates html to display the Sort Application module on the homepage
+    var gen_application_sort_string = function () {
+
+        var sortAppliancesString = '<div id = "application-sort-container">'+
+'           <table id="application-sort-table">'+
+'               <tr>';
+        curDevice = self.vue.device_id;
+
+        var rooms = device.rooms;
+        var roomIds = Object.keys(rooms);
+        var idIndex = 0;
+        for (var i = 0; i < roomIds.length; i++) {
+            var roomName = roomIds[i];
+            var room = rooms[roomName];
+            var appliancesKeys = Object.keys(room.appliances); // array of names of the appliances as shown to the user
+            var appliancesValues = Object.values(room.appliances); // array of objects containing id's of the appliances which is used to communicate with the SEADS db
+            console.log('---------');
+            console.log(roomName);
+            // In this loop, inject the new div for another room-column container 
+            sortAppliancesString = sortAppliancesString + 
+'                   <td>'+
+'                       <div class="room-column-container">'+
+'                           <div class="unselectable room-column" unselectable="on" id = "' + roomName + '" ondrop="column = this; applianceSortDrop(event)" ondragover="applianceSortAllowDrop(event)">'+
+'                               <h3 class="unselectable roomNameHeader" unselectable="on">' + roomName + '</h1>'+
+'                               <hr>';
+
+            for (var appliancesIndex = 0; appliancesIndex < appliancesKeys.length; appliancesIndex++) {
+                idIndex++;
+                sortAppliancesString = sortAppliancesString +
+'                                   <p class="draggable" id="'+appliancesValues[appliancesIndex].id+'" draggable="true" ondragstart="applianceSortDragged(event)">'+appliancesKeys[appliancesIndex]+'</p>';
+            }
+            // close the room-column-container and room-column div
+            sortAppliancesString = sortAppliancesString + 
+'                           </div>'+
+'                       </div>'+
+'                   </td>';
+        }
+        sortAppliancesString = sortAppliancesString +
+'               </tr>'+
+'           </table>'+
+'       </div>';
+        return sortAppliancesString;
+    };
 
     var gen_dev_list = function (room_i) {
         appliances = self.vue.rooms[room_i].appliances;
@@ -723,6 +786,13 @@ var app = function () {
                     'modType': 'module2',
                     'el_id': 'Home_el_4',
                     'id': 'Home_4',
+                    'chart': '',
+                }, {
+                    'header': 'Sort appliances',
+                    '_idx': 5,
+                    'modType': 'module1',
+                    'el_id': 'Home_el_5',
+                    'id': 'Home_5',
                     'chart': '',
                 }],
             },],

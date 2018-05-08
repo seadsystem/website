@@ -88,6 +88,43 @@ def DashboardView(request):
 
     return render(request, 'dashboard.html', {'authenticated': authenticated, 'devices': devices})
 
+# takes in paramaters that let us change the firebase schema. 
+# Should take in currrent selection, which room to move it to
+# where it needs to move
+# pass in current device, room too
+def DashboardModuleSort(request):
+    print("hi==============")
+    targetRoom = request.GET.get('targetRoom', None)
+    targetAppliance = request.GET.get('targetAppliance', None)
+    currentRoom = request.GET.get('currentRoom', None)
+    currentDevice = request.GET.get('currentDevice', None) 
+
+    print(targetRoom)
+    print(targetAppliance)
+    print(currentRoom)
+    print(currentDevice)
+
+    # vars denoted as current refer to before the deletion
+    # other vars refer to after the move
+
+    userRef = db.reference('users').child(request.session['user_id']).child('devices')
+    currentAppliancesNode = userRef.child(currentDevice).child('rooms').child(currentRoom).child('appliances')
+    targetAppliancesNode = userRef.child(currentDevice).child('rooms').child(targetRoom).child('appliances')
+    for testAppliance in currentAppliancesNode.get():
+        if(targetAppliance == currentAppliancesNode.child(testAppliance).child('id').get()):
+            print("TRUE")
+            targetAppliancesNode.child(testAppliance).child('id').set(targetAppliance)
+            currentAppliancesNode.child(testAppliance).delete()
+        # print(testAppliance)
+        # print(currentAppliancesNode.child(testAppliance).child('id').get())
+        print("---end-------------------------------")
+    # userRef.child('"987654321"').set("test")
+    # devices = simplejson.dumps(userRef.get());
+
+    # print(devices)
+
+
+    return render(request, 'device.html')
 
 def DeviceView(request, device_id):
     """
