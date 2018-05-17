@@ -1,0 +1,3 @@
+Make CSS consistent across website
+Add loading spinner to device page
+Avoid reloading cost graph on every action room change

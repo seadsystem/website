@@ -1,7 +1,8 @@
 var areaspline = function (room, mod_i, payload) {
     room.modules[mod_i].chart = Highcharts.chart(room.modules[mod_i].el_id, {
         chart: {
-            type: 'areaspline'
+            type: 'areaspline',
+            zoomType: 'x'
         },
         title: {
             text: ''

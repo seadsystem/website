@@ -65,7 +65,7 @@ var app = function () {
             self.vue.end_date = Math.floor(end / 1000);
             console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
             refresh_data();
-            self.reload_room(self.vue.action_room);
+            self.create_chart(self.vue.action_room, 0);
         }
 
         $('#reportrange').daterangepicker({
@@ -108,7 +108,6 @@ var app = function () {
             self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
                 appl_id, self.vue.start_date, self.vue.end_date, 30);
         });
-        console.log(JSON.parse(JSON.stringify(self.vue.power_data)));
     }
 
     var init_home = function () {
@@ -119,18 +118,14 @@ var app = function () {
 
     var init_rooms = function () {
         var rooms = self.vue.room_structure.rooms;
-        console.log(rooms);
         Object.keys(rooms).forEach(function (room_name) {
             var room = rooms[room_name];
-            console.log(room);
             self.vue.modal_chosen_icon_path = img_path + "/" + room.icon + ".png";
             self.vue.modal_room_name = room_name;
             self.vue.modal_appliances = room.appliances;
             self.vue.add_room();
             self.modal_reinit();
         });
-
-        console.log('Room Inited');
         enumerate(self.vue.rooms);
         self.modal_reinit();
         self.manage_btn_toggle(0);
@@ -326,19 +321,16 @@ var app = function () {
         };
 
         var add_room_action = function () {
-            // console.log('add_room');
             self.vue.rooms.push(new_room);
-            console.log('add ' + name);
             self.vue.action_room = self.vue.rooms.length - 1;
             self.add_module(1, 'activity'); // number refers to module type
-            self.add_module(3, 'devices');
+            //self.add_module(3, 'devices');
             self.add_module(2, 'graph');
             self.add_module(3, 'consumption');
-            self.add_module(2, 'notification');
+            //self.add_module(2, 'notification');
             if (self.vue.isInitialized) {
                 self.manage_btn_toggle(self.vue.rooms.length - 1); //set this to active (jump to this page)
             }
-            // self.vue.rooms[new_room._idx].data[3] = [40, 50, 80];
             enumerate(self.vue.rooms);
         }
 
@@ -394,14 +386,12 @@ var app = function () {
 
     self.reload_mod = function (room_i, mod_i) {
         var mod = self.vue.rooms[room_i].modules[mod_i];
-        console.log('Reloading Mod ' + mod.header);
         if (mod.chart != "") {
             mod.chart.destroy();
         } else if (mod.header == "devices") {
             $('#' + mod.el_id).empty();
         }
         self.create_chart(room_i, mod_i);
-        console.log('----DONE');
     }
 
     self.create_chart = function (room_i, mod_i) {
@@ -409,6 +399,7 @@ var app = function () {
         if (mod.header == "activity") {
             gen_line_chart(room_i, mod_i);
         } else if (mod.header == "devices") {
+            $('#' + mod.el_id).empty();
             htmltag = gen_dev_list(room_i);
             tmp = self.vue.rooms[room_i].modules[mod_i];
             $('#' + tmp.el_id).append("\
@@ -423,7 +414,7 @@ var app = function () {
         } else if (mod.header == "consumption") {
             gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
         } else if (mod.header == "notification") {
-            gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
+            //gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
         } else {
             console.log("create_chart() error: " + mod.header);
         }
@@ -696,14 +687,17 @@ var app = function () {
                     'el_id': 'Home_el_0', //for plot use( the inner el box )
                     'id': 'Home_0', // this should be computed and assigned at the insertion
                     'chart': '',
-                }, {
-                    'header': 'devices',
-                    '_idx': 1,
-                    'modType': 'module3',
-                    'el_id': 'Home_el_1',
-                    'id': 'Home_1',
-                    'chart': '',
-                }, {
+                }
+                // ,
+                //     {
+                //     'header': 'devices',
+                //     '_idx': 1,
+                //     'modType': 'module3',
+                //     'el_id': 'Home_el_1',
+                //     'id': 'Home_1',
+                //     'chart': '',
+                // }
+                , {
                     'header': 'graph',
                     '_idx': 2,
                     'modType': 'module2',
@@ -717,14 +711,17 @@ var app = function () {
                     'el_id': 'Home_el_3',
                     'id': 'Home_3',
                     'chart': '',
-                }, {
-                    'header': 'notification',
-                    '_idx': 4,
-                    'modType': 'module2',
-                    'el_id': 'Home_el_4',
-                    'id': 'Home_4',
-                    'chart': '',
-                }],
+                }
+                // ,
+                //     {
+                //     'header': 'notification',
+                //     '_idx': 4,
+                //     'modType': 'module2',
+                //     'el_id': 'Home_el_4',
+                //     'id': 'Home_4',
+                //     'chart': '',
+                // }
+                ],
             },],
             id_tracker: 4, //according to that last Home_(id)
             search_bar_input_val: '',

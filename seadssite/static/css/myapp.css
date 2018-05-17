@@ -14,7 +14,7 @@ body {
 }
 
 #space-for-search-bar {
-  margin-top: 50px;
+  margin-top: 80px;
   padding: 10px;
   wdith: 300px;
 }
@@ -27,7 +27,7 @@ body {
   left: 0px;
   width: 230px;
   text-align: center;
-  padding: 10px;
+  padding: 30px 10px 10px 10px;
 }
 .manage-bar .logo {
   margin-top: 40px;
