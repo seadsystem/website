@@ -31,7 +31,7 @@ $(function() {
                     });
 
                     $(document).ajaxStop(function () {
-                        window.location = "/dashboard/"
+                        location.reload();
                     })
                 });
             }

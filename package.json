@@ -9,8 +9,8 @@
     "watchify": "3.10.0"
   },
   "scripts": {
-    "postinstall": "browserify seadssite/static/js/graph.js -o seadssite/static/js/bundle.js",
-    "watch": "watchify seadssite/static/js/graph.js -o seadssite/static/js/bundle.js",
+    "postinstall": "browserify seadssite/static/js/dashboard.js -o seadssite/static/js/bundle.js",
+    "watch": "watchify seadssite/static/js/dashboard.js -o seadssite/static/js/bundle.js",
     "start": "nf start"
   },
   "repository": {
