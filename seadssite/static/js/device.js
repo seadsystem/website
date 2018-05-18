@@ -394,6 +394,8 @@ var app = function () {
         self.create_chart(room_i, mod_i);
     }
 
+    var isSortInitialized = false;
+
     self.create_chart = function (room_i, mod_i) {
         var mod = self.vue.rooms[room_i].modules[mod_i];
         if (mod.header == "activity") {
@@ -416,14 +418,15 @@ var app = function () {
         } else if (mod.header == "notification") {
             //gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
         } else if (mod.header == "Sort appliances") {
+            console.log("sort appliances");
             tmp = self.vue.rooms[room_i].modules[mod_i];
             console.log("tmpelid");
-                console.log($('#'+tmp.el_id));
-            if(!isSortInitialized) {
+            console.log($('#' + tmp.el_id));
+            if (!isSortInitialized) {
                 // construct string to contain individual divs
                 var sortAppliancesString = gen_application_sort_string();
 
-                $('#'+tmp.el_id).append(sortAppliancesString);
+                $('#' + tmp.el_id).append(sortAppliancesString);
 
                 isSortInitialized = true;
             }
@@ -437,9 +440,9 @@ var app = function () {
     // generates html to display the Sort Application module on the homepage
     var gen_application_sort_string = function () {
 
-        var sortAppliancesString = '<div id = "application-sort-container">'+
-'           <table id="application-sort-table">'+
-'               <tr>';
+        var sortAppliancesString = '<div id = "application-sort-container">' +
+            '           <table id="application-sort-table">' +
+            '               <tr>';
         curDevice = self.vue.device_id;
 
         var rooms = device.rooms;
@@ -454,27 +457,27 @@ var app = function () {
             console.log(roomName);
             // In this loop, inject the new div for another room-column container
             sortAppliancesString = sortAppliancesString +
-'                   <td>'+
-'                       <div class="room-column-container">'+
-'                           <div class="unselectable room-column" unselectable="on" id = "' + roomName + '" ondrop="column = this; applianceSortDrop(event)" ondragover="applianceSortAllowDrop(event)">'+
-'                               <h3 class="unselectable roomNameHeader" unselectable="on">' + roomName + '</h1>'+
-'                               <hr>';
+                '                   <td>' +
+                '                       <div class="room-column-container">' +
+                '                           <div class="unselectable room-column" unselectable="on" id = "' + roomName + '" ondrop="column = this; applianceSortDrop(event)" ondragover="applianceSortAllowDrop(event)">' +
+                '                               <h3 class="unselectable roomNameHeader" unselectable="on">' + roomName + '</h1>' +
+                '                               <hr>';
 
             for (var appliancesIndex = 0; appliancesIndex < appliancesKeys.length; appliancesIndex++) {
                 idIndex++;
                 sortAppliancesString = sortAppliancesString +
-'                                   <p class="draggable" id="'+appliancesValues[appliancesIndex].id+'" draggable="true" ondragstart="applianceSortDragged(event)">'+appliancesKeys[appliancesIndex]+'</p>';
+                    '                                   <p class="draggable" id="' + appliancesValues[appliancesIndex].id + '" draggable="true" ondragstart="applianceSortDragged(event)">' + appliancesKeys[appliancesIndex] + '</p>';
             }
             // close the room-column-container and room-column div
             sortAppliancesString = sortAppliancesString +
-'                           </div>'+
-'                       </div>'+
-'                   </td>';
+                '                           </div>' +
+                '                       </div>' +
+                '                   </td>';
         }
         sortAppliancesString = sortAppliancesString +
-'               </tr>'+
-'           </table>'+
-'       </div>';
+            '               </tr>' +
+            '           </table>' +
+            '       </div>';
         return sortAppliancesString;
     };
 
@@ -746,46 +749,46 @@ var app = function () {
                     'id': 'Home_0', // this should be computed and assigned at the insertion
                     'chart': '',
                 }
-                // ,
-                //     {
-                //     'header': 'devices',
-                //     '_idx': 1,
-                //     'modType': 'module3',
-                //     'el_id': 'Home_el_1',
-                //     'id': 'Home_1',
-                //     'chart': '',
-                // }
-                , {
-                    'header': 'graph',
-                    '_idx': 2,
-                    'modType': 'module2',
-                    'el_id': 'Home_el_2',
-                    'id': 'Home_2',
-                    'chart': '',
-                }, {
-                    'header': 'consumption',
-                    '_idx': 3,
-                    'modType': 'module3',
-                    'el_id': 'Home_el_3',
-                    'id': 'Home_3',
-                    'chart': '',
-                },
-                //     {
-                //     'header': 'notification',
-                //     '_idx': 4,
-                //     'modType': 'module2',
-                //     'el_id': 'Home_el_4',
-                //     'id': 'Home_4',
-                //     'chart': '',
-                // },
+                    // ,
+                    //     {
+                    //     'header': 'devices',
+                    //     '_idx': 1,
+                    //     'modType': 'module3',
+                    //     'el_id': 'Home_el_1',
+                    //     'id': 'Home_1',
+                    //     'chart': '',
+                    // }
+                    , {
+                        'header': 'graph',
+                        '_idx': 2,
+                        'modType': 'module2',
+                        'el_id': 'Home_el_2',
+                        'id': 'Home_2',
+                        'chart': '',
+                    }, {
+                        'header': 'consumption',
+                        '_idx': 3,
+                        'modType': 'module3',
+                        'el_id': 'Home_el_3',
+                        'id': 'Home_3',
+                        'chart': '',
+                    },
+                    //     {
+                    //     'header': 'notification',
+                    //     '_idx': 4,
+                    //     'modType': 'module2',
+                    //     'el_id': 'Home_el_4',
+                    //     'id': 'Home_4',
+                    //     'chart': '',
+                    // },
                     {
-                    'header': 'Sort appliances',
-                    '_idx': 5,
-                    'modType': 'module1',
-                    'el_id': 'Home_el_5',
-                    'id': 'Home_5',
-                    'chart': '',
-                }],
+                        'header': 'Sort appliances',
+                        '_idx': 5,
+                        'modType': 'module1',
+                        'el_id': 'Home_el_5',
+                        'id': 'Home_5',
+                        'chart': '',
+                    }],
             },],
             id_tracker: 4, //according to that last Home_(id)
             search_bar_input_val: '',
