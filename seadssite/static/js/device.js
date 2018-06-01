@@ -164,7 +164,6 @@ var app = function () {
             } else
                 result.push(null);
         }
-
         return result;
     }
 
