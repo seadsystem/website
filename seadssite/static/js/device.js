@@ -183,6 +183,7 @@ var app = function () {
                 })
             }
         });
+        document.getElementById("loader").style.display = "none"
         return result;
     }
 
