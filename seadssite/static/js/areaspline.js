@@ -1,4 +1,4 @@
-var areaspline = function (room, mod_i, payload) {
+var areaspline = function (room, mod_i, payload, isLoading) {
     room.modules[mod_i].chart = Highcharts.chart(room.modules[mod_i].el_id, {
         chart: {
             type: 'areaspline',
@@ -43,4 +43,7 @@ var areaspline = function (room, mod_i, payload) {
         },
         series: payload
     });
+    if (isLoading) {
+        room.modules[mod_i].chart.showLoading();
+    }
 }

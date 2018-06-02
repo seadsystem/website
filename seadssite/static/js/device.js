@@ -10,6 +10,7 @@ var app = function () {
     var self = {};
 
     var isloadingBarChart = false;
+    var isloadingLineChart = false;
 
     Vue.config.silent = false; // show all warnings
 
@@ -159,9 +160,30 @@ var app = function () {
         console.log("refresh_data");
         Object.keys(self.vue.power_data).forEach(function (appl_id) {
             self.vue.power_data[appl_id].data = [];
-            // self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
-                // appl_id, self.vue.start_date, self.vue.end_date, 30);
         });
+        // self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
+                // appl_id, self.vue.start_date, self.vue.end_date, 30);
+        isloadingLineChart = true;
+        if (window.Worker) {
+            var myWorker = new Worker("../../static/js/line-graph-worker.js");
+            myWorker.postMessage([device,self.vue.device_id, self.vue.power_data, 
+                    self.vue.start_date, self.vue.end_date]); 
+            myWorker.onmessage = function(e) {
+                console.log(e.data);
+                var currentDataIndex = 0;
+                Object.keys(self.vue.power_data).forEach(function (appl_id) {
+                    self.vue.power_data[appl_id].data = e.data[currentDataIndex];
+                    currentDataIndex++;
+                });
+                isloadingLineChart = false;
+                gen_line_chart(0,0);
+            }
+        } else {
+            Object.keys(self.vue.power_data).forEach(function (appl_id) {
+                self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
+                    appl_id, self.vue.start_date, self.vue.end_date, 30);
+            });
+        }
     }
 
     var init_home = function () { // TODO modify so that we don't call the activity part of the graph until async part is done
@@ -274,7 +296,8 @@ var app = function () {
                 });
             });
         }
-        areaspline(self.vue.rooms[room_i], mod_i, payload);
+        console.log("area spline? from gen_line_chart");
+        areaspline(self.vue.rooms[room_i], mod_i, payload, isloadingLineChart);
     }
 
     // Generates bar chart for specified room
