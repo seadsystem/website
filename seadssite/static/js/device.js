@@ -1,6 +1,15 @@
+class VueDataStorageForAsync {
+    constructor() {
+
+    }
+}
+
+
 var app = function () {
 
     var self = {};
+
+    var isloadingBarChart = false;
 
     Vue.config.silent = false; // show all warnings
 
@@ -47,7 +56,6 @@ var app = function () {
             });
 
             var del_room_modal = $("#del-room-modal");
-            // console.log(del_room_modal);
             del_room_modal.on("show.bs.modal", function (w) {
                 console.log("modal2");
                 $('.del-room-list').first().addClass('disabled');
@@ -63,7 +71,6 @@ var app = function () {
             $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
             self.vue.start_date = Math.floor(start / 1000);
             self.vue.end_date = Math.floor(end / 1000);
-            console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
             refresh_data();
             self.create_chart(self.vue.action_room, 0);
         }
@@ -87,6 +94,7 @@ var app = function () {
         cb(start, end);
     }
 
+
     // Generates a power data structure and generates monthly power usage data for each appliance
     function init_data() {
         Object.keys(device.rooms).forEach(function (room) {
@@ -94,23 +102,69 @@ var app = function () {
                 var appl_id = device.rooms[room].appliances[appliance].id;
                 self.vue.power_data[appl_id] = {
                     name: appliance,
-                    monthly_data: gen_monthly_appl_data(self.vue.device_id, appliance, appl_id),
+                    monthly_data: [],
                     data: undefined,
                 };
             });
         });
+        isloadingBarChart = true;
+        if (window.Worker) {
+            var myWorker = new Worker("../../static/js/bar-graph-worker.js");
+            myWorker.postMessage([device,self.vue.device_id]); 
+            myWorker.onmessage = function(e) {
+                var currentDataIndex = 0;
+                Object.keys(device.rooms).forEach(function (room) {
+                    Object.keys(device.rooms[room].appliances).forEach(function (appliance) {
+                        var appl_id = device.rooms[room].appliances[appliance].id;
+                        self.vue.power_data[appl_id] = {
+                            name: appliance,
+                            monthly_data: e.data[currentDataIndex],
+                        };
+                        currentDataIndex++;
+                    });
+                });
+                isloadingBarChart = false;
+                gen_bar_chart(0,1);
+            }
+        } else {
+            Object.keys(device.rooms).forEach(function (room) {
+            Object.keys(device.rooms[room].appliances).forEach(function (appliance) {
+                var appl_id = device.rooms[room].appliances[appliance].id;
+                self.vue.power_data[appl_id] = {
+                    name: appliance,
+                    monthly_data: gen_monthly_appl_data(self.vue.device_id, appliance, appl_id),
+                    data: undefined,
+                };
+                });
+            });
+        }
+
     }
 
-    // Refreshes saved power data based on current start and end date
-    function refresh_data() {
-        console.log("refresh_data");
+    // initialize the line graph data to blank if it hasn't already been initialized
+    function put_blank_graph_data() {
         Object.keys(self.vue.power_data).forEach(function (appl_id) {
-            self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
-                appl_id, self.vue.start_date, self.vue.end_date, 30);
+            // self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
+            //     appl_id, self.vue.start_date, self.vue.end_date, 30);
+            if(typeof self.vue.power_data[appl_id].data === "undefined") {
+                self.vue.power_data[appl_id].data = [];    
+            }
         });
     }
 
-    var init_home = function () {
+
+    // Refreshes saved power data based on current start and end date
+    // TODO currently the old sync stuff is commented out in place of a blank array, need to copy over the logic for the bar chart to the line chart.
+    function refresh_data() {
+        console.log("refresh_data");
+        Object.keys(self.vue.power_data).forEach(function (appl_id) {
+            self.vue.power_data[appl_id].data = [];
+            // self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
+                // appl_id, self.vue.start_date, self.vue.end_date, 30);
+        });
+    }
+
+    var init_home = function () { // TODO modify so that we don't call the activity part of the graph until async part is done
         for (var i = 0; i < self.vue.rooms[0].modules.length; i++) {
             self.create_chart(0, i);
         }
@@ -264,7 +318,7 @@ var app = function () {
                 });
             });
         }
-        bar(self.vue.rooms[room_i], mod_i, categories, payload);
+        bar(self.vue.rooms[room_i], mod_i, categories, payload, isloadingBarChart);
     }
 
     self.modal_reinit = function () {
@@ -418,23 +472,22 @@ var app = function () {
         } else if (mod.header == "notification") {
             //gauge(self.vue.rooms[room_i], mod_i, self.vue.device_id);
         } else if (mod.header == "Sort appliances") {
-            console.log("sort appliances");
-            tmp = self.vue.rooms[room_i].modules[mod_i];
-            console.log("tmpelid");
-            console.log($('#' + tmp.el_id));
-            if (!isSortInitialized) {
-                // construct string to contain individual divs
-                var sortAppliancesString = gen_application_sort_string();
-
-                $('#' + tmp.el_id).append(sortAppliancesString);
-
-                isSortInitialized = true;
-            }
+            self.create_sort_appliance_module(room_i, mod_i);
         } else {
             console.log("create_chart() error: " + mod.header);
         }
     }
 
+    self.create_sort_appliance_module = function (room_i, mod_i) {
+        tmp = self.vue.rooms[room_i].modules[mod_i];
+        if (!isSortInitialized) {
+            // construct string to contain individual divs
+            var sortAppliancesString = gen_application_sort_string();
+            $('#' + tmp.el_id).append(sortAppliancesString);
+
+            isSortInitialized = true;
+        }
+    }
 
     // gen_application_sort_string()
     // generates html to display the Sort Application module on the homepage
@@ -453,8 +506,6 @@ var app = function () {
             var room = rooms[roomName];
             var appliancesKeys = Object.keys(room.appliances); // array of names of the appliances as shown to the user
             var appliancesValues = Object.values(room.appliances); // array of objects containing id's of the appliances which is used to communicate with the SEADS db
-            console.log('---------');
-            console.log(roomName);
             // In this loop, inject the new div for another room-column container
             sortAppliancesString = sortAppliancesString +
                 '                   <td>' +
@@ -829,7 +880,7 @@ var app = function () {
 
     modal_event_init();
     init_rooms();
-
+    self.create_sort_appliance_module(0,3);
     init_data();
     date_picker();
 

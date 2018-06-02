@@ -1,4 +1,6 @@
-var bar = function(room, mod_i, categories, payload) {
+var bar = function(room, mod_i, categories, payload, isloading) {
+    console.log(typeof room.modules[mod_i].chart);
+
     room.modules[mod_i].chart = Highcharts.chart(room.modules[mod_i].el_id, {
         chart: {
             type: 'column',
@@ -79,4 +81,7 @@ var bar = function(room, mod_i, categories, payload) {
         //
         // }
     });
+    if(isloading) {
+        room.modules[mod_i].chart.showLoading();
+    }
 }
