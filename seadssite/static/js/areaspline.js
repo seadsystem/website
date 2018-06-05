@@ -1,4 +1,10 @@
-var areaspline = function (room, mod_i, payload) {
+var areaspline = function (room, mod_i) {
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+    })
+
     room.modules[mod_i].chart = Highcharts.chart(room.modules[mod_i].el_id, {
         chart: {
             type: 'areaspline',
@@ -20,7 +26,8 @@ var areaspline = function (room, mod_i, payload) {
         xAxis: {
             type: 'datetime',
             dateTimeLabelFormats: {
-                day: '%b %e'
+                day: '%b %e',
+                hour: '%I:%M'
             }
         },
         yAxis: {
@@ -30,7 +37,7 @@ var areaspline = function (room, mod_i, payload) {
         },
         tooltip: {
             valueSuffix: ' kWh',
-            valueDecimals: 3,
+            //valueDecimals: 3,
             shared: true
         },
         credits: {
@@ -38,9 +45,10 @@ var areaspline = function (room, mod_i, payload) {
         },
         plotOptions: {
             areaspline: {
-                fillOpacity: 0.8
+                fillOpacity: 0.6
             }
         },
-        series: payload
+        series: {}
     });
+    room.modules[mod_i].chart.showLoading();
 }
