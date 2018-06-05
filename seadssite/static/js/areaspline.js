@@ -32,11 +32,11 @@ var areaspline = function (room, mod_i) {
         },
         yAxis: {
             title: {
-                text: 'kWh'
+                text: 'Wh'
             },
         },
         tooltip: {
-            valueSuffix: ' kWh',
+            valueSuffix: ' Wh',
             //valueDecimals: 3,
             shared: true
         },
