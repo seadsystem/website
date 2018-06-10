@@ -4,6 +4,14 @@
   color: #bb8833;
 }
 
+#reportrange {
+  margin-right: 10px;
+}
+
+#live-data-toggle {
+  margin-top: -50px;
+}
+
 body {
   over-flow-x: hidden;
   margin: 0px;

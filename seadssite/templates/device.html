@@ -14,6 +14,9 @@
     <link href="{% static 'css/myapp.css' %}" rel="stylesheet" media="screen">
     <link href="{% static 'css/calendar.css' %}" rel="stylesheet" media="screen">
 
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
     <script>
         var img_path = "{% static 'images' %}";
@@ -59,14 +62,12 @@
             </div>
             <div id="page-wrap" class="page-wrap">
                 <div id="space-for-search-bar">
-{#                    <div id="reportrange" class="pull-left"#}
-{#                         style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc;">#}
-{#                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;#}
-{#                        <span></span> <b class="caret"></b>#}
-{#                    </div>#}
-{#                    <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">#}
-{#                        Live Data#}
-{#                    </button>#}
+                    <div id="reportrange" class="pull-left"
+                         style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc;">
+                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                        <span></span> <b class="caret"></b>
+                    </div>
+                    Live Data: <input type="checkbox" v-model="live_data" v-on:click="toggle_live_data(this)">
                 </div>
                 <div id="top-manage-bar" class="top-manage-bar">
                     <top-manage-item v-for="room in rooms" :room="room" :manage_btn_toggle="manage_btn_toggle"

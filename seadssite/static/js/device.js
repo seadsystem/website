@@ -1,5 +1,3 @@
-var liveTimer;
-
 var app = function () {
 
         var self = {};
@@ -66,8 +64,15 @@ var app = function () {
                 self.vue.start_date = Math.floor(start / 1000);
                 self.vue.end_date = Math.floor(end / 1000);
                 console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
-                refresh_data();
-                self.create_chart(self.vue.action_room, 0);
+                if(self.vue.live_data) {
+                    self.vue.live_data = false;
+                    clearInterval(self.vue.live_timer);
+                }
+                self.vue.rooms[self.vue.action_room].modules[0].chart.showLoading();
+                if(self.vue.action_room == 0)
+                    update_home_data(self.vue.start_date, self.vue.end_date, 30, update_areaspline);
+                else
+                    update_room_data(self.vue.action_room, self.vue.start_date, self.vue.end_date, 30, update_areaspline);
             }
 
             $('#reportrange').daterangepicker({
@@ -237,7 +242,7 @@ var app = function () {
         }
 
         function live_data(room_i) {
-            liveTimer = setInterval(function x() {
+            self.vue.live_timer = setInterval(function x() {
                 console.log("updating chart");
                 var end = Math.floor(Date.now() / 1000);
                 var start = end - 600;
@@ -286,7 +291,7 @@ var app = function () {
         }
 
 
-// Generates bar chart for specified room
+        // Generates bar chart for specified room
         function gen_bar_chart(room_i, mod_i) {
             var categories = [];
             var month = moment().month() + 1;
@@ -499,8 +504,8 @@ var app = function () {
         }
 
 
-    // gen_application_sort_string()
-    // generates html to display the Sort Application module on the homepage
+        // gen_application_sort_string()
+        // generates html to display the Sort Application module on the homepage
         var gen_application_sort_string = function () {
 
             var sortAppliancesString = '<div id = "application-sort-container">' +
@@ -674,7 +679,7 @@ var app = function () {
 
 
         self.manage_btn_toggle = function (_idx) {
-            clearInterval(liveTimer);
+            clearInterval(self.vue.live_timer);
             for (var i = 0; i < self.vue.rooms.length; i++) {
                 if (_idx == self.vue.rooms[i]._idx) {
                     self.vue.rooms[i].isActive = true;
@@ -689,7 +694,10 @@ var app = function () {
                     if (!self.vue.rooms[_idx].initialized) {
                         init_charts(_idx);
                     }
-                    live_data(_idx, 0);
+                    if(self.vue.live_timer != false) {
+                        clearInterval(self.vue.live_timer);
+                        live_data(_idx, 0);
+                    }
                 }, 1);
             }
         };
@@ -792,12 +800,15 @@ var app = function () {
                     }
                     return csrf_token;
                 },
+                live_timer: false,
+                live_data: false,
                 house_id: 99, // Not sure, from query file
                 user_id: 0, // from query file
                 device_id: device_id,
                 room_structure: device,
                 appliances: {},
                 rooms: [{
+                    'checked': false,
                     'name': 'Home', // or possibly separated from room
                     '_idx': 0, // index of local manage-list
                     'notice': 0,
@@ -886,6 +897,12 @@ var app = function () {
                 add_edit_room_enter: self.add_edit_room_enter,
                 edit_room: self.edit_room,
                 modal_reinit: self.modal_reinit,
+                toggle_live_data: function () {
+                    if(this.live_data)
+                        clearInterval(this.live_timer);
+                    else
+                        live_data(this.action_room);
+                }
             },
         });
 
@@ -894,7 +911,8 @@ var app = function () {
 
         init_charts(self.vue.action_room);
 
-        live_data(self.vue.action_room);
+        date_picker();
+
 
         $("#vue-div").show();
         console.log('Vue initialized');
