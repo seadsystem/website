@@ -64,14 +64,21 @@ var app = function () {
                 self.vue.start_date = Math.floor(start / 1000);
                 self.vue.end_date = Math.floor(end / 1000);
                 console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
+
+                // Clear live data refresh if it is active
                 if (self.vue.live_data) {
                     self.vue.live_data = false;
                     clearInterval(self.vue.live_timer);
                 }
+
+                // Update the current room's areaspline
                 self.vue.rooms[self.vue.action_room].modules[0].chart.showLoading();
                 update_room_data(self.vue.action_room, self.vue.start_date, self.vue.end_date, 30, update_areaspline);
-                for(var i = 0; i < self.vue.rooms.length; i++) {
-                    if(i != self.vue.action_room)
+
+                // Mark areaspline for other rooms as not updated
+                // Should probaby be done differently but no time :(
+                for (var i = 0; i < self.vue.rooms.length; i++) {
+                    if (i != self.vue.action_room)
                         self.vue.rooms[i].modules[0].updated = false;
                 }
             }
@@ -154,13 +161,12 @@ var app = function () {
             if (arguments.length == 2)
                 url += "&end_time=" + start;
             else
-                url += "&end_time=" + end + "&list_format=energy&granularity=" + Math.floor((end - start) / data_points);
+                url += "&end_time=" + end + "&granularity=" + Math.floor((end - start) / data_points);
             return url;
         }
 
         // Performs GET request for specified API call
         function fetch_data(url, callback) {
-            console.log(url);
             return $.ajax({
                 url: url,
                 dataType: 'json',
@@ -181,7 +187,6 @@ var app = function () {
         // Updates continuous power data for all appliances in specified room with specified parameters
         // Does not work for home room (index 0) as it has no appliances associated
         function update_room_data(room_i, start, end, data_points, callback) {
-            console.log("updating data for room", room_i);
             if (room_i == 0) {
                 var c = self.vue.rooms.length - 1;
                 for (var i = 1; i < self.vue.rooms.length; i++) {
@@ -197,7 +202,8 @@ var app = function () {
                 var promises = [];
                 Object.keys(appliances).forEach(function (appl) {
                     promises.push(fetch_data(create_url(appliances[appl].id, start, end, data_points), function (response) {
-                        self.vue.appliances[appliances[appl].id] = response;
+                        self.vue.appliances[appliances[appl].id] = self.vue.appliances[appliances[appl].id] || {};
+                        self.vue.appliances[appliances[appl].id].data = response;
                     }));
                 });
                 $.when.apply(this, promises).done(function () {
@@ -215,7 +221,7 @@ var app = function () {
                     var appliances = self.vue.rooms[i].appliances;
                     var aggregate = [];
                     Object.keys(appliances).forEach(function (key, index) {
-                        var data = self.vue.appliances[appliances[key].id];
+                        var data = self.vue.appliances[appliances[key].id].data;
                         for (var j = 0; j < data.length; j++) {
                             if (index == 0)
                                 aggregate[j] = data[j].slice(0);
@@ -230,7 +236,7 @@ var app = function () {
             } else {
                 chart.series.forEach(function (series) {
                     chart.get(series.options.id).update({
-                        data: self.vue.appliances[series.options.id]
+                        data: self.vue.appliances[series.options.id].data
                     });
                 });
             }
@@ -248,85 +254,90 @@ var app = function () {
             }(), 20000);
         }
 
-// Generates monthly usage of specified panel for the last 12 months
-        function gen_monthly_appl_data(device_id, appl_name, appl_id) {
-            var result = [];
-
-            var points = [];
-            var start = moment().subtract(12, "months").startOf("month");
-            var end = moment().subtract(5, "minutes");
-            var time;
-            for (var i = 0; i <= 12; i++) {
-                time = Math.floor(start / 1000);
-                $.ajax({
-                    url: "http://db.sead.systems:8080/" + device_id + "?start_time=" + time + "&end_time=" + time + "&device=" + appl_id + "&type=P",
-                    dataType: 'json',
-                    async: false,
-                    success: function (data_test) {
-                        points.push(data_test[1]);
-                    }
-                });
-                if (i >= 11)
-                    start = end;
-                else
-                    start.add(1, "month");
-            }
-
-            for (var i = 1; i < points.length; i++) {
-                if (points[i] !== undefined && points[i - 1] !== undefined) {
-                    result.push(
-                        Math.abs((points[i - 1][1] - points[i][1]) / 3600000)
-                    )
-                } else
-                    result.push(null);
-            }
-            return result;
-        }
-
-
-        // Generates bar chart for specified room
-        function gen_bar_chart(room_i, mod_i) {
-            var categories = [];
-            var month = moment().month() + 1;
-            for (var i = 0; i < 12; i++) {
-                categories.push(moment().month(month).format('MMMM'));
-                month = (month + 1) % 12;
-            }
-
-            var payload = [];
-            var appliances;
+        function update_monthly_room_data(room_i, callback) {
             if (room_i == 0) {
-                var temp = [];
-                var appl_data;
+                var c = self.vue.rooms.length - 1;
                 for (var i = 1; i < self.vue.rooms.length; i++) {
-                    appliances = self.vue.rooms[i].appliances;
-                    Object.keys(appliances).forEach(function (key, index) {
-                        appl_data = self.vue.power_data[appliances[key].id].monthly_data;
-                        if (index == 0)
-                            temp = appl_data.slice();
-                        else {
-                            for (var j = 0; j < appl_data.length; j++) {
-                                if (appl_data[j] != null)
-                                    temp[j] += appl_data[j];
-                            }
-                        }
-                    });
-                    payload.push({
-                        name: self.vue.rooms[i].name,
-                        data: temp
+                    update_monthly_room_data(i, function () {
+                        c--;
+                        if (c == 0)
+                            callback(room_i);
                     })
                 }
             } else {
-                appliances = self.vue.rooms[room_i].appliances;
-                Object.keys(appliances).forEach(function (key) {
-                    payload.push({
-                        name: key,
-                        data: self.vue.power_data[appliances[key].id].monthly_data
+                var appliances = self.vue.rooms[room_i].appliances;
+                var c = Object.keys(self.vue.rooms[room_i].appliances).length;
+                Object.keys(appliances).forEach(function (appl_name) {
+                    var start = moment().subtract(12, "months").startOf("month");
+                    var end = moment().subtract(5, "minutes");
+
+                    var promises = [];
+                    var points = [];
+                    for (var i = 0; i <= 12; i++) {
+                        var time = Math.floor(start / 1000);
+                        promises.push(fetch_data(create_url(appliances[appl_name].id, time), function (response) {
+                            points.push(response[0]);
+                        }));
+                        if (i >= 11)
+                            start = end;
+                        else
+                            start.add(1, "month");
+                    }
+                    $.when.apply(this, promises).done(function () {
+                        var result = [];
+                        for (var i = 1; i < points.length; i++) {
+                            if (points[i] !== undefined && points[i - 1] !== undefined) {
+                                result.push(
+                                    Math.abs((points[i - 1][1] - points[i][1]) / 3600000)
+                                )
+                            } else
+                                result.push(null);
+                        }
+                        self.vue.appliances[appliances[appl_name].id] = self.vue.appliances[appliances[appl_name].id] || {};
+                        self.vue.appliances[appliances[appl_name].id].monthly_data = result;
+                        c--;
+                        if(c == 0)
+                            callback(room_i);
                     });
                 });
             }
-            bar(self.vue.rooms[room_i], mod_i, categories, payload);
         }
+
+        function update_bar(room_i) {
+            var chart = self.vue.rooms[room_i].modules[1].chart;
+
+            if (room_i == 0) {
+                var appl_data;
+                for (var i = 1; i < self.vue.rooms.length; i++) {
+                    var appliances = self.vue.rooms[i].appliances;
+
+                    var aggregate = [];
+                    Object.keys(appliances).forEach(function (key, index) {
+                        appl_data = self.vue.appliances[appliances[key].id].monthly_data;
+                        if (index == 0)
+                            aggregate = appl_data.slice();
+                        else {
+                            for (var j = 0; j < appl_data.length; j++) {
+                                if (appl_data[j] != null)
+                                    aggregate[j] += appl_data[j];
+                            }
+                        }
+                    });
+                    chart.get(self.vue.rooms[i].name).update({
+                        data: aggregate
+                    });
+                }
+            } else {
+                chart.series.forEach(function (series) {
+                    chart.get(series.options.id).update({
+                        data: self.vue.appliances[series.options.id].monthly_data
+                    });
+                });
+            }
+            self.vue.rooms[room_i].modules[1].updated = true;
+            chart.hideLoading();
+        }
+
 
         self.modal_reinit = function () {
             self.vue.modal_room_name = '';
@@ -577,9 +588,8 @@ var app = function () {
                 'el_id': id_name + "el_" + id,
                 'id': id_name + id,
                 'chart': "",
+                'updated': false
             };
-            if(header == 'activity')
-                new_module.updated = false;
             room.modules.push(new_module);
             if (self.vue.isInitialized) {
                 setTimeout(function () {
@@ -688,13 +698,17 @@ var app = function () {
                     if (!self.vue.rooms[_idx].initialized) {
                         init_charts(_idx);
                     }
+                    // If the live data interval is active, switch to live data for the new action room
                     if (self.vue.live_data) {
                         clearInterval(self.vue.live_timer);
                         live_data(_idx, 0);
-                    } else if(!self.vue.rooms[_idx].modules[0].updated) {
+                    } else if (!self.vue.rooms[_idx].modules[0].updated) { // Otherwise, if the new action room's areaspline is outdated, update it
                         self.vue.rooms[_idx].modules[0].chart.showLoading();
                         update_room_data(self.vue.action_room, self.vue.start_date, self.vue.end_date, 30, update_areaspline);
                     }
+
+                    if(!self.vue.rooms[_idx].modules[1].updated)
+                        update_bar(_idx);
                 }, 1);
             }
         };
@@ -911,6 +925,7 @@ var app = function () {
 
         date_picker();
 
+        update_monthly_room_data(0, update_bar);
 
         $("#vue-div").show();
         console.log('Vue initialized');
