@@ -64,15 +64,16 @@ var app = function () {
                 self.vue.start_date = Math.floor(start / 1000);
                 self.vue.end_date = Math.floor(end / 1000);
                 console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
-                if(self.vue.live_data) {
+                if (self.vue.live_data) {
                     self.vue.live_data = false;
                     clearInterval(self.vue.live_timer);
                 }
                 self.vue.rooms[self.vue.action_room].modules[0].chart.showLoading();
-                if(self.vue.action_room == 0)
-                    update_home_data(self.vue.start_date, self.vue.end_date, 30, update_areaspline);
-                else
-                    update_room_data(self.vue.action_room, self.vue.start_date, self.vue.end_date, 30, update_areaspline);
+                update_room_data(self.vue.action_room, self.vue.start_date, self.vue.end_date, 30, update_areaspline);
+                for(var i = 0; i < self.vue.rooms.length; i++) {
+                    if(i != self.vue.action_room)
+                        self.vue.rooms[i].modules[0].updated = false;
+                }
             }
 
             $('#reportrange').daterangepicker({
@@ -177,26 +178,21 @@ var app = function () {
             });
         }
 
-        // Updates continuous power data for all appliances registered with specified parameters
-        // Should probably be merged with update_room_data
-        function update_home_data(start, end, data_points, callback) {
-            var c = self.vue.rooms.length - 1;
-            for (var i = 1; i < self.vue.rooms.length; i++) {
-                update_room_data(i, start, end, data_points, function () {
-                    c--;
-                    if (c == 0) {
-                        console.log("all appliances update");
-                        callback(0);
-                    }
-                })
-            }
-        }
-
         // Updates continuous power data for all appliances in specified room with specified parameters
         // Does not work for home room (index 0) as it has no appliances associated
         function update_room_data(room_i, start, end, data_points, callback) {
-            console.log("updating room", room_i);
-            if (self.vue.rooms[room_i].hasOwnProperty('appliances')) {
+            console.log("updating data for room", room_i);
+            if (room_i == 0) {
+                var c = self.vue.rooms.length - 1;
+                for (var i = 1; i < self.vue.rooms.length; i++) {
+                    update_room_data(i, start, end, data_points, function () {
+                        c--;
+                        if (c == 0) {
+                            callback(room_i);
+                        }
+                    })
+                }
+            } else {
                 var appliances = self.vue.rooms[room_i].appliances;
                 var promises = [];
                 Object.keys(appliances).forEach(function (appl) {
@@ -238,6 +234,7 @@ var app = function () {
                     });
                 });
             }
+            self.vue.rooms[room_i].modules[0].updated = true;
             chart.hideLoading();
         }
 
@@ -246,11 +243,7 @@ var app = function () {
                 console.log("updating chart");
                 var end = Math.floor(Date.now() / 1000);
                 var start = end - 600;
-                if (room_i == 0) {
-                    update_home_data(start, end, 60, update_areaspline);
-                } else {
-                    update_room_data(room_i, start, end, 60, update_areaspline);
-                }
+                update_room_data(room_i, start, end, 60, update_areaspline);
                 return x;
             }(), 20000);
         }
@@ -585,6 +578,8 @@ var app = function () {
                 'id': id_name + id,
                 'chart': "",
             };
+            if(header == 'activity')
+                new_module.updated = false;
             room.modules.push(new_module);
             if (self.vue.isInitialized) {
                 setTimeout(function () {
@@ -679,7 +674,6 @@ var app = function () {
 
 
         self.manage_btn_toggle = function (_idx) {
-            clearInterval(self.vue.live_timer);
             for (var i = 0; i < self.vue.rooms.length; i++) {
                 if (_idx == self.vue.rooms[i]._idx) {
                     self.vue.rooms[i].isActive = true;
@@ -694,9 +688,12 @@ var app = function () {
                     if (!self.vue.rooms[_idx].initialized) {
                         init_charts(_idx);
                     }
-                    if(self.vue.live_timer != false) {
+                    if (self.vue.live_data) {
                         clearInterval(self.vue.live_timer);
                         live_data(_idx, 0);
+                    } else if(!self.vue.rooms[_idx].modules[0].updated) {
+                        self.vue.rooms[_idx].modules[0].chart.showLoading();
+                        update_room_data(self.vue.action_room, self.vue.start_date, self.vue.end_date, 30, update_areaspline);
                     }
                 }, 1);
             }
@@ -822,6 +819,7 @@ var app = function () {
                         'el_id': 'Home_el_0', //for plot use( the inner el box )
                         'id': 'Home_0', // this should be computed and assigned at the insertion
                         'chart': '',
+                        'updated': false
                     }
                         // ,
                         //     {
@@ -898,7 +896,7 @@ var app = function () {
                 edit_room: self.edit_room,
                 modal_reinit: self.modal_reinit,
                 toggle_live_data: function () {
-                    if(this.live_data)
+                    if (this.live_data)
                         clearInterval(this.live_timer);
                     else
                         live_data(this.action_room);
