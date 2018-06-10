@@ -89,28 +89,6 @@ var app = function () {
             cb(start, end);
         }
 
-        // Generates a power data structure and generates monthly power usage data for each appliance
-        function init_data() {
-            Object.keys(device.rooms).forEach(function (room) {
-                Object.keys(device.rooms[room].appliances).forEach(function (appliance) {
-                    var appl_id = device.rooms[room].appliances[appliance].id;
-                    self.vue.power_data[appl_id] = {
-                        name: appliance,
-                        monthly_data: gen_monthly_appl_data(self.vue.device_id, appliance, appl_id),
-                        data: undefined,
-                    };
-                });
-            });
-        }
-
-        // Refreshes saved power data based on current start and end date
-        function refresh_data() {
-            console.log("refresh_data");
-            Object.keys(self.vue.power_data).forEach(function (appl_id) {
-                self.vue.power_data[appl_id].data = gen_cont_appl_data(self.vue.device_id, self.vue.power_data[appl_id].name,
-                    appl_id, self.vue.start_date, self.vue.end_date, 30);
-            });
-        }
 
         var init_rooms = function () {
             var rooms = self.vue.room_structure.rooms;
@@ -136,16 +114,37 @@ var app = function () {
             self.vue.rooms[room_i].initialized = true;
         }
 
+        // Creates empty series for the appliances of the specified room and chart
+        function create_series(room_i, mod_i) {
+            var chart = self.vue.rooms[room_i].modules[mod_i].chart;
 
-        //function gen_series_data()
+            if (room_i == 0) {
+                for (var i = 1; i < self.vue.rooms.length; i++) {
+                    chart.addSeries({
+                        id: self.vue.rooms[i].name,
+                        name: self.vue.rooms[i].name,
+                        data: []
+                    })
+                }
+            } else {
+                var appliances = self.vue.rooms[room_i].appliances;
+                Object.keys(appliances).forEach(function (key) {
+                    chart.addSeries({
+                        id: appliances[key].id,
+                        name: key,
+                        data: []
+                    });
+                });
+            }
+        }
 
         // Returns a request URL
         // Overloaded such that if only two arguments are provided, it creates a URL for requesting cumulative usage
-        // up to a specified time - this is used for calculating power usage over a period of time
+        // up to a specified time - this is used for calculating power usage over a period of time, i.e. for monthly usage
         // Otherwise it creates a URL for requesting continuous usage data over a specified period of time, with ~data_points
         // number of data points
         function create_url(appliance_id, start, end, data_points) {
-            var url = "http://db.sead.systems:8080/" + device_id + "?type=P" + "&device=" + appliance_id + "&start_time=" + start;
+            var url = "http://db.sead.systems:8080/" + self.vue.device_id + "?type=P&list_format=energy&device=" + appliance_id + "&start_time=" + start;
             if (arguments.length == 2)
                 url += "&end_time=" + start;
             else
@@ -156,102 +155,97 @@ var app = function () {
         // Performs GET request for specified API call
         function fetch_data(url, callback) {
             console.log(url);
-            $.ajax({
+            return $.ajax({
                 url: url,
                 dataType: 'json',
+                dataFilter: function (response, type) {
+                    var data = [];
+                    $.map(JSON.parse(response).data, function (value, key) {
+                        data.push([moment(value.time, "YYYY-MM-DD HH:mm:ss").valueOf(), parseFloat(value.energy)]);
+                    });
+                    data.reverse();
+                    return JSON.stringify(data);
+                },
                 success: function (response) {
                     callback(response);
                 }
             });
         }
 
-        // Creates empty series for the appliances of the specified room and chart
-        function create_series(room_i, mod_i) {
-            var chart = self.vue.rooms[room_i].modules[mod_i].chart;
-            var appliances;
-
-            // if (room_i == 0) {
-            //     for (var i = 1; i < self.vue.rooms.length; i++) {
-            //         chart.addSeries({
-            //             id: self.vue.rooms[i].name,
-            //             name: self.vue.rooms[i].name,
-            //             data: [1, 2, 3]
-            //         })
-            //     }
-            // } else {
-            appliances = self.vue.rooms[room_i].appliances;
-            Object.keys(appliances).forEach(function (key) {
-                chart.addSeries({
-                    id: appliances[key].id,
-                    name: key,
-                    data: []
-                });
-            });
-            // }
-        }
-
-        function update_areaspline(room_i, mod_i, start, end, data_points) {
-            var chart = self.vue.rooms[room_i].modules[mod_i].chart;
-            chart.series.forEach(function (series) {
-                fetch_data(create_url(series.options.id, start, end, data_points), function (response) {
-                    var temp = Object.keys(response.data).reverse().map(function (key) {
-                        return [moment(response.data[key].time, "YYYY-MM-DD HH:mm:ss").valueOf(), parseFloat(response.data[key].energy) * 1000];
-                    });
-                    chart.get(series.options.id).update({
-                        data: temp
-                    })
-                });
-            });
-            chart.hideLoading();
-        }
-
-        function helper(appliances, index, start, end, data_points, data) {
-            fetch_data(create_url(appliances[index].id, start, end, data_points), function (response) {
-                var temp = Object.keys(response.data).reverse().map(function (key) {
-                    return [moment(response.data[key].time, "YYYY-MM-DD HH:mm:ss").valueOf(), parseFloat(response.data[key].energy)];
-                });
-                console.log(appliances[index].id, temp);
-                if (data.length == 0) {
-                    console.log("empty");
-                    for (var j = 0; j < temp.length; j++) {
-                        data.push(temp[j].slice(0));
-                    }
-                } else {
-                    console.log("not empty", data, temp);
-                    for (var j = 0; j < temp.length; j++) {
-                        data[j][1] = data[j][1] + temp[j][1];
-                    }
-                }
-                console.log("updated to", data);
-                if (index != appliances.length - 1)
-                    helper(appliances, index + 1, start, end, data_points, temp, data);
-                else
-                    return data;
-            });
-        }
-
-
-        function update_areaspline_home(room_i, mod_i, start, end, data_points) {
-            var chart = self.vue.rooms[room_i].modules[mod_i].chart;
-            var appliances = self.vue.rooms[room_i].appliances;
-            console.log("areaspline");
-            var data = [];
+        // Updates continuous power data for all appliances registered with specified parameters
+        // Should probably be merged with update_room_data
+        function update_home_data(start, end, data_points, callback) {
+            var c = self.vue.rooms.length - 1;
             for (var i = 1; i < self.vue.rooms.length; i++) {
-                console.log("helper", self.vue.rooms[i].name);
-                var test = helper(Object.values(appliances), 0, start, end, data_points, data);
-                console.log(test);
-
+                update_room_data(i, start, end, data_points, function () {
+                    c--;
+                    if (c == 0) {
+                        console.log("all appliances update");
+                        callback(0);
+                    }
+                })
             }
+        }
 
+        // Updates continuous power data for all appliances in specified room with specified parameters
+        // Does not work for home room (index 0) as it has no appliances associated
+        function update_room_data(room_i, start, end, data_points, callback) {
+            console.log("updating room", room_i);
+            if (self.vue.rooms[room_i].hasOwnProperty('appliances')) {
+                var appliances = self.vue.rooms[room_i].appliances;
+                var promises = [];
+                Object.keys(appliances).forEach(function (appl) {
+                    promises.push(fetch_data(create_url(appliances[appl].id, start, end, data_points), function (response) {
+                        self.vue.appliances[appliances[appl].id] = response;
+                    }));
+                });
+                $.when.apply(this, promises).done(function () {
+                    callback(room_i);
+                });
+            }
+        }
+
+        // Updates areaspline chart for specified room with data from buffered data at self.vue.appliances
+        function update_areaspline(room_i) {
+            var chart = self.vue.rooms[room_i].modules[0].chart;
+
+            if (room_i == 0) {
+                for (var i = 1; i < self.vue.rooms.length; i++) {
+                    var appliances = self.vue.rooms[i].appliances;
+                    var aggregate = [];
+                    Object.keys(appliances).forEach(function (key, index) {
+                        var data = self.vue.appliances[appliances[key].id];
+                        for (var j = 0; j < data.length; j++) {
+                            if (index == 0)
+                                aggregate[j] = data[j].slice(0);
+                            else
+                                aggregate[j][1] = aggregate[j][1] + data[j][1];
+                        }
+                    });
+                    chart.get(self.vue.rooms[i].name).update({
+                        data: aggregate
+                    });
+                }
+            } else {
+                chart.series.forEach(function (series) {
+                    chart.get(series.options.id).update({
+                        data: self.vue.appliances[series.options.id]
+                    });
+                });
+            }
             chart.hideLoading();
         }
 
-        function live_data(room_i, mod_i) {
+        function live_data(room_i) {
             liveTimer = setInterval(function x() {
                 console.log("updating chart");
                 var end = Math.floor(Date.now() / 1000);
                 var start = end - 600;
-                update_areaspline(room_i, mod_i, start, end, 60);
+                if (room_i == 0) {
+                    update_home_data(start, end, 60, update_areaspline);
+                } else {
+                    update_room_data(room_i, start, end, 60, update_areaspline);
+                }
                 return x;
             }(), 20000);
         }
@@ -288,29 +282,6 @@ var app = function () {
                 } else
                     result.push(null);
             }
-            return result;
-        }
-
-// Generates continous power usage data for the specified parameters
-        function gen_cont_appl_data(device_id, name, appliance_id, start, end, data_points) {
-            var granularity = Math.floor((end - start) / data_points);
-
-            console.log("http://db.sead.systems:8080/" + device_id + "?start_time=" + start + "&end_time=" + end +
-                "&list_format=energy&type=P&device=" + appliance_id + "&granularity=" + granularity);
-
-            var result = [];
-            $.ajax({
-                url: "http://db.sead.systems:8080/" + device_id + "?start_time=" + start + "&end_time=" + end +
-                "&list_format=energy&type=P&device=" + appliance_id + "&granularity=" + granularity,
-                dataType: 'json',
-                async: false,
-                success: function (response) {
-                    result = Object.keys(response.data).reverse().map(function (key) {
-                        return [moment(response.data[key]["time"], "YYYY-MM-DD HH:mm:ss").valueOf(), parseFloat(response.data[key]["energy"])];
-                    })
-                }
-            });
-            console.log(result);
             return result;
         }
 
@@ -528,8 +499,8 @@ var app = function () {
         }
 
 
-// gen_application_sort_string()
-// generates html to display the Sort Application module on the homepage
+    // gen_application_sort_string()
+    // generates html to display the Sort Application module on the homepage
         var gen_application_sort_string = function () {
 
             var sortAppliancesString = '<div id = "application-sort-container">' +
@@ -713,7 +684,6 @@ var app = function () {
                     self.vue.rooms[i].isActive = false;
                 }
             }
-            //
             if (self.vue.isInitialized) {
                 setTimeout(function () {
                     if (!self.vue.rooms[_idx].initialized) {
@@ -826,17 +796,11 @@ var app = function () {
                 user_id: 0, // from query file
                 device_id: device_id,
                 room_structure: device,
-                power_data: {},
+                appliances: {},
                 rooms: [{
                     'name': 'Home', // or possibly separated from room
                     '_idx': 0, // index of local manage-list
                     'notice': 0,
-                    'data': [],
-                    'appliances': {
-                        'Testbed': {
-                            'id': 'Grid'
-                        }
-                    },
                     'icon_path': img_path + "/home.png",
                     'isActive': true,
                     'initialized': false,
@@ -927,15 +891,10 @@ var app = function () {
 
         modal_event_init();
         init_rooms();
+
         init_charts(self.vue.action_room);
 
-        live_data(0, 0);
-        // update_areaspline_home(0, 0, 1528093000, 1528093579, 20);
-//live_data(0, 0);
-//init_data();
-//date_picker();
-
-//init_home();
+        live_data(self.vue.action_room);
 
         $("#vue-div").show();
         console.log('Vue initialized');

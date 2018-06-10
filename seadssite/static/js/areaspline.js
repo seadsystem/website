@@ -3,7 +3,7 @@ var areaspline = function (room, mod_i) {
         global: {
             useUTC: false
         }
-    })
+    });
 
     room.modules[mod_i].chart = Highcharts.chart(room.modules[mod_i].el_id, {
         chart: {
