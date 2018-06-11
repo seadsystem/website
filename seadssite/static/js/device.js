@@ -61,8 +61,8 @@ var app = function () {
 
             function cb(start, end) {
                 $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-                self.vue.start_date = Math.floor(start / 1000);
-                self.vue.end_date = Math.floor(end / 1000);
+                self.vue.start_date = start.unix();
+                self.vue.end_date = end.unix();
                 console.log(moment.unix(self.vue.start_date).format("MM/DD/YYYY h:mm a") + " to " + moment.unix(self.vue.end_date).format("MM/DD/YYYY h:mm a"));
 
                 // Clear live data refresh if it is active
@@ -202,8 +202,8 @@ var app = function () {
                 var promises = [];
                 Object.keys(appliances).forEach(function (appl) {
                     promises.push(fetch_data(create_url(appliances[appl].id, start, end, data_points), function (response) {
-                        self.vue.appliances[appliances[appl].id] = self.vue.appliances[appliances[appl].id] || {};
-                        self.vue.appliances[appliances[appl].id].data = response;
+                        self.vue.appliance_data[appliances[appl].id] = self.vue.appliance_data[appliances[appl].id] || {};
+                        self.vue.appliance_data[appliances[appl].id].data = response;
                     }));
                 });
                 $.when.apply(this, promises).done(function () {
@@ -212,7 +212,7 @@ var app = function () {
             }
         }
 
-        // Updates areaspline chart for specified room with data from buffered data at self.vue.appliances
+        // Updates areaspline chart for specified room with data from buffered data at self.vue.appliance_data
         function update_areaspline(room_i) {
             var chart = self.vue.rooms[room_i].modules[0].chart;
 
@@ -221,7 +221,7 @@ var app = function () {
                     var appliances = self.vue.rooms[i].appliances;
                     var aggregate = [];
                     Object.keys(appliances).forEach(function (key, index) {
-                        var data = self.vue.appliances[appliances[key].id].data;
+                        var data = self.vue.appliance_data[appliances[key].id].data;
                         for (var j = 0; j < data.length; j++) {
                             if (index == 0)
                                 aggregate[j] = data[j].slice(0);
@@ -236,7 +236,7 @@ var app = function () {
             } else {
                 chart.series.forEach(function (series) {
                     chart.get(series.options.id).update({
-                        data: self.vue.appliances[series.options.id].data
+                        data: self.vue.appliance_data[series.options.id].data
                     });
                 });
             }
@@ -293,10 +293,10 @@ var app = function () {
                             } else
                                 result.push(null);
                         }
-                        self.vue.appliances[appliances[appl_name].id] = self.vue.appliances[appliances[appl_name].id] || {};
-                        self.vue.appliances[appliances[appl_name].id].monthly_data = result;
+                        self.vue.appliance_data[appliances[appl_name].id] = self.vue.appliance_data[appliances[appl_name].id] || {};
+                        self.vue.appliance_data[appliances[appl_name].id].monthly_data = result;
                         c--;
-                        if(c == 0)
+                        if (c == 0)
                             callback(room_i);
                     });
                 });
@@ -307,19 +307,18 @@ var app = function () {
             var chart = self.vue.rooms[room_i].modules[1].chart;
 
             if (room_i == 0) {
-                var appl_data;
                 for (var i = 1; i < self.vue.rooms.length; i++) {
                     var appliances = self.vue.rooms[i].appliances;
 
                     var aggregate = [];
                     Object.keys(appliances).forEach(function (key, index) {
-                        appl_data = self.vue.appliances[appliances[key].id].monthly_data;
+                        var curr_appl_data = self.vue.appliance_data[appliances[key].id].monthly_data;
                         if (index == 0)
-                            aggregate = appl_data.slice();
+                            aggregate = curr_appl_data.slice();
                         else {
-                            for (var j = 0; j < appl_data.length; j++) {
-                                if (appl_data[j] != null)
-                                    aggregate[j] += appl_data[j];
+                            for (var j = 0; j < curr_appl_data.length; j++) {
+                                if (curr_appl_data[j] != null)
+                                    aggregate[j] += curr_appl_data[j];
                             }
                         }
                     });
@@ -330,7 +329,7 @@ var app = function () {
             } else {
                 chart.series.forEach(function (series) {
                     chart.get(series.options.id).update({
-                        data: self.vue.appliances[series.options.id].monthly_data
+                        data: self.vue.appliance_data[series.options.id].monthly_data
                     });
                 });
             }
@@ -707,7 +706,7 @@ var app = function () {
                         update_room_data(self.vue.action_room, self.vue.start_date, self.vue.end_date, 30, update_areaspline);
                     }
 
-                    if(!self.vue.rooms[_idx].modules[1].updated)
+                    if (!self.vue.rooms[_idx].modules[1].updated)
                         update_bar(_idx);
                 }, 1);
             }
@@ -817,7 +816,7 @@ var app = function () {
                 user_id: 0, // from query file
                 device_id: device_id,
                 room_structure: device,
-                appliances: {},
+                appliance_data: {},
                 rooms: [{
                     'checked': false,
                     'name': 'Home', // or possibly separated from room
