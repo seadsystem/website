@@ -4,6 +4,14 @@
   color: #bb8833;
 }
 
+#reportrange {
+  margin-right: 10px;
+}
+
+#live-data-toggle {
+  margin-top: -50px;
+}
+
 body {
   over-flow-x: hidden;
   margin: 0px;
@@ -14,7 +22,7 @@ body {
 }
 
 #space-for-search-bar {
-  margin-top: 80px;
+  margin-top: 60px;
   padding: 10px;
   wdith: 300px;
 }
@@ -201,7 +209,8 @@ body {
   height: 473px;
 }
 .module-wrap .module3 {
-  width: 31%;
+  margin-right: -20px;
+  width: 34%;
   height: 473px;
 }
 
