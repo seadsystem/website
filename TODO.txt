@@ -1,0 +1,53 @@
+Kind of in order of priority:
+
+Handle rooms with no appliances properly
+
+Add a way to add appliances
+    - Not sure how this will work when disaggregation arrives, but need a temporary method
+
+Clean up CSS
+    - Device view and rest of website consistent
+    - Modules lign up on device view
+
+Add loading spinner to device page
+    - still not ideal, we should use synchronous requests because the website still hangs when changing date range
+
+Avoid reloading cost graph on every action room change
+
+Implement room editing for name/icon
+
+Home tab should show appliances if there are no rooms
+    - Ideally there should be a way to query the SEADS backend for all appliances the device has found
+    - users
+        - Pat Mantey
+            - devices
+                - 466419818
+                    - roomid (unique id) // As is there is not an easy way to rename a room
+                        - name: Kitchen
+                        - appliances
+                            - Panel1 // The appliance id should be the key not its name
+                                - name: Oven
+                                - color: brown
+                            - Panel2
+                                - name: Refridgerator
+                                - color: gray
+                    - roomid (unique id)
+                        - name: Unsorted // Newly recognized appliances show up in an unsorted tab
+                        - appliances
+                            - Panel3
+                                - name: Unnamed Device
+                                - color: random
+                            - PowerS
+                                - name: Unnamed Device
+                                - color: random
+    ....
+
+Add customization in terms of which modules are shown that stay consistent across sessions
+
+rewrite javascript for device page.... it's really bad as is :(
+
+Beautify the appliance sorting module
+
+Beautify rest of the website
+
+Ask for confirmation before deleting a user's device

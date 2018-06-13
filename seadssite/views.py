@@ -2,10 +2,10 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllow
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
-from seadssite.models import Device
-
 import google.auth.transport.requests
 import google.oauth2.id_token
+
+import simplejson
 
 HTTP_REQUEST = google.auth.transport.requests.Request()
 
@@ -58,10 +58,6 @@ def LogoutView(request):
     return HttpResponse(status=200)
 
 
-'''
-device dashboard page controller
-TODO: users can delete each others devices I think
-'''
 def DashboardView(request):
     authenticated = False
     if 'user_id' not in request.session:
@@ -70,13 +66,14 @@ def DashboardView(request):
     if request.session['user_id'] is not None:
         authenticated = True
 
-    ref = db.reference('users').child(request.session['user_id']).child('devices')
+    userRef = db.reference('users').child(request.session['user_id']).child('devices')
 
+    print(request.POST)
     # Register a new device
     if request.POST.get('device_id'):
         new_device_name = request.POST.get('device_name')
         new_device_id = request.POST.get('device_id')
-        ref.update({
+        userRef.update({
             new_device_id: {
                 'name': new_device_name
             }
@@ -85,26 +82,81 @@ def DashboardView(request):
     # Delete a device
     elif request.POST.get('delete'):
         device_id = request.POST.get('delete')
-        ref.child(device_id).delete()
+        userRef.child(device_id).delete()
 
-    devices = ref.get()
+    devices = userRef.get()
 
     return render(request, 'dashboard.html', {'authenticated': authenticated, 'devices': devices})
 
+# takes in paramaters that let us change the firebase schema. 
+# Should take in currrent selection, which room to move it to
+# where it needs to move
+# pass in current device, room too
+def DashboardModuleSort(request):
+    print("hi==============")
+    targetRoom = request.GET.get('targetRoom', None)
+    targetAppliance = request.GET.get('targetAppliance', None)
+    currentRoom = request.GET.get('currentRoom', None)
+    currentDevice = request.GET.get('currentDevice', None) 
 
-def graph(request, device_id):
+    print(targetRoom)
+    print(targetAppliance)
+    print(currentRoom)
+    print(currentDevice)
+
+    # vars denoted as current refer to before the deletion
+    # other vars refer to after the move
+
+    userRef = db.reference('users').child(request.session['user_id']).child('devices')
+    currentAppliancesNode = userRef.child(currentDevice).child('rooms').child(currentRoom).child('appliances')
+    targetAppliancesNode = userRef.child(currentDevice).child('rooms').child(targetRoom).child('appliances')
+    for testAppliance in currentAppliancesNode.get():
+        if(targetAppliance == currentAppliancesNode.child(testAppliance).child('id').get()):
+            print("TRUE")
+            targetAppliancesNode.child(testAppliance).child('id').set(targetAppliance)
+            currentAppliancesNode.child(testAppliance).delete()
+        # print(testAppliance)
+        # print(currentAppliancesNode.child(testAppliance).child('id').get())
+        print("---end-------------------------------")
+    # userRef.child('"987654321"').set("test")
+    # devices = simplejson.dumps(userRef.get());
+
+    # print(devices)
+
+
+    return render(request, 'device.html')
+
+def DeviceView(request, device_id):
+    """
+        load main page as "index"
+        """
     authenticated = False
     if 'user_id' not in request.session:
-        return render(request, 'graph.html', {'authenticated': authenticated})
+        return render(request, 'device.html', {'authenticated': authenticated})
 
     if request.session['user_id'] is not None:
         authenticated = True
 
-    # Get info associated with requested device
-    device = db.reference('devices').child(device_id)
-    rooms = device.child('rooms').order_by_child('solar').get()
+    deviceRef = db.reference('users').child(request.session['user_id']).child('devices').child(device_id)
+    device = simplejson.dumps(deviceRef.get())
 
-    return render(request, 'graph.html', {'authenticated': authenticated, 'rooms': rooms})
+    return render(request, 'device.html', {'authenticated': authenticated, 'deviceId': device_id, 'device': device})
+
+
+def UpdateDeviceView(request):
+    if not request.is_ajax():
+        return HttpResponseNotAllowed(['POST'])
+
+    if 'user_id' not in request.session or request.session['user_id'] is None:
+        return HttpResponse(status=401)
+
+    device_id = request.POST.get('device_id')
+    device = simplejson.loads(request.POST.get('data'))
+
+    device_ref = db.reference('users').child(request.session['user_id']).child('devices').child(device_id)
+    device_ref.set(device)
+
+    return HttpResponse(status=200)
 
 
 def TimerView(request):
@@ -148,4 +200,3 @@ def DevicesView(request):
     #
     # user_devices = Device.objects.filter(user=current_user, is_active=True)
     return render(request, 'devices.html')
-
